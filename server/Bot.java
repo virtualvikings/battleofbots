@@ -8,9 +8,9 @@ public class Bot {
 	private static final int DEFAULTHEALTH = 100;
 	private static final int UP = 0;
 	private static final int RIGHT = 1;
-	private static final int LEFT = 2;
-	private static final int DOWN = 3;
-	private static final int HIT = 4;
+	private static final int DOWN = 2;
+	private static final int LEFT = 3;
+	private static final int ATTACK = 4;
 	
 	private int health;
 	//private int x, y;
@@ -31,7 +31,7 @@ public class Bot {
 			case RIGHT: x++; break;
 			case DOWN: y++; break;
 			case LEFT: x--; break;
-			case HIT: break;
+			case ATTACK: break;
 		}
 		int[] result = {x, y};
 		return result;
