@@ -12,7 +12,7 @@ import android.widget.Button;
 
 public class MainActivity extends ActionBarActivity {
 
-	Button matchBtn, editBtn;
+	Button matchBtn, editBtn, quitBtn;
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,6 +21,7 @@ public class MainActivity extends ActionBarActivity {
         
         matchBtn = (Button) findViewById(R.id.matchBtn);
         editBtn = (Button) findViewById(R.id.editBtn);
+        quitBtn = (Button) findViewById(R.id.quitBtn);
         
         matchBtn.setOnClickListener(new OnClickListener(){
         	
@@ -36,6 +37,13 @@ public class MainActivity extends ActionBarActivity {
         	public void onClick(View v){
         		Intent EditActivity = new Intent("android.intent.action.EDITACTIVITY");
         		startActivity(EditActivity);
+        	}
+        });
+        
+        quitBtn.setOnClickListener(new OnClickListener(){
+        	public void onClick(View v){
+        		//quit
+        		finish();
         	}
         });
     }
