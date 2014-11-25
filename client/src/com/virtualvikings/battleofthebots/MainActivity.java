@@ -1,16 +1,19 @@
 package com.virtualvikings.battleofthebots;
 
 import android.support.v7.app.ActionBarActivity;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.TextView;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends Activity {
 
 	Button matchBtn, editBtn, quitBtn;
 	
@@ -22,6 +25,8 @@ public class MainActivity extends ActionBarActivity {
         matchBtn = (Button) findViewById(R.id.matchBtn);
         editBtn = (Button) findViewById(R.id.editBtn);
         quitBtn = (Button) findViewById(R.id.quitBtn);
+        //TextView tv = (TextView) findViewById(R.id.textTitle);
+        //tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 40);
         
         matchBtn.setOnClickListener(new OnClickListener(){
         	
