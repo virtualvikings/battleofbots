@@ -9,12 +9,4 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin">
     
-    <Button 
-        android:id="@+id/homeBtn"
-        android:text="@string/home"
-        android:layout_width="250dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        />
-    
 </LinearLayout>
