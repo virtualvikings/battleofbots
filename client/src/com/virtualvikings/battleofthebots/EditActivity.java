@@ -47,11 +47,18 @@ public class EditActivity extends ActionBarActivity {
         case R.id.action_save:
         	save();
         	return true;
+        case R.id.action_clear:
+        	clear();
+        	return true;
         default:
             return super.onOptionsItemSelected(item);
         }
     }
 	
+	private void clear() {
+		code.setText(""); 
+	}
+
 	public void save()
 	{
 		String text = code.getText().toString();
@@ -68,8 +75,6 @@ public class EditActivity extends ActionBarActivity {
 			Toast.makeText(getApplicationContext(), "An error occured while saving.",
 					   Toast.LENGTH_LONG).show();
 		}
-		
-	
 	}
 	
 }
