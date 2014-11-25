@@ -7,34 +7,34 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin">
-    
-    <EditText
-        android:id="@+id/codeTxt"
-        android:layout_width="290dp"
-        android:layout_height="350dp"
-        android:layout_gravity="center"
-        android:gravity="top"
-        android:hint="@string/codeHint" />
-    
+
     <RelativeLayout
-        android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:layout_gravity="bottom">
-        
-    	<Button
-        	android:id="@+id/saveBtn"
-        	android:text="@string/save"
-        	android:layout_width="175dp"
-        	android:layout_height="wrap_content"
-        	android:layout_alignParentRight="true"
-        	android:layout_alignParentEnd="true" />
-    
-    	<Button
-        	android:id="@+id/homeBtn"
-        	android:text="@string/home"
-        	android:layout_width="100dp"
-        	android:layout_height="wrap_content" />
-    	
+        android:layout_height="match_parent"
+        android:gravity="bottom" >
+
+        <EditText
+            android:id="@+id/codeTxt"
+            android:layout_width="290dp"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/saveBtn"
+            android:ems="10"
+            android:gravity="top"
+            android:hint="@string/codeHint" >
+
+            <requestFocus />
+        </EditText>
+
+        <Button
+            android:id="@+id/saveBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentLeft="true" 
+			android:layout_alignParentRight="true"
+            android:text="@string/save" />
+
     </RelativeLayout>
     
 </LinearLayout>

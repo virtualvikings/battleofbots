@@ -5,15 +5,17 @@ import java.io.FileOutputStream;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-public class EditActivity extends Activity{
+public class EditActivity extends ActionBarActivity{
 
-	Button home, save;
+	Button save;
 	EditText code;
 	
 	@Override
@@ -21,16 +23,18 @@ public class EditActivity extends Activity{
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.layout_edit);
-		home = (Button) findViewById(R.id.homeBtn);
+		//home = (Button) findViewById(R.id.homeBtn);
 		save = (Button) findViewById(R.id.saveBtn);
 		code = (EditText)findViewById(R.id.codeTxt);
 		
-		home.setOnClickListener(new OnClickListener(){
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true); //zet terug knop in action bar
+		
+		/*home.setOnClickListener(new OnClickListener(){
 			
 			public void onClick(View v){
 				finish();
 			}
-		});
+		});*/
 		
 		save.setOnClickListener(new OnClickListener(){
 			
@@ -54,5 +58,16 @@ public class EditActivity extends Activity{
 			}
 		});
 	}
+	
+	public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+        case android.R.id.home: 
+            onBackPressed();
+            return true;
+
+        default:
+            return super.onOptionsItemSelected(item);
+        }
+    }
 	
 }
