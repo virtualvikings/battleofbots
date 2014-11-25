@@ -6,4 +6,9 @@
           android:title="@string/save"
           yourapp:showAsAction="ifRoom"  />
     
+    <item android:id="@+id/action_clear"
+          android:icon="@drawable/ic_action_discard"
+          android:title="@string/clear"
+          yourapp:showAsAction="ifRoom"  />
+    
 </menu>

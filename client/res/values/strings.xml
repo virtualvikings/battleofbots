@@ -10,5 +10,6 @@
     <string name="event">Event</string>
     <string name="save">Save</string>
     <string name="codeHint">Write your strategy here</string>
+    <string name="clear">Clear</string>
 
 </resources>
