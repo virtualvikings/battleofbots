@@ -14,6 +14,7 @@ public class Arena {
 	
 	private int[] locationBot1 = {1, 1};
 	private int[] locationBot2 = {18, 18};
+	
 	private int numberOfObstacles = 0;
 	
 	public Arena() {
@@ -103,6 +104,5 @@ public class Arena {
 		view = view.replace('3','x');
 		view = view.replace('0', '.');
 		System.out.println(view);
-		System.out.println(numberOfObstacles);
 	}
 }

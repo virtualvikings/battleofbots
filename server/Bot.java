@@ -18,7 +18,7 @@ public class Bot {
 	public Bot(String data, Thread thread) {
 		String[] dataParts = data.split(", ");
 		this.name = dataParts[0];
-		this.strategy = new Strategy(dataParts[1]);
+		this.strategy = new Strategy(this, dataParts[1]);
 		this.health = DEFAULTHEALTH;
 	}
 	

@@ -9,16 +9,20 @@ public class Strategy {
 	private String strategy;
 	//private ArrayList<String> variables = new ArrayList<String>();
 	private HashMap<String, Integer> userVariables = new HashMap<String, Integer>();
+	private HashMap<String, Integer> botVariables = new HashMap<String, Integer>();
 	private HashMap<String, Integer> moves = new HashMap<String, Integer>();
-	private boolean start = false;
+	private boolean start = true;
 	private ArrayList<ArrayList<String>> partedCode;
 	private int nextMove;
+	private Bot bot;
 	
-	public Strategy(String strategy) {
+	public Strategy(Bot bot, String strategy) {
+		System.out.println("- " + bot.getName() + " ---");
 		createMoves();
 		userVariables.put("counter", 0);
 		this.strategy = strategy;
 		this.removeWhitespaces();
+		this.bot = bot;
 		partedCode = this.readParts(this.stringToParts(this.strategy));
 	}
 	
@@ -28,6 +32,11 @@ public class Strategy {
 		moves.put("GoDown", 2);
 		moves.put("GoLeft", 3);
 		moves.put("Attack", 4);
+		moves.put("GoRandom", 5);
+	}
+	
+	private void createBotVariables() {
+		
 	}
 	
 	private void readCode(ArrayList<ArrayList<String>> parts) {
@@ -36,7 +45,6 @@ public class Strategy {
 			if (firstPart.contains("if")) {
 				String statement = firstPart.split("\\(|\\)")[1];
 				if (evaluateStatement(statement)) {
-					System.out.println("True statement: " + statement);
 					execute(parts.get(i).get(1));
 				}
 			} else {
@@ -53,28 +61,65 @@ public class Strategy {
 	}
 	
 	private void doExpression(String expression) {
-		System.out.println("Expression: " + expression);
+		// Assign a new value to a variable
+		if (expression.charAt(expression.length() - 1) == ';') {
+			expression = expression.substring(0, expression.length() - 1);
+		}
 		if (expression.contains("=")) {
-			System.out.println("=");
 			String[] parts = expression.split("=");
 			String name = parts[0];
 			if (userVariables.containsKey(name)) {
 				userVariables.put(name, Integer.parseInt(parts[1]));
+				System.out.println(name + " is now " + parts[1]);
 			}
+		// Increase a variable with 1
 		} else if (expression.contains("++")) {
-			System.out.println("++");
 			String name = expression.substring(0, expression.length() - 2);
 			if (userVariables.containsKey(name)) {
 				int oldValue = userVariables.get(name);
 				userVariables.put(name, oldValue + 1);
+				System.out.println(name + " is increased to " + (oldValue + 1));
 			}
+		// A command
 		} else {
-			System.out.println("x");
 			if (moves.containsKey(expression)) {
-				nextMove = moves.get(expression);
+				int move = moves.get(expression);
+				if (move == 5) {
+					nextMove = (new Random()).nextInt(4);
+				} else {
+					nextMove = move;
+				}
+				System.out.println(expression + " is executed (" + nextMove + ")");
 			}
 		}
-		System.out.println(userVariables.get("counter"));
+	}
+	
+	public int getVariableValue(String variable) {
+		boolean allUpperCase = true;
+		boolean allLowerCase = true;
+		for (int i = 0; i < variable.length(); i++) {
+			if (Character.isUpperCase(variable.charAt(i))) {
+				allLowerCase = false;
+			} else {
+				allUpperCase = false;
+			}
+		}
+		if (allUpperCase) {
+			if (variable.equals("HEALTH")) {
+				return bot.getHealth();
+			}
+			if (variable.equals("OBSTACLENEXT")) {
+				return 1;
+			}
+			if (variable.equals("OPPONENTNEXT")) {
+				return 0;
+			}
+		}
+		if (allLowerCase && userVariables.containsKey(variable)) {
+			return userVariables.get(variable);
+		}
+		
+		return -1;
 	}
 	
 	private ArrayList<String> partExpressions(String expressions) {
@@ -90,15 +135,26 @@ public class Strategy {
 		if (statement.contains("==")) {
 			String[] parts = statement.split("==");
 			if (userVariables.containsKey(parts[0])) {
-				if (userVariables.get(parts[0]) == Integer.parseInt(parts[1])) {
+				if (getVariableValue(parts[0]) == Integer.parseInt(parts[1])) {
+					return true;
+				}
+			} else {
+				System.out.println(statement + " is " + (getVariableValue(parts[0]) == Integer.parseInt(parts[1])));
+				if (getVariableValue(parts[0]) == Integer.parseInt(parts[1])) {
+					
 					return true;
 				}
 			}
 		} else {
 			if (statement.equals("START")) {
-				return start;
+				if (start) {
+					start = false;
+					return true;
+				}
 			} else {
-				
+				if (getVariableValue(statement) == 1) {
+					return true;
+				} 
 			}
 		}
 		return false;
@@ -119,7 +175,7 @@ public class Strategy {
 		for (int i = 0; i < greaterParts.size(); i++) {
 			System.out.println(greaterParts.get(i));
 		}
-		System.out.println("\n");
+		System.out.println("");
 		return greaterParts;
 	}
 	
@@ -141,7 +197,7 @@ public class Strategy {
 		for (int i = 0; i < parts.size(); i++) {
 			System.out.println(parts.get(i));
 		}
-		System.out.println("\n");
+		System.out.println("");
 		
 		return parts;
 	}
@@ -151,6 +207,7 @@ public class Strategy {
 	}
 	
 	public int nextMove() {
+		System.out.println("\n- " + bot.getName() + " ---");
 		readCode(partedCode);
 		return nextMove;
 	}
