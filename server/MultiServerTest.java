@@ -18,6 +18,7 @@ public class MultiServerTest {
 	
 	public void listen() {
 		try (ServerSocket serverSocket = new ServerSocket(portNumber)) {
+			System.out.println("Started listening on portnumber " + portNumber + "...");
 			while (listening) {
 				Socket clientSocket = serverSocket.accept();
 				if (threads.size() < 4) {
