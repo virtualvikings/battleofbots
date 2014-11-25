@@ -25,20 +25,15 @@ public class MainActivity extends Activity {
         matchBtn = (Button) findViewById(R.id.matchBtn);
         editBtn = (Button) findViewById(R.id.editBtn);
         quitBtn = (Button) findViewById(R.id.quitBtn);
-        //TextView tv = (TextView) findViewById(R.id.textTitle);
-        //tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 40);
         
         matchBtn.setOnClickListener(new OnClickListener(){
-        	
         	public void onClick(View v){
         		Intent MatchMaking = new Intent("android.intent.action.MATCHMAKING");
         		startActivity(MatchMaking);
         	}
-        	
         });
         
         editBtn.setOnClickListener(new OnClickListener(){
-        	
         	public void onClick(View v){
         		Intent EditActivity = new Intent("android.intent.action.EDITACTIVITY");
         		startActivity(EditActivity);

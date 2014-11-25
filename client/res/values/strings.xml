@@ -4,14 +4,14 @@
     <string name="app_name">Battle Of Bots</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-    <string name="matchBtn">Fight!</string>
-    <string name="editBtn">Edit Bot</string>
+    <string name="matchBtn">FIGHT!</string>
+    <string name="editBtn">EDIT BOT</string>
     <string name="home">Home</string>
     <string name="event">Event</string>
     <string name="save">Save</string>
     <string name="codeHint">Write your strategy here</string>
     <string name="clear">Clear</string>
-    <string name="quitBtn">Quit</string>
+    <string name="quitBtn">QUIT</string>
     
     <string name="title">BATTLE OF BOTS</string>
 
