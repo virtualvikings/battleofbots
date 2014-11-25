@@ -1,9 +1,11 @@
 package com.virtualvikings.battleofthebots;
 
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.MenuItem;
@@ -20,38 +22,37 @@ public class EditActivity extends ActionBarActivity{
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.layout_edit);
-		//home = (Button) findViewById(R.id.homeBtn);
+
 		save = (Button) findViewById(R.id.saveBtn);
 		code = (EditText)findViewById(R.id.codeTxt);
 		
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true); //zet terug knop in action bar
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true); //place back button in action bar
 		
-		/*home.setOnClickListener(new OnClickListener(){
-			
-			public void onClick(View v){
-				finish();
-			}
-		});*/
+		final String FileName = "Strategy";
 		
+		SharedPreferences settings = getSharedPreferences(FileName, MODE_PRIVATE);
+	    String readCode = settings.getString("code", "void stap()\n{\n    \n}");
+	    code.setText(readCode);
+	    
 		save.setOnClickListener(new OnClickListener(){
 			
 			public void onClick(View v){
-				String FileName = "Strategy";// + selectedEvent;
-				String text = code.getText().toString();//.toString();
-				FileOutputStream osw;
+				
+				String text = code.getText().toString();
 				
 				try{
-					osw = openFileOutput(FileName, Context.MODE_PRIVATE);
-					osw.write(text.getBytes());
-					osw.close();
-					
-					Toast.makeText(getApplicationContext(), "Opgeslagen!",
+					SharedPreferences settings = getSharedPreferences(FileName, MODE_PRIVATE);
+				    SharedPreferences.Editor editor = settings.edit();
+				    editor.putString("code", text);
+				    editor.commit();
+
+					Toast.makeText(getApplicationContext(), "Saved!",
 							   Toast.LENGTH_LONG).show();
 				} catch(Exception e){
-					e.printStackTrace();
+					Toast.makeText(getApplicationContext(), "An error occured while saving.",
+							   Toast.LENGTH_LONG).show();
 				}
 				
 				
