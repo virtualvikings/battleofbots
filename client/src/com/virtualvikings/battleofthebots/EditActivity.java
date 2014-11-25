@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 public class EditActivity extends Activity{
 
@@ -22,6 +23,7 @@ public class EditActivity extends Activity{
 		setContentView(R.layout.layout_edit);
 		home = (Button) findViewById(R.id.homeBtn);
 		save = (Button) findViewById(R.id.saveBtn);
+		code = (EditText)findViewById(R.id.codeTxt);
 		
 		home.setOnClickListener(new OnClickListener(){
 			
@@ -34,16 +36,21 @@ public class EditActivity extends Activity{
 			
 			public void onClick(View v){
 				String FileName = "Strategy";// + selectedEvent;
-				String text = code.toString();
+				String text = code.getText().toString();//.toString();
 				FileOutputStream osw;
 				
 				try{
 					osw = openFileOutput(FileName, Context.MODE_PRIVATE);
 					osw.write(text.getBytes());
 					osw.close();
+					
+					Toast.makeText(getApplicationContext(), "Opgeslagen!",
+							   Toast.LENGTH_LONG).show();
 				} catch(Exception e){
 					e.printStackTrace();
 				}
+				
+				
 			}
 		});
 	}
