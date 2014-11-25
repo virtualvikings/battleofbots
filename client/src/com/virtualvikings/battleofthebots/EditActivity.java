@@ -24,6 +24,7 @@ public class EditActivity extends ActionBarActivity {
 		code = (EditText)findViewById(R.id.codeTxt);
 		code.setTypeface(Typeface.MONOSPACE); 
 		
+		getSupportActionBar().setTitle("Edit Bot");
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true); //place back button in action bar
 		
 		SharedPreferences settings = getSharedPreferences(FileName, MODE_PRIVATE);
