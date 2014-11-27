@@ -7,31 +7,39 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.support.v7.app.ActionBarActivity;
 import android.view.MenuItem;
+import android.view.Window;
 import android.widget.Toast;
 
-public class MatchMaking extends ActionBarActivity {
+public class MatchMaking extends Activity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-
+		
+		//requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);  
+		
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.layout_match);
 
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		//setProgressBarIndeterminateVisibility(true); //werkt niet
+		//getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		
-		final Activity t = this;
+		final ProgressDialog ringProgressDialog = ProgressDialog.show(this, "Please wait",	"Searching for match...", true);
+		ringProgressDialog.setCancelable(true);
+
 		
 		new Thread(new Runnable(){
 			
 			private void makeToast(final String s)
 			{
-				t.runOnUiThread(new Runnable() {
+				MatchMaking.this.runOnUiThread(new Runnable() {
 				    public void run() {
 				        Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT).show();
 				    }
