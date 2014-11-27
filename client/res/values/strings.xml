@@ -12,7 +12,7 @@
     <string name="codeHint">Write your strategy here</string>
     <string name="clear">Clear</string>
     <string name="quitBtn">QUIT</string>
-    
     <string name="title">BATTLE OF BOTS</string>
+    <string name="title_activity_game">GameActivity</string>
 
 </resources>

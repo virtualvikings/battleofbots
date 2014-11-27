@@ -9,6 +9,7 @@ import java.net.UnknownHostException;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -34,6 +35,10 @@ public class MatchMaking extends Activity {
 		final ProgressDialog ringProgressDialog = ProgressDialog.show(this, "Please wait",	"Searching for match...", true);
 		ringProgressDialog.setCancelable(true);
 
+		Intent goToNextActivity = new Intent(getApplicationContext(), GameActivity.class);
+		startActivity(goToNextActivity);
+		
+		
 		
 		new Thread(new Runnable(){
 			
