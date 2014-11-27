@@ -3,6 +3,7 @@ package com.virtualvikings.battleofthebots;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.MenuItem;
@@ -21,11 +22,14 @@ public class EditActivity extends ActionBarActivity{
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
+
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.layout_edit);
-		code = (EditText) findViewById(R.id.codeTxt);
 		
+		code = (EditText) findViewById(R.id.codeTxt);
+		code.setTypeface(Typeface.MONOSPACE); 
+		
+		getSupportActionBar().setTitle("Edit Bot");
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		
 		SharedPreferences settings = getSharedPreferences(FileName, MODE_PRIVATE);
