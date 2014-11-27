@@ -25,42 +25,46 @@ public class MatchMaking extends ActionBarActivity {
 
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		
-		new Thread(new ClientThread()).start();
-	}
-	
-	class ClientThread implements Runnable {
-
-		@Override
-		public void run() {
+		final Activity t = this;
+		
+		new Thread(new Runnable(){
 			
-			//Dit werkt niet
-			/*((Activity) getApplicationContext()).runOnUiThread(new Runnable() {
-			    public void run() {
-			        Toast.makeText(getApplicationContext(), "Hello", Toast.LENGTH_SHORT).show();
-			    }
-			});*/
-
-			System.out.println("starten...");
-			try {
-				InetAddress serverAddr = InetAddress.getByName("172.20.10.2"/*"10.0.2.2"*/);
-				//Dat werkt!
-
-				Socket socket = new Socket(serverAddr, 4444);
-				
-				PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-				out.println("Correct_Key");
-				socket.close();
-				
-				System.out.println("voltooid");
-
-			} catch (Exception e1) {
-				e1.printStackTrace();
-				System.out.println("fout opgetreden");
+			private void makeToast(final String s)
+			{
+				t.runOnUiThread(new Runnable() {
+				    public void run() {
+				        Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT).show();
+				    }
+				});
 			}
 
-		}
+			@Override
+			public void run() {
+				
+				makeToast("Starten...");
+				
+				try {
+					
+					//"172.20.10.2"
+					InetAddress serverAddr = InetAddress.getByName("10.0.2.2");
+					//Dat werkt!
 
+					Socket socket = new Socket(serverAddr, 4444);
+					
+					PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+					out.println("Correct_Key");
+					socket.close();
+					
+					makeToast("Voltooid.");
+
+				} catch (Exception e1) {
+					e1.printStackTrace();
+					makeToast("Fout opgetreden.");
+				}
+				
+			}}).start();
 	}
+	
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
