@@ -17,22 +17,29 @@ public class GameView extends View {
 		
 	}
 	
+	Paint brush = new Paint();
+	int cells = 10;
+	
 	@Override
 	public void onDraw (Canvas canvas)
 	{
-		Paint paint = new Paint();
-		paint.setStrokeWidth(3);
-		paint.setColor(Color.WHITE);
+		brush.setStrokeWidth(2);
+		brush.setColor(Color.WHITE);
 		
-		int linesW = 20;
-		int linesH = 20;
+		int minWH = Math.min(canvas.getWidth(), canvas.getHeight());
+		float cellS = minWH / (float)cells;
 		
-		for (int i = 0; i <= linesW; i++)
+		if (minWH == canvas.getWidth())
+			canvas.translate(0, canvas.getHeight() / 2f - minWH / 2f);
+		else
+			canvas.translate(canvas.getWidth() / 2f - minWH / 2f, 0);
+
+		for (int i = 0; i <= cells; i++)
 		{
-			for (int j = 0; j <= linesH; j++)
+			for (int j = 0; j <= cells; j++)
 			{
-				canvas.drawLine(i * canvas.getWidth() / (float)linesW, 0, i * canvas.getWidth() / (float)linesW, canvas.getHeight(), paint );
-				canvas.drawLine(0, j  * canvas.getHeight() / (float)linesH, canvas.getWidth(), j * canvas.getHeight() / (float)linesH, paint );
+				canvas.drawLine(i * cellS, 0, i * cellS, minWH, brush);
+				canvas.drawLine(0, j * cellS, minWH, j * cellS, brush);
 			}
 		}
 	}
