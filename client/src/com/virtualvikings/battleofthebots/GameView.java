@@ -7,43 +7,34 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.view.View;
-import android.widget.Button;
-import android.widget.LinearLayout;
 
 public class GameView extends View {
 
-	Paint brush = new Paint();
+	Paint brush;
 	int cellCount = 10;
 	int[][] cells;
 	
 	public GameView(Context context) {
 		super(context);
-		// TODO Auto-generated constructor stub
 		
 		cells = new int[cellCount][cellCount];
-		invalidate();
 		
 		//Maak willekeurig test level
 		Random r = new Random();
 		for (int i = 0; i < cellCount; i++)
-		{
 			for (int j = 0; j < cellCount; j++)
-			{
 				cells[i][j] = r.nextInt(7);
-			}
-		}
 		
+		brush = new Paint();
+		brush.setStrokeWidth(2);
+		brush.setAntiAlias(true);
 		
+		invalidate();
 	}
-	
-
 	
 	@Override
 	public void onDraw (Canvas canvas)
 	{
-		brush.setStrokeWidth(2);
-		brush.setAntiAlias(true);
-		
 		//Bepaal of breedte of hoogte kleiner is
 		int minWH = Math.min(canvas.getWidth(), canvas.getHeight());
 		float cellS = minWH / (float)cellCount;

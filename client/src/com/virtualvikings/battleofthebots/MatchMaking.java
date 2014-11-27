@@ -1,22 +1,14 @@
 package com.virtualvikings.battleofthebots;
 
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.net.UnknownHostException;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
-import android.support.v7.app.ActionBarActivity;
 import android.view.MenuItem;
-import android.view.Window;
 import android.widget.Toast;
 
 public class MatchMaking extends Activity {
@@ -24,21 +16,15 @@ public class MatchMaking extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		
-		//requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);  
-		
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.layout_match);
-
-		//setProgressBarIndeterminateVisibility(true); //werkt niet
-		//getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		
 		final ProgressDialog ringProgressDialog = ProgressDialog.show(this, "Please wait",	"Searching for match...", true);
 		ringProgressDialog.setCancelable(true);
 
+		//Tijdelijk: ga naar spel activity (zelfs als verbinding niet gelukt is)
 		Intent goToNextActivity = new Intent(getApplicationContext(), GameActivity.class);
 		startActivity(goToNextActivity);
-		
-		
 		
 		new Thread(new Runnable(){
 			
