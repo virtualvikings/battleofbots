@@ -1,10 +1,15 @@
 package com.virtualvikings.battleofthebots;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.support.v7.app.ActionBarActivity;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -13,32 +18,43 @@ public class MatchMaking extends ActionBarActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
+
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.layout_match);
 
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-		Thread socketSender = new Thread() {
-
-			public void run() {
-				try {
-					//Toast.makeText(getApplicationContext(), "started", Toast.LENGTH_SHORT);
-					int portNumber = 4444;
-					Socket socket = new Socket("localhost", portNumber);
-					PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-					out.println("HOI!");
-					socket.close();
-					//Toast.makeText(getApplicationContext(), "Verstuurd", Toast.LENGTH_SHORT).show();
-				} catch (Exception e) {
-					e.printStackTrace();
-					//Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_SHORT).show();
-				}
-			}
-		};
-		socketSender.start();
+		
+		new Thread(new ClientThread()).start();
 	}
+	
+	class ClientThread implements Runnable {
 
+		@Override
+		public void run() {
+			
+			Toast.makeText(getApplicationContext(), "Waiting...", Toast.LENGTH_SHORT);
+
+			System.out.println("starten...");
+			try {
+				InetAddress serverAddr = InetAddress.getByName("172.20.10.2"/*"10.0.2.2"*/);
+				//Dat werkt!
+
+				Socket socket = new Socket(serverAddr, 4444);
+				
+				PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+				out.println("Correct_Key");
+				socket.close();
+				
+				System.out.println("voltooid");
+
+			} catch (Exception e1) {
+				e1.printStackTrace();
+				System.out.println("fout opgetreden");
+			}
+
+		}
+
+	}
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
