@@ -10,7 +10,6 @@ public class MultiServerThreadTest extends Thread {
     private Socket socket = null;
     private MultiServerTest mst;
     private MatchCentre matchCentre;
-    private Player player;
  
     public MultiServerThreadTest(Socket socket, MultiServerTest mst, MatchCentre matchCentre) {
         super("MultiServerThreadTest");
