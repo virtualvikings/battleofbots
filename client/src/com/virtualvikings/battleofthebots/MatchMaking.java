@@ -6,6 +6,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -32,7 +33,12 @@ public class MatchMaking extends ActionBarActivity {
 		@Override
 		public void run() {
 			
-			Toast.makeText(getApplicationContext(), "Waiting...", Toast.LENGTH_SHORT);
+			//Dit werkt niet
+			/*((Activity) getApplicationContext()).runOnUiThread(new Runnable() {
+			    public void run() {
+			        Toast.makeText(getApplicationContext(), "Hello", Toast.LENGTH_SHORT).show();
+			    }
+			});*/
 
 			System.out.println("starten...");
 			try {
