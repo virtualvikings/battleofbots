@@ -3,8 +3,8 @@ package nl.davidlieffijn.battleofbots;
 import java.util.Random;
 
 public class Arena {
-	private static final int HEIGHT = 20;
-	private static final int WIDTH = 20;
+	private static final int HEIGHT = 10;
+	private static final int WIDTH = 10;
 	private int[][] field = new int[WIDTH][HEIGHT];
 	
 	private static final int EMPTY = 0;
