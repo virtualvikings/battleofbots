@@ -23,6 +23,11 @@ class Vector2<E>
 	public boolean equals(Vector2<E> other) {
 		return other.x.equals(x) && other.y.equals(y);
 	}
+	
+	@Override
+	protected Object clone() {
+		return new Vector2<E>(x, y);
+	}
 }
 
 public class GameView extends View {
@@ -31,12 +36,17 @@ public class GameView extends View {
 		
 		public static class State {
 			
-			Vector2<Integer> position;
-			byte direction;
+			private Vector2<Integer> position;
+			private byte direction;
 			
 			public State(Vector2<Integer> position, byte direction) {
 				this.position = position;
 				this.direction = direction;
+			}
+			
+			@Override
+			protected Object clone() throws CloneNotSupportedException {
+				return super.clone();
 			}
 		}
 		
@@ -45,6 +55,7 @@ public class GameView extends View {
 		public Bot(State[] states) {
 			this.states = states;
 		}
+		
 	}
 	
 	private int cellCount = 10;
@@ -78,19 +89,43 @@ public class GameView extends View {
 		super(context);
 		
 		//Waarschuwing - deze constructor wordt opnieuw aangeroepen als het scherm draait!
-		timeSegments = 15;
+		timeSegments = 500;
 		cells = new byte[cellCount][cellCount][timeSegments];
 		
 		//Plaats bots op willekeurige plekken
 		Random r = new Random();
 		State[] statesPlayer = new State[timeSegments];
 		State[] statesEnemy = new State[timeSegments];
+		Vector2<Integer> posPlayer = new Vector2<Integer>(2, 4);
+		Vector2<Integer> posEnemy = new Vector2<Integer>(3, 7);
 		
-		for (int i = 0; i < timeSegments; i++) {
-			byte direction = (byte) r.nextInt(3); //0-3
-			statesPlayer[i] = new State(new Vector2<Integer>(r.nextInt(cellCount), r.nextInt(cellCount)), direction);
-			statesEnemy[i] = new State(new Vector2<Integer>(r.nextInt(cellCount), r.nextInt(cellCount)), direction);
+		//Simuleer een gevecht
+		try
+		{
+			for (int i = 0; i < timeSegments; i++) {
+				byte direction = (byte) r.nextInt(3); //0-3
+				
+				//Spring naar andere kant als bot uit het veld gelopen is
+				posPlayer.x = (posPlayer.x + r.nextInt(3) - 1) % cellCount;
+				posPlayer.y = (posPlayer.y + r.nextInt(3) - 1) % cellCount;
+				posEnemy.x = (posEnemy.x + r.nextInt(3) - 1) % cellCount;
+				posEnemy.y = (posEnemy.y + r.nextInt(3) - 1) % cellCount;
+				
+				while (posPlayer.x < 0)
+					posPlayer.x += cellCount;
+				while (posPlayer.y < 0)
+					posPlayer.y += cellCount;
+				while (posEnemy.x < 0)
+					posEnemy.x += cellCount;
+				while (posEnemy.y < 0)
+					posEnemy.y += cellCount;
+				
+				statesPlayer[i] = new State((Vector2<Integer>) posPlayer.clone(), direction);
+				statesEnemy[i] = new State((Vector2<Integer>) posEnemy.clone(), direction);
+			}
 		}
+		catch (Exception e)
+		{}
 		
 		player = new Bot(statesPlayer);
 		enemy = new Bot(statesEnemy);
