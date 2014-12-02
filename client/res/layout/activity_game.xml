@@ -17,7 +17,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_weight="0"
-        android:text="Time:"
+        android:text="You won!"
         android:textColor="#FFF"
         android:textSize="20sp" />
 
