@@ -81,7 +81,7 @@ public class GameView extends View {
 		super(context);
 		
 		//Waarschuwing - deze constructor wordt opnieuw aangeroepen als het scherm draait!
-		timeSegments = 10;
+		timeSegments = 15;
 		cells = new byte[cellCount][cellCount][timeSegments];
 		
 		//Plaats bots op willekeurige plekken

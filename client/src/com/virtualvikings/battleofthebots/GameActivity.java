@@ -1,5 +1,8 @@
 package com.virtualvikings.battleofthebots;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
@@ -34,8 +37,8 @@ public class GameActivity extends Activity {
 		params.gravity = 1;
 		game.setLayoutParams(params);
 		
-		final TextView text = (TextView) findViewById(R.id.textTime2);
-		bar = (SeekBar) findViewById(R.id.seekBar2); 
+		final TextView text = (TextView) findViewById(R.id.textTime);
+		bar = (SeekBar) findViewById(R.id.seekBar); 
 		buttonPlay = (ImageButton) findViewById(R.id.button2);
 		bar.setMax(game.getDuration() - 1); 
 		
@@ -43,8 +46,8 @@ public class GameActivity extends Activity {
 			@Override
 			public void onProgressChanged(SeekBar seekBar, int progress,
 					boolean fromUser) {
-				GameActivity.this.seek(progress);
-				text.setText(String.format("%d/%d", progress, game.getDuration() - 1));
+				GameActivity.this.game.seek(progress);
+				text.setText(String.format("%d/%d", progress + 1, game.getDuration()));
 			}
 			
 			@Override
@@ -59,8 +62,51 @@ public class GameActivity extends Activity {
 		
 	}
 	
+	private void seek(int progress) {
+		bar.setProgress(progress);
+	}
+	
+	private void step(int progress) {
+		bar.setProgress(game.getCurrentTime() + progress);
+	}
+
+	private void setPlaying(boolean b) {
+		playing = b;
+		if (playing)
+			buttonPlay.setImageResource(R.drawable.ic_action_pause);
+		else
+			buttonPlay.setImageResource(R.drawable.ic_action_play);
+	}
+	
+	
 	public void clickPlay(View v) {
+		
 		setPlaying(!playing);
+		if (!playing) return;
+		
+		if (game.getCurrentTime() >= game.getDuration() - 1) //Ga naar begin als we aan het einde zijn
+			seek(0);
+		
+		int speed = 250; //Milliseconden
+		
+		final Timer t = new Timer();
+		t.schedule(new TimerTask(){
+			@Override
+			public void run() {
+				GameActivity.this.runOnUiThread(new Runnable(){
+					@Override
+					public void run() {
+						if (!playing) {
+							t.cancel();
+							return;
+						}
+						GameActivity.this.step(1);
+						if (GameActivity.this.game.getCurrentTime() >= GameActivity.this.game.getDuration() - 1) {
+							t.cancel();
+							setPlaying(false); //Stop als we bij het einde zijn
+						}
+					}});
+			}}, 0, speed);
 	}
 	
 	public void clickStart(View v) {
@@ -83,22 +129,5 @@ public class GameActivity extends Activity {
 		step(-1);
 	}
 	
-	private void seek(int progress) {
-		game.seek(progress);
-		bar.setProgress(progress);
-	}
-	
-	private void step(int progress) {
-		//game.step(progress);
-		bar.setProgress(game.getCurrentTime() + progress);
-	}
-
-	private void setPlaying(boolean b) {
-		playing = b;
-		if (playing)
-			buttonPlay.setImageResource(R.drawable.ic_action_pause);
-		else
-			buttonPlay.setImageResource(R.drawable.ic_action_play);
-	}
 	
 }
