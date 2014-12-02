@@ -1,16 +1,14 @@
 package com.virtualvikings.battleofthebots;
 
 import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
-
-import com.virtualvikings.battleofthebots.GameView.Bot.State;
 
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.view.View;
+
+import com.virtualvikings.battleofthebots.GameView.Bot.State;
 
 class Vector2<E>
 {
@@ -48,7 +46,6 @@ public class GameView extends View {
 			this.states = states;
 		}
 	}
-
 	
 	private int cellCount = 10;
 	private byte[][][] cells;
@@ -114,18 +111,6 @@ public class GameView extends View {
 		brush.setAntiAlias(true);
 		
 		invalidate();
-		
-		/*Timer t = new Timer();
-		TimerTask task = new TimerTask(){
-			@Override
-			public void run() {
-				GameView.this.post(new Runnable(){
-					@Override
-					public void run() {
-						GameView.this.invalidate();
-					}});
-			}};
-		t.schedule(task , 0, 1000); //Doe dit elke seconde*/
 	}
 	
 	@Override
@@ -155,6 +140,7 @@ public class GameView extends View {
 			}
 		}
 
+		Vector2<Integer> pos = new Vector2<Integer>(0, 0);
 		//Teken obstakels en bots
 		for (int i = 0; i < cellCount; i++)
 		{
@@ -162,18 +148,28 @@ public class GameView extends View {
 			{
 				float x = i * cellS;
 				float y = j * cellS;
-				Vector2<Integer> pos = new Vector2<Integer>(i, j);
+				float radius = cellS / 2f;
 				
 				brush.setColor(Color.WHITE);
 				if (cells[i][j][currentTime] == 0)
-					canvas.drawCircle(x + cellS / 2f, y + cellS / 2f, cellS / 2f, brush);
+					canvas.drawCircle(x + radius, y + radius, radius, brush);
 				
-				brush.setColor(Color.GREEN);
-				if (player.states[currentTime].position.equals(pos))
-					canvas.drawCircle(x + cellS / 2f, y + cellS / 2f, cellS / 2f, brush);
-				brush.setColor(Color.RED);
-				if (enemy.states[currentTime].position.equals(pos))
-					canvas.drawCircle(x + cellS / 2f, y + cellS / 2f, cellS / 2f, brush);
+				pos.x = i;
+				pos.y = j;
+				
+				State playerState = player.states[currentTime];
+			
+				if (playerState.position.equals(pos)) {
+					brush.setColor(Color.GREEN);
+					canvas.drawCircle(x + radius, y + radius, radius, brush);
+				}
+				
+				State enemyState = enemy.states[currentTime];
+
+				if (enemyState.position.equals(pos)) {
+					brush.setColor(Color.RED);
+					canvas.drawCircle(x + radius, y + radius, radius, brush);
+				}
 			}
 		}
 	}

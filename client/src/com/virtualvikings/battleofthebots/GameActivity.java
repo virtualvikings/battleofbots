@@ -28,15 +28,6 @@ public class GameActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_game);
 		
-		LinearLayout layout = (LinearLayout) findViewById(R.id.test);
-
-		game = new GameView(getApplicationContext());
-		LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT);
-		params.gravity = 1;
-		game.setLayoutParams(params);
-		
 		final TextView text = (TextView) findViewById(R.id.textTime);
 		bar = (SeekBar) findViewById(R.id.seekBar); 
 		buttonPlay = (ImageButton) findViewById(R.id.button2);
@@ -58,7 +49,16 @@ public class GameActivity extends Activity {
 			public void onStopTrackingTouch(SeekBar seekBar) {
 			}});
 		
-		layout.addView(game); //Plaats de GameView voor de andere views
+
+		game = new GameView(getApplicationContext());
+		LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT);
+		params.weight = 1;
+		game.setLayoutParams(params);
+		
+		LinearLayout layout = (LinearLayout) findViewById(R.id.test);
+		layout.addView(game, 1); //Plaats de GameView voor de andere views
 		
 	}
 	
