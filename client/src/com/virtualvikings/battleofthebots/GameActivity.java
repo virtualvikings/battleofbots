@@ -25,10 +25,8 @@ public class GameActivity extends Activity {
 		params.gravity = 1;
 		game.setLayoutParams(params);
 		
-		layout.addView(game);
-		
-		final TextView text = (TextView) findViewById(R.id.textTime);
-		SeekBar bar = (SeekBar) findViewById(R.id.seekBar);
+		final TextView text = (TextView) findViewById(R.id.textTime); //Crash
+		SeekBar bar = (SeekBar) findViewById(R.id.seekBar); 
 		bar.setMax(game.getTimeSegments() - 1); 
 		
 		bar.setOnSeekBarChangeListener(new OnSeekBarChangeListener(){
@@ -36,7 +34,7 @@ public class GameActivity extends Activity {
 			public void onProgressChanged(SeekBar seekBar, int progress,
 					boolean fromUser) {
 				game.setProgress(progress);
-				text.setText(String.format("Time: %d/%d", progress + 1, game.getTimeSegments()));
+				text.setText(String.format("%d/%d", progress + 1, game.getTimeSegments()));
 			}
 			
 			@Override
@@ -46,5 +44,8 @@ public class GameActivity extends Activity {
 			@Override
 			public void onStopTrackingTouch(SeekBar seekBar) {
 			}});
+		
+		layout.addView(game, 0); //Plaats de GameView voor de andere views
+		
 	}
 }

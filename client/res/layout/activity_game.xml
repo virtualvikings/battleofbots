@@ -11,13 +11,6 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.virtualvikings.battleofthebots.GameActivity" >
 
-    <SeekBar
-        android:id="@+id/seekBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:layout_weight="0" />
-    
     <TextView
         android:id="@+id/textTime"
         android:layout_width="wrap_content"
@@ -28,6 +21,13 @@
         android:textColor="#FFF"
         android:textSize="20sp" />
 
+    <SeekBar
+        android:id="@+id/seekBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_weight="0" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -37,25 +37,36 @@
             android:id="@+id/button0"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:src="@drawable/ic_action_rewind" />
 
         <ImageButton
             android:id="@+id/button1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:src="@drawable/ic_action_previous" />
 
         <ImageButton
             android:id="@+id/button2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:src="@drawable/ic_action_play" />
 
         <ImageButton
             android:id="@+id/button3"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:src="@drawable/ic_action_next" />
+
+        <ImageButton
+            android:id="@+id/button4"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@drawable/ic_action_fast_forward" />
 
     </LinearLayout>
 
