@@ -6,6 +6,7 @@ import java.util.TimerTask;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -19,9 +20,15 @@ public class GameActivity extends Activity {
 	//Zie https://stackoverflow.com/questions/6812003/difference-between-oncreate-and-onstart
 	
 	private boolean playing;
-	private ImageButton buttonPlay;
+	
 	private GameView game;
 	private SeekBar bar;
+	
+	private ImageButton buttonPrevious;
+	private ImageButton buttonBegin;
+	private ImageButton buttonPlay;
+	private ImageButton buttonNext;
+	private ImageButton buttonEnd;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +48,6 @@ public class GameActivity extends Activity {
 		
 		final TextView text = (TextView) findViewById(R.id.textTime);
 		bar = (SeekBar) findViewById(R.id.seekBar); 
-		buttonPlay = (ImageButton) findViewById(R.id.button2);
 		bar.setMax(game.getDuration() - 1); 
 		
 		bar.setOnSeekBarChangeListener(new OnSeekBarChangeListener(){
@@ -60,6 +66,34 @@ public class GameActivity extends Activity {
 			public void onStopTrackingTouch(SeekBar seekBar) {
 			}});
 	
+		buttonBegin = (ImageButton) findViewById(R.id.buttonBegin);
+		buttonPrevious = (ImageButton) findViewById(R.id.buttonPrevious);
+		buttonPlay = (ImageButton) findViewById(R.id.buttonPlay);
+		buttonNext = (ImageButton) findViewById(R.id.buttonNext);
+		buttonEnd = (ImageButton) findViewById(R.id.buttonEnd);
+		
+		OnClickListener clickListener = new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				if (v == buttonBegin)
+					clickBegin(v);
+				else if (v == buttonPrevious)
+					clickPrevious(v);
+				else if (v == buttonPlay)
+					clickPlay(v);
+				else if (v == buttonNext)
+					clickNext(v);
+				else if (v == buttonEnd)
+					clickEnd(v);
+			}};
+			
+		buttonBegin.setOnClickListener(clickListener);
+		buttonPrevious.setOnClickListener(clickListener);
+		buttonPlay.setOnClickListener(clickListener);
+		buttonNext.setOnClickListener(clickListener);
+		buttonEnd.setOnClickListener(clickListener);
+		
+		//TODO voeg OnLongClickListener toe
 		
 	}
 	
@@ -110,7 +144,7 @@ public class GameActivity extends Activity {
 			}}, 0, speed);
 	}
 	
-	public void clickStart(View v) {
+	public void clickBegin(View v) {
 		setPlaying(false);
 		seek(0);
 	}

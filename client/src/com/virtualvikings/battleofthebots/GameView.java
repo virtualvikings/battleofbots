@@ -89,7 +89,7 @@ public class GameView extends View {
 		super(context);
 		
 		//Waarschuwing - deze constructor wordt opnieuw aangeroepen als het scherm draait!
-		timeSegments = 500;
+		timeSegments = 800;
 		cells = new byte[cellCount][cellCount][timeSegments];
 		
 		//Plaats bots op willekeurige plekken
@@ -99,7 +99,7 @@ public class GameView extends View {
 		Vector2<Integer> posPlayer = new Vector2<Integer>(2, 4);
 		Vector2<Integer> posEnemy = new Vector2<Integer>(3, 7);
 		
-		//Simuleer een gevecht
+		//Simuleer een gevecht, dit moet eigenlijk op de server gebeuren maar dit is om het te testen
 		try
 		{
 			for (int i = 0; i < timeSegments; i++) {
@@ -130,7 +130,7 @@ public class GameView extends View {
 		player = new Bot(statesPlayer);
 		enemy = new Bot(statesEnemy);
 		
-		//Maak willekeurig test level
+		//Maak willekeurig level, ook eigenlijk een verantwoordelijkheid van de server
 		for (int i = 0; i < cellCount; i++)
 			for (int j = 0; j < cellCount; j++)
 				for (int k = 0; k < timeSegments; k++)
