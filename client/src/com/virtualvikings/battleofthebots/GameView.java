@@ -50,21 +50,30 @@ public class GameView extends View {
 	}
 
 	
-	int cellCount = 10;
-	byte[][][] cells;
-	int timeSegments;
-	int currentTime;
+	private int cellCount = 10;
+	private byte[][][] cells;
+	private int timeSegments;
+	private int currentTime;
 	
-	Bot player;
-	Bot enemy;
-	Paint brush;
+	private Bot player;
+	private Bot enemy;
+	private Paint brush;
 	
-	public int getTimeSegments() {
+	public int getDuration() {
 		return timeSegments;
 	}
+	
+	public int getCurrentTime() {
+		return currentTime;
+	}
 
-	public void setProgress(int progress) {
+	public void seek(int progress) {
 		currentTime = progress;
+		invalidate();
+	}
+	
+	public void step(int i) {
+		currentTime += i;
 		invalidate();
 	}
 	
