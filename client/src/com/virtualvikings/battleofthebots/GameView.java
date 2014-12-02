@@ -4,6 +4,8 @@ import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import com.virtualvikings.battleofthebots.GameView.Bot.State;
+
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -27,29 +29,39 @@ class Vector2<E>
 
 public class GameView extends View {
 	
-	class Bot
-	{
-		Vector2<Integer>[] positions;
-		byte[] directions; //0-3
+	public static class Bot {
 		
-		public Bot(Vector2<Integer>[] positions) {
-			this.positions = positions;
+		public static class State {
+			
+			Vector2<Integer> position;
+			byte direction;
+			
+			public State(Vector2<Integer> position, byte direction) {
+				this.position = position;
+				this.direction = direction;
+			}
+		}
+		
+		State[] states;
+		
+		public Bot(State[] states) {
+			this.states = states;
 		}
 	}
 
-	Paint brush;
+	
 	int cellCount = 10;
+	byte[][][] cells;
 	int timeSegments;
 	int currentTime;
-	byte[][][] cells;
 	
 	Bot player;
 	Bot enemy;
+	Paint brush;
 	
 	public int getTimeSegments() {
 		return timeSegments;
 	}
-	
 
 	public void setProgress(int progress) {
 		currentTime = progress;
@@ -59,22 +71,23 @@ public class GameView extends View {
 	public GameView(Context context) {
 		super(context);
 		
+		//Waarschuwing - deze constructor wordt opnieuw aangeroepen als het scherm draait!
 		timeSegments = 10;
 		cells = new byte[cellCount][cellCount][timeSegments];
 		
 		//Plaats bots op willekeurige plekken
 		Random r = new Random();
-		Vector2<?>[] positionsPlayer = new Vector2<?>[timeSegments];
-		Vector2<?>[] positionsEnemy = new Vector2<?>[timeSegments];
+		State[] statesPlayer = new State[timeSegments];
+		State[] statesEnemy = new State[timeSegments];
+		
 		for (int i = 0; i < timeSegments; i++) {
-			positionsPlayer[i] = new Vector2<Integer>(r.nextInt(cellCount), r.nextInt(cellCount));
-			positionsEnemy[i] = new Vector2<Integer>(r.nextInt(cellCount), r.nextInt(cellCount));
-			System.out.println("player[" + i + "]: " + positionsPlayer[i].x + ", " + positionsPlayer[i].y);
-			System.out.println("enemy[" + i + "]: " + positionsEnemy[i].x + ", " + positionsEnemy[i].y);
+			byte direction = (byte) r.nextInt(3); //0-3
+			statesPlayer[i] = new State(new Vector2<Integer>(r.nextInt(cellCount), r.nextInt(cellCount)), direction);
+			statesEnemy[i] = new State(new Vector2<Integer>(r.nextInt(cellCount), r.nextInt(cellCount)), direction);
 		}
 		
-		player = new Bot((Vector2<Integer>[]) positionsPlayer);
-		enemy = new Bot((Vector2<Integer>[]) positionsEnemy);
+		player = new Bot(statesPlayer);
+		enemy = new Bot(statesEnemy);
 		
 		//Maak willekeurig test level
 		for (int i = 0; i < cellCount; i++)
@@ -147,10 +160,10 @@ public class GameView extends View {
 					canvas.drawCircle(x + cellS / 2f, y + cellS / 2f, cellS / 2f, brush);
 				
 				brush.setColor(Color.GREEN);
-				if (player.positions[currentTime].equals(pos))
+				if (player.states[currentTime].position.equals(pos))
 					canvas.drawCircle(x + cellS / 2f, y + cellS / 2f, cellS / 2f, brush);
 				brush.setColor(Color.RED);
-				if (enemy.positions[currentTime].equals(pos))
+				if (enemy.states[currentTime].position.equals(pos))
 					canvas.drawCircle(x + cellS / 2f, y + cellS / 2f, cellS / 2f, brush);
 			}
 		}
