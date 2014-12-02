@@ -16,7 +16,7 @@ public class MultiServerThreadTest extends Thread {
         this.socket = socket;
         this.mst = mst;
         this.matchCentre = matchCentre;
-        System.out.println("Created a new thread. (" + new SimpleDateFormat("HH:mm:ss").format(new Date()) + ")");
+        System.out.println("Created thread " + this.getId() + " (" + new SimpleDateFormat("HH:mm:ss").format(new Date()) + ")");
     }
     
     public void run() {
@@ -28,18 +28,23 @@ public class MultiServerThreadTest extends Thread {
             ProtocolTest kkp = new ProtocolTest();
             outputLine = kkp.processInput(null);
             out.println(outputLine);
- 
+            Bot bot = null;
+            
             while ((inputLine = in.readLine()) != null) {
+            	System.out.println("Received: " + inputLine);
                 outputLine = kkp.processInput(inputLine);
-                if (outputLine.equals("processing")) {
-                	matchCentre.addBot(new Bot(inputLine, this));
+                if (outputLine.equals("matchFound")) {
+                	bot = new Bot(inputLine, this);
+                	matchCentre.addBot(bot);
                 	outputLine = matchCentre.getResult();
                 }
                 if (outputLine.equals("exit"))
                     break;
                 out.println(outputLine);
+            	System.out.println("Sent: " + outputLine);
             }
             mst.removeThread(this);
+            matchCentre.removeBot(bot);
             
             socket.close();
         } catch (IOException e) {

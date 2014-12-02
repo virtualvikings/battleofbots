@@ -23,9 +23,9 @@ public class Strategy {
 		this.strategy = strategy;
 		this.removeWhitespaces();
 		this.bot = bot;
-		// Parse the code
+		//Parse the code
 		//partedCode = this.readParts(this.stringToParts(this.strategy));
-		parsedCode = this.parseCode(this.strategy);
+		parsedCode = ParseCode.parse(strategy);
 	}
 	
 	public void runCode() {
@@ -36,7 +36,7 @@ public class Strategy {
 				if (evaluateStatement(parsedCode.get(i+1))) {
 					int n = 2;
 					while (!parsedCode.get(i+n).equals("end")) {
-						System.out.println(parsedCode.get(i+n));
+						//System.out.println("n: " + parsedCode.get(i+n));
 						n++;
 					}
 				}
@@ -45,6 +45,9 @@ public class Strategy {
 	}
 	
 	private boolean evaluateStatement(String statement) {
+		if (statement.equals("START")) {
+			return start;
+		}
 		if (statement.contains("==")) {
 			String[] parts = statement.split("==");
 			return true;
@@ -56,86 +59,7 @@ public class Strategy {
 		return 0;
 	}
 	
-	private ArrayList<String> parseCode(String strategy) {
-		//System.out.println(strategy);
-		ArrayList<String> parts = new ArrayList<String>();
-		int i = 0;
-		while (i < strategy.length()) {
-			int charsToEnd = strategy.length() - (i + 1);
-			if (charsToEnd > 2 && strategy.substring(i, i+3).equals("if(")) {
-				parts.add("if");
-				i += 3;
-				String statement = "";
-				int parentheses = 1;
-				while (parentheses != 0) {
-					if (strategy.charAt(i) == '(') {
-						parentheses++;
-					}
-					if (strategy.charAt(i) == ')') {
-						parentheses--;
-					}
-					if (parentheses != 0) {
-						statement += strategy.charAt(i);
-					}
-					i++;
-				}
-				parts.add(statement);
-				i++;
-				String exec = "";
-				int braces = 1;
-				while (braces != 0) {
-					if (strategy.charAt(i) == '{') {
-						braces++;
-					}
-					if (strategy.charAt(i) == '}') {
-						braces--;
-					}
-					if (braces != 0) {
-						exec += strategy.charAt(i);
-					}
-					i++;
-				}
-				//System.out.println(exec + " to " + this.parseCode(exec));
-				parts.addAll(this.parseCode(exec));
-				if (charsToEnd > 3 && strategy.substring(i, i+4).equals("else")) {
-					parts.add("else");
-					i += 5;
-					exec = "";
-					braces = 1;
-					while (braces != 0) {
-						if (strategy.charAt(i) == '{') {
-							braces++;
-						}
-						if (strategy.charAt(i) == '}') {
-							braces--;
-						}
-						if (braces != 0) {
-							exec += strategy.charAt(i);
-						}
-						i++;
-					}
-					parts.addAll(this.parseCode(exec));
-					parts.add("end");
-				} else {
-					parts.add("end");
-				}
-				i--;
-			} else {
-				String part = "";
-				while (i < strategy.length() && strategy.charAt(i) != ';') {
-					part += strategy.charAt(i);
-					i++;
-				}
-				parts.add(part);
-			}
-			i++;
-		}
-		/*System.out.println();
-		for (int j = 0; j < parts.size(); j++) {
-			System.out.println(parts.get(j));
-		}*/
-		return parts;
-	}
+	
 	
 	private void createMoves() {
 		moves.put("GoUp", 0);
@@ -320,7 +244,7 @@ public class Strategy {
 	}
 	
 	public int nextMove() {
-		System.out.println("\n- " + bot.getName() + " ---");
+		//System.out.println("\n- " + bot.getName() + " ---");
 		runCode();
 		return nextMove;
 	}

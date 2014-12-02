@@ -1,7 +1,9 @@
 package nl.davidlieffijn.battleofbots;
 
 import java.net.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.io.*;
 
 public class MultiServerTest {
@@ -18,7 +20,7 @@ public class MultiServerTest {
 	
 	public void listen() {
 		try (ServerSocket serverSocket = new ServerSocket(portNumber)) {
-			System.out.println("Started listening on portnumber " + portNumber + "...");
+			System.out.println("Started listening on port " + portNumber + "... (" + new SimpleDateFormat("HH:mm:ss").format(new Date()) + ")");
 			while (listening) {
 				Socket clientSocket = serverSocket.accept();
 				if (threads.size() < 4) {
@@ -41,13 +43,14 @@ public class MultiServerTest {
 	}
 	
 	public void removeThread(Thread t) {
+		System.out.println("Thread " + t.getId() + " disconnected. (" + new SimpleDateFormat("HH:mm:ss").format(new Date()) + ")");
 		threads.remove(t);
 	}
 
 	private String listClients() {
 		String list = "Currently connected clients:\n";
 		for (int i = 0; i < threads.size(); i++) {
-			list += threads.get(i).getId() + "\n";
+			list += "- Thread " + threads.get(i).getId() + "\n";
 		}
 		return list;
 	}

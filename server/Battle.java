@@ -25,9 +25,9 @@ public class Battle {
 			if (arena.isValidMove(2, move2[0], move2[1])) {
 				arena.moveBot(2, move2);
 			}
-			arena.showGraphicView();
+			//arena.showGraphicView();
 			try {
-				Thread.sleep(500);
+				Thread.sleep(1000);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
