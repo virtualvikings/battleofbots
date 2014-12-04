@@ -3,13 +3,13 @@
     android:id="@+id/test"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#050"
     android:orientation="vertical"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.virtualvikings.battleofthebots.GameActivity" >
+<!--     android:background="#050" -->
 
     <TextView
         android:id="@+id/textTime"
@@ -18,7 +18,7 @@
         android:layout_gravity="center"
         android:layout_weight="0"
         android:text="You won!"
-        android:textColor="#FFF"
+        android:textColor="#000"
         android:textSize="20sp" />
 
     <SeekBar
@@ -29,6 +29,7 @@
         android:layout_weight="0" />
 
     <LinearLayout
+        android:id="@+id/mediaButtons"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="0" >
@@ -70,5 +71,13 @@
             android:layout_weight="1"
             android:src="@drawable/ic_action_next" />
     </LinearLayout>
+
+    <CheckBox
+        android:id="@+id/checkBoxTrack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:layout_weight="0"
+        android:text="Zoom" />
 
 </LinearLayout>

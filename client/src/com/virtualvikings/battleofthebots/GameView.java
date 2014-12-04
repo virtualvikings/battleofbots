@@ -78,6 +78,7 @@ public class GameView extends View {
 	private Bot enemy;
 	private Paint brush;
 	private Random r = new Random();
+	private boolean trackPlayer;
 	
 	public int getDuration() {
 		return timeSegments;
@@ -97,13 +98,18 @@ public class GameView extends View {
 		invalidate();
 	}
 	
+	public void setTrackPlayer(boolean track) {
+		trackPlayer = track;
+		invalidate();
+	}
+	
 	public GameView(Context context) {
 		super(context);
 		
 		this.setBackgroundColor(Color.WHITE);
 		
 		//Waarschuwing - deze constructor wordt opnieuw aangeroepen als het scherm draait!
-		timeSegments = 300;
+		timeSegments = 30;
 		cells = new byte[cellCount][cellCount][timeSegments];
 		
 		//Plaats bots op willekeurige plekken
@@ -176,7 +182,6 @@ public class GameView extends View {
 		State playerState = player.states[currentTime];
 		State enemyState = enemy.states[currentTime];
 		
-		boolean trackPlayer = false;
 		if (!trackPlayer) {
 			if (minWH == canvas.getWidth())
 				canvas.translate(0, canvas.getHeight() / 2f - minWH / 2f);

@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
+import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -44,7 +45,7 @@ public class GameActivity extends Activity {
 		game.setLayoutParams(params);
 		
 		LinearLayout layout = (LinearLayout) findViewById(R.id.test);
-		layout.addView(game, 1); //Plaats de GameView voor de andere views
+		layout.addView(game, 0); //Plaats de GameView voor de andere views
 		
 		final TextView text = (TextView) findViewById(R.id.textTime);
 		LinearLayout mediaButtons = (LinearLayout) findViewById(R.id.mediaButtons);
@@ -68,7 +69,8 @@ public class GameActivity extends Activity {
 			
 			@Override
 			public void onStopTrackingTouch(SeekBar seekBar) {
-			}});
+			}
+		});
 	
 		buttonBegin = (ImageButton) findViewById(R.id.buttonBegin);
 		buttonPrevious = (ImageButton) findViewById(R.id.buttonPrevious);
@@ -111,6 +113,14 @@ public class GameActivity extends Activity {
 		buttonPrevious.setOnLongClickListener(longClickListener);
 		buttonNext.setOnLongClickListener(longClickListener);
 		//TODO laat dit herhalen
+		
+		CheckBox checkPlayer = (CheckBox) findViewById(R.id.checkBoxTrack);
+		checkPlayer.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				game.setTrackPlayer(((CheckBox)v).isChecked());
+			}
+		});
 	}
 	
 	private void seek(int progress) {
