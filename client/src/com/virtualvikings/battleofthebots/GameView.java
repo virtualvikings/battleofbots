@@ -16,23 +16,28 @@ import android.view.View;
 
 import com.virtualvikings.battleofthebots.GameView.Bot.State;
 
-class Vector2<E>
+class Vector2
 {
-	public E x;
-	public E y;
-	public Vector2(E x, E y)
+	public int x;
+	public int y;
+	public Vector2(int x, int y)
 	{
 		this.x = x;
 		this.y = y;
 	}
 	
-	public boolean equals(Vector2<E> other) {
-		return other.x.equals(x) && other.y.equals(y);
+	public boolean equals(Vector2 other) {
+		return other.x == x && other.y == y;
 	}
 	
 	@Override
 	protected Object clone() {
-		return new Vector2<E>(x, y);
+		return new Vector2(x, y);
+	}
+
+	public void add(Vector2 toAdd) {
+		x += toAdd.x;
+		y += toAdd.y;
 	}
 }
 
@@ -42,10 +47,10 @@ public class GameView extends View {
 		
 		public static class State {
 			
-			private Vector2<Integer> position;
+			private Vector2 position;
 			private byte direction;
 			
-			public State(Vector2<Integer> position, byte direction) {
+			public State(Vector2 position, byte direction) {
 				this.position = position;
 				this.direction = direction;
 			}
@@ -95,27 +100,33 @@ public class GameView extends View {
 		super(context);
 		
 		//Waarschuwing - deze constructor wordt opnieuw aangeroepen als het scherm draait!
-		timeSegments = 100;
+		timeSegments = 300;
 		cells = new byte[cellCount][cellCount][timeSegments];
 		
 		//Plaats bots op willekeurige plekken
 		Random r = new Random();
 		State[] statesPlayer = new State[timeSegments];
 		State[] statesEnemy = new State[timeSegments];
-		Vector2<Integer> posPlayer = new Vector2<Integer>(2, 4);
-		Vector2<Integer> posEnemy = new Vector2<Integer>(3, 7);
+		Vector2 posPlayer = new Vector2(2, 4);
+		Vector2 posEnemy = new Vector2(3, 7);
 		
 		//Simuleer een gevecht, dit moet eigenlijk op de server gebeuren maar dit is om het te testen
 		try
 		{
 			for (int i = 0; i < timeSegments; i++) {
-				byte direction = (byte) r.nextInt(3); //0-3
+
+				//Kies willekeurige richting
+				byte direction = (byte) r.nextInt(4); //0-3
+				Vector2 toAdd = new Vector2((int)Math.round(Math.cos(direction / 2f * Math.PI)), (int)Math.round(Math.sin(direction / 2f * Math.PI)));
+				
+				posPlayer.add(toAdd);
+				posEnemy.add(toAdd);
 				
 				//Spring naar andere kant als bot uit het veld gelopen is
-				posPlayer.x = (posPlayer.x + r.nextInt(3) - 1) % cellCount;
-				posPlayer.y = (posPlayer.y + r.nextInt(3) - 1) % cellCount;
-				posEnemy.x = (posEnemy.x + r.nextInt(3) - 1) % cellCount;
-				posEnemy.y = (posEnemy.y + r.nextInt(3) - 1) % cellCount;
+				posPlayer.x = posPlayer.x % cellCount;
+				posPlayer.y = posPlayer.y % cellCount;
+				posEnemy.x = posEnemy.x % cellCount;
+				posEnemy.y = posEnemy.y % cellCount;
 				
 				while (posPlayer.x < 0)
 					posPlayer.x += cellCount;
@@ -126,8 +137,8 @@ public class GameView extends View {
 				while (posEnemy.y < 0)
 					posEnemy.y += cellCount;
 				
-				statesPlayer[i] = new State((Vector2<Integer>) posPlayer.clone(), direction);
-				statesEnemy[i] = new State((Vector2<Integer>) posEnemy.clone(), direction);
+				statesPlayer[i] = new State((Vector2) posPlayer.clone(), direction);
+				statesEnemy[i] = new State((Vector2) posEnemy.clone(), direction);
 			}
 		}
 		catch (Exception e)
@@ -197,7 +208,7 @@ public class GameView extends View {
 		*/
 
 		
-		Vector2<Integer> pos = new Vector2<Integer>(0, 0);
+		Vector2 pos = new Vector2(0, 0);
 		//Teken obstakels en bots
 		for (int i = 0; i < cellCount; i++)
 		{
@@ -243,7 +254,6 @@ public class GameView extends View {
 	}
 	
 	private void drawBot(Canvas canvas, float halfSize, byte rotation) {
-		//brush.setStrokeWidth(4);
 		brush.setStyle(Style.FILL);
 		
 		Path path = new Path();
