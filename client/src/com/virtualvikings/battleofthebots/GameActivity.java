@@ -7,6 +7,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -78,13 +79,24 @@ public class GameActivity extends Activity {
 				if (v == buttonBegin)
 					clickBegin(v);
 				else if (v == buttonPrevious)
-					clickPrevious(v);
+					clickPrevious(v, 1);
 				else if (v == buttonPlay)
 					clickPlay(v);
 				else if (v == buttonNext)
-					clickNext(v);
+					clickNext(v, 1);
 				else if (v == buttonEnd)
 					clickEnd(v);
+			}};
+			
+		OnLongClickListener longClickListener = new OnLongClickListener(){
+			@Override
+			public boolean onLongClick(View v) {
+				if (v == buttonPrevious)
+					clickPrevious(v, 25);
+				else if (v == buttonNext)
+					clickNext(v, 25);
+				
+				return true;
 			}};
 			
 		buttonBegin.setOnClickListener(clickListener);
@@ -93,8 +105,9 @@ public class GameActivity extends Activity {
 		buttonNext.setOnClickListener(clickListener);
 		buttonEnd.setOnClickListener(clickListener);
 		
-		//TODO voeg OnLongClickListener toe
-		
+		buttonPrevious.setOnLongClickListener(longClickListener);
+		buttonNext.setOnLongClickListener(longClickListener);
+		//TODO laat dit herhalen
 	}
 	
 	private void seek(int progress) {
@@ -154,14 +167,14 @@ public class GameActivity extends Activity {
 		seek(game.getDuration());
 	}
 
-	public void clickNext(View v) {
+	public void clickNext(View v, int steps) {
 		setPlaying(false);
-		step(1);
+		step(steps);
 	}
 	
-	public void clickPrevious(View v) {
+	public void clickPrevious(View v, int steps) {
 		setPlaying(false);
-		step(-1);
+		step(-steps);
 	}
 	
 	
