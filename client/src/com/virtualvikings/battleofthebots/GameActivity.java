@@ -45,18 +45,19 @@ public class GameActivity extends Activity {
 		
 		LinearLayout layout = (LinearLayout) findViewById(R.id.test);
 		layout.addView(game, 1); //Plaats de GameView voor de andere views
-
 		
 		final TextView text = (TextView) findViewById(R.id.textTime);
+		
 		bar = (SeekBar) findViewById(R.id.seekBar); 
 		bar.setMax(game.getDuration() - 1); 
-		
 		bar.setOnSeekBarChangeListener(new OnSeekBarChangeListener(){
 			@Override
-			public void onProgressChanged(SeekBar seekBar, int progress,
-					boolean fromUser) {
+			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 				GameActivity.this.game.seek(progress);
 				text.setText(String.format("%d/%d", progress + 1, game.getDuration()));
+				
+				if (fromUser)
+					setPlaying(false);
 			}
 			
 			@Override

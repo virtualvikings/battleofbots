@@ -1,5 +1,6 @@
 package com.virtualvikings.battleofthebots;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.BindException;
 import java.net.ConnectException;
@@ -31,15 +32,20 @@ public class MatchMaking extends Activity {
 		final ProgressDialog ringProgressDialog = ProgressDialog.show(this, "Please wait",	"Searching for match...", true);
 		ringProgressDialog.setCancelable(true);
 		
+		final Socket socket = new Socket();
+		
 		ringProgressDialog.setOnDismissListener(new OnDismissListener(){
-
 			@Override
 			public void onDismiss(DialogInterface dialog) {
+				try {
+					socket.close(); //Stop verbinding als de gebruiker annuleert
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 				MatchMaking.this.finish();
-			}});
+		}});
 		
 		new Thread(new Runnable(){
-			
 			private void makeToast(final String s)
 			{
 				MatchMaking.this.runOnUiThread(new Runnable() {
@@ -48,18 +54,14 @@ public class MatchMaking extends Activity {
 				    }
 				});
 			}
-
 			@Override
 			public void run() {
-				
 				try {
-					
 					//"172.20.10.2"
 					InetAddress serverAddr = InetAddress.getByName("10.0.2.2");
 					
 					int timeout = 10 * 1000; //Wacht 10 seconden
 
-					Socket socket = new Socket();
 					socket.connect(new InetSocketAddress(serverAddr, 4444), timeout);
 					
 					PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
@@ -72,7 +74,6 @@ public class MatchMaking extends Activity {
 					startActivity(goToNextActivity);
 					
 					makeToast("Connection successful.");
-
 				} catch (Exception e) {
 					
 					e.printStackTrace();
@@ -89,12 +90,11 @@ public class MatchMaking extends Activity {
 					else if (e instanceof BindException)
 						error += "port unusable.";
 					else
-						error += ": unknown error.";
+						error += "user canceled.";
 					
 					makeToast(error);
 					ringProgressDialog.cancel();
 				}
-				
 			}}).start();
 	}
 	
