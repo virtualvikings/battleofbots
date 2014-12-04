@@ -57,16 +57,16 @@ public class MatchMaking extends Activity {
 			@Override
 			public void run() {
 				try {
+					
 					//"172.20.10.2"
-					InetAddress serverAddr = InetAddress.getByName("10.0.2.2");
+					/*InetAddress serverAddr = InetAddress.getByName("10.0.2.2");
 					
 					int timeout = 10 * 1000; //Wacht 10 seconden
-
 					socket.connect(new InetSocketAddress(serverAddr, 4444), timeout);
 					
 					PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 					out.println("Correct_Key");
-					socket.close();
+					socket.close();*/
 					
 					//TODO: verkrijg speelveld hier
 					
