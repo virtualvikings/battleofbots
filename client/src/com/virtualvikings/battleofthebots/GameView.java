@@ -77,6 +77,7 @@ public class GameView extends View {
 	private Bot player;
 	private Bot enemy;
 	private Paint brush;
+	private Random r = new Random();
 	
 	public int getDuration() {
 		return timeSegments;
@@ -99,12 +100,13 @@ public class GameView extends View {
 	public GameView(Context context) {
 		super(context);
 		
+		this.setBackgroundColor(Color.WHITE);
+		
 		//Waarschuwing - deze constructor wordt opnieuw aangeroepen als het scherm draait!
 		timeSegments = 300;
 		cells = new byte[cellCount][cellCount][timeSegments];
 		
 		//Plaats bots op willekeurige plekken
-		Random r = new Random();
 		State[] statesPlayer = new State[timeSegments];
 		State[] statesEnemy = new State[timeSegments];
 		Vector2 posPlayer = new Vector2(2, 4);
@@ -171,45 +173,61 @@ public class GameView extends View {
 		int minWH = Math.min(canvas.getWidth(), canvas.getHeight());
 		float cellS = minWH / (float)cellCount;
 		
-		//Centreer
-		if (minWH == canvas.getWidth())
-			canvas.translate(0, canvas.getHeight() / 2f - minWH / 2f);
-		else
-			canvas.translate(canvas.getWidth() / 2f - minWH / 2f, 0);
+		State playerState = player.states[currentTime];
+		State enemyState = enemy.states[currentTime];
 		
-		//Teken lijnen
-		brush.setStrokeWidth(2);
-		brush.setColor(Color.GRAY);
-		for (int i = 0; i <= cellCount; i++)
-		{
-			for (int j = 0; j <= cellCount; j++)
-			{
-				float x = i * cellS;
-				float y = j * cellS;
-				
-				canvas.drawLine(x, 0, x, minWH, brush);
-				canvas.drawLine(0, y, minWH, y, brush);
-			}
+		boolean trackPlayer = false;
+		if (!trackPlayer) {
+			if (minWH == canvas.getWidth())
+				canvas.translate(0, canvas.getHeight() / 2f - minWH / 2f);
+			else
+				canvas.translate(canvas.getWidth() / 2f - minWH / 2f, 0);
+		} else {
+			canvas.translate(canvas.getWidth() / 2f, canvas.getHeight() / 2f); //Centreer
+			canvas.scale(3, 3); //Zoom in
+			canvas.translate(-(playerState.position.x + 0.5f) * cellS, -(playerState.position.y + 0.5f) * cellS); //Richt camera op speler
 		}
 		
 		//Teken blokken
-		/*brush.setColor(Color.WHITE);
+		brush.setColor(Color.rgb(200, 200, 200));
+		canvas.drawRect(new RectF(0, 0, minWH, minWH), brush);
+		
+		RectF rect = new RectF(0, 0, cellS, cellS);
 		for (int i = 0; i < cellCount; i++)
 		{
 			for (int j = 0; j < cellCount; j++)
 			{
-				if ((i + j) % 2 != 0) continue; //Teken schaakbord patroon
+				int gray = 210; 
+				if ((i + j) % 2 == 0) continue; //Maak schaakbord patroon
+				
 				float x = i * cellS;
 				float y = j * cellS;
 				
-				canvas.drawRect(new RectF(x, y, x + cellS, y + cellS), brush);
+				brush.setColor(Color.rgb(gray, gray, gray));
+				rect.offsetTo(x, y);
+				canvas.drawRect(rect, brush);
 			}
 		}
-		*/
-
 		
-		Vector2 pos = new Vector2(0, 0);
+		//Teken lijnen NIET
+		if (false) {
+			brush.setStrokeWidth(2);
+			brush.setColor(Color.WHITE);
+			for (int i = 0; i <= cellCount; i++)
+			{
+				for (int j = 0; j <= cellCount; j++)
+				{
+					float x = i * cellS;
+					float y = j * cellS;
+					
+					canvas.drawLine(x, 0, x, minWH, brush);
+					canvas.drawLine(0, y, minWH, y, brush);
+				}
+			}
+		}
+
 		//Teken obstakels en bots
+		Vector2 pos = new Vector2(0, 0);
 		for (int i = 0; i < cellCount; i++)
 		{
 			for (int j = 0; j < cellCount; j++)
@@ -221,21 +239,17 @@ public class GameView extends View {
 				canvas.save();
 				canvas.translate(x + radius, y + radius);
 				
-				brush.setColor(Color.WHITE);
+				brush.setColor(Color.GRAY);
 				if (cells[i][j][currentTime] == 0)
 					drawObstacle(canvas, radius);
 				
 				pos.x = i;
 				pos.y = j;
 				
-				State playerState = player.states[currentTime];
-			
 				if (playerState.position.equals(pos)) {
 					brush.setColor(Color.GREEN);
 					drawBot(canvas, radius, playerState.direction); //Waarom niet bot.draw()?
 				}
-				
-				State enemyState = enemy.states[currentTime];
 
 				if (enemyState.position.equals(pos)) {
 					brush.setColor(Color.RED);

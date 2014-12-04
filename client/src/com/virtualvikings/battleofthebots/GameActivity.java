@@ -47,6 +47,8 @@ public class GameActivity extends Activity {
 		layout.addView(game, 1); //Plaats de GameView voor de andere views
 		
 		final TextView text = (TextView) findViewById(R.id.textTime);
+		LinearLayout mediaButtons = (LinearLayout) findViewById(R.id.mediaButtons);
+		mediaButtons.setVisibility(View.GONE);
 		
 		bar = (SeekBar) findViewById(R.id.seekBar); 
 		bar.setMax(game.getDuration() - 1); 
