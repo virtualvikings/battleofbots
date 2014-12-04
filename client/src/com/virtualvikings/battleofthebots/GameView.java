@@ -4,8 +4,14 @@ import java.util.Random;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Canvas.VertexMode;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Paint.Style;
+import android.graphics.Path;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.view.View;
 
 import com.virtualvikings.battleofthebots.GameView.Bot.State;
@@ -142,7 +148,6 @@ public class GameView extends View {
 				}
 		
 		brush = new Paint();
-		brush.setStrokeWidth(2);
 		brush.setAntiAlias(true);
 		
 		invalidate();
@@ -162,7 +167,8 @@ public class GameView extends View {
 			canvas.translate(canvas.getWidth() / 2f - minWH / 2f, 0);
 		
 		//Teken lijnen
-		brush.setColor(Color.rgb(100, 100, 100));
+		brush.setStrokeWidth(2);
+		brush.setColor(Color.GRAY);
 		for (int i = 0; i <= cellCount; i++)
 		{
 			for (int j = 0; j <= cellCount; j++)
@@ -174,7 +180,23 @@ public class GameView extends View {
 				canvas.drawLine(0, y, minWH, y, brush);
 			}
 		}
+		
+		//Teken blokken
+		/*brush.setColor(Color.WHITE);
+		for (int i = 0; i < cellCount; i++)
+		{
+			for (int j = 0; j < cellCount; j++)
+			{
+				if ((i + j) % 2 != 0) continue; //Teken schaakbord patroon
+				float x = i * cellS;
+				float y = j * cellS;
+				
+				canvas.drawRect(new RectF(x, y, x + cellS, y + cellS), brush);
+			}
+		}
+		*/
 
+		
 		Vector2<Integer> pos = new Vector2<Integer>(0, 0);
 		//Teken obstakels en bots
 		for (int i = 0; i < cellCount; i++)
@@ -185,9 +207,12 @@ public class GameView extends View {
 				float y = j * cellS;
 				float radius = cellS / 2f;
 				
+				canvas.save();
+				canvas.translate(x + radius, y + radius);
+				
 				brush.setColor(Color.WHITE);
 				if (cells[i][j][currentTime] == 0)
-					canvas.drawCircle(x + radius, y + radius, radius, brush);
+					drawObstacle(canvas, radius);
 				
 				pos.x = i;
 				pos.y = j;
@@ -196,17 +221,41 @@ public class GameView extends View {
 			
 				if (playerState.position.equals(pos)) {
 					brush.setColor(Color.GREEN);
-					canvas.drawCircle(x + radius, y + radius, radius, brush);
+					drawBot(canvas, radius, playerState.direction); //Waarom niet bot.draw()?
 				}
 				
 				State enemyState = enemy.states[currentTime];
 
 				if (enemyState.position.equals(pos)) {
 					brush.setColor(Color.RED);
-					canvas.drawCircle(x + radius, y + radius, radius, brush);
+					drawBot(canvas, radius, enemyState.direction);
 				}
+				
+				canvas.restore();
 			}
 		}
+	}
+	
+	private void drawObstacle(Canvas canvas, float radius) {
+		canvas.drawCircle(0, 0, radius, brush);
+		//brush.setColor(Color.BLACK);
+		//canvas.drawCircle(x + radius, y + radius, radius / 2, brush);
+	}
+	
+	private void drawBot(Canvas canvas, float halfSize, byte rotation) {
+		//brush.setStrokeWidth(4);
+		brush.setStyle(Style.FILL);
+		
+		Path path = new Path();
+		path.moveTo(-halfSize, -halfSize);
+		path.lineTo(halfSize, 0);
+		path.lineTo(-halfSize, halfSize);
+		path.lineTo(-halfSize, -halfSize);
+
+		canvas.save();
+		canvas.rotate(rotation * 90);
+		canvas.drawPath(path, brush);
+		canvas.restore();
 	}
 
 }
