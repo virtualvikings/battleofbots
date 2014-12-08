@@ -25,7 +25,7 @@ public class ClientTest {
 
 					// Message from server.
 					while ((fromServer = in.readLine()) != null) {
-						System.out.println("Server: " + fromServer);
+						//System.out.println("Server: " + fromServer);
 						fromUser = "";
 						if (fromServer.equals("exit"))
 							break;
@@ -36,7 +36,7 @@ public class ClientTest {
 							
 						if (!fromServer.equals("RESULT")) {
 							out.println(fromUser);
-							System.out.println("Client: " + fromUser);
+							//System.out.println("Client: " + fromUser);
 						}
 						
 					}

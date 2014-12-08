@@ -25,7 +25,7 @@ public class ProtocolTest {
         } else if (state == WAITINGFORDATA) {
         	// Name is ok.
         	if (true) {
-        		output = "processing";
+        		output = "matchFound";
         		state = PROCESSING;
         	} else {
         		output = "requestData";

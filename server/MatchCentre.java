@@ -18,6 +18,7 @@ public class MatchCentre {
 	
 	public void removeBot(Bot bot) {
 		this.bots.remove(bot);
+		this.freeBots.remove(bot);
 		//bot.getBattle().stop();
 	}
 	
