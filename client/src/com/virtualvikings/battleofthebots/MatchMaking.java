@@ -96,7 +96,7 @@ public class MatchMaking extends ActionBarActivity {
 								out.println("Correct_Key");
 							else if(fromServer.equals("requestData"))
 								out.println("poep, " + code);
-							else if(fromServer.equals("matchFound")){
+							else if(fromServer.equals("matchFound") || true){
 								runOnUiThread(new Runnable() {
 
 			                        @Override

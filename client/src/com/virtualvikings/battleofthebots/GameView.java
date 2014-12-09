@@ -73,7 +73,7 @@ public class GameView extends View {
 		
 	}
 	
-	private int cellCount = 10;
+	private int cellCount;
 	private byte[][][] cells;
 	private int timeSegments;
 	private int currentTime;
@@ -114,7 +114,7 @@ public class GameView extends View {
 		
 		//Waarschuwing - deze constructor wordt opnieuw aangeroepen als het scherm draait!
 
-		
+		System.out.println("Map data is: " + mapData);
 		//deserialize(mapData);
 		makeDefaultLevel();
 		
@@ -127,19 +127,20 @@ public class GameView extends View {
 	private void deserialize(String mapData) {
 		try {
 			
-			JSONObject obj = new JSONObject(mapData);
-			JSONArray timeSlices = obj.getJSONArray("mapThings");
-			timeSegments = timeSlices.length();
+			//JSONObject obj = new JSONObject(mapData);
+			//JSONArray timeSlices = obj.getJSONArray("mapThings");
+			//timeSegments = timeSlices.length();
 			//JSONArray[] rowSlices = timeSlices.getJSONArray(0);
 			//cells = new byte[timeSegments][cellCount][cellCount];
 			
-		} catch (JSONException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
 	private void makeDefaultLevel() {
 
+		cellCount = 20;
 		timeSegments = 30;
 		cells = new byte[timeSegments][cellCount][cellCount];
 		

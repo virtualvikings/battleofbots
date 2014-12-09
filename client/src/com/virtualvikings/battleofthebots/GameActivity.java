@@ -5,9 +5,11 @@ import java.util.TimerTask;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
+import android.view.View.OnTouchListener;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -20,8 +22,7 @@ import android.widget.Toolbar.LayoutParams;
 public class GameActivity extends Activity {
 	
 	//Zie https://stackoverflow.com/questions/6812003/difference-between-oncreate-and-onstart
-	
-	private boolean playing;
+
 	
 	private GameView game;
 	private SeekBar bar;
@@ -31,6 +32,12 @@ public class GameActivity extends Activity {
 	private ImageButton buttonPlay;
 	private ImageButton buttonNext;
 	private ImageButton buttonEnd;
+	
+	private boolean playing;
+	private boolean rewinding;
+	private boolean forwarding;
+	private boolean waitDone;
+	//private boolean cancelled;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -93,16 +100,62 @@ public class GameActivity extends Activity {
 					clickEnd(v);
 			}};
 			
-		OnLongClickListener longClickListener = new OnLongClickListener(){
+		
+		OnTouchListener touchListener = new OnTouchListener(){
+			
+			Timer longPressTimer;
+
 			@Override
-			public boolean onLongClick(View v) {
-				if (v == buttonPrevious)
-					clickPrevious(v, 25);
-				else if (v == buttonNext)
-					clickNext(v, 25);
+			public boolean onTouch(View v, MotionEvent event) {
 				
-				return true;
-			}};
+				//Dit wordt steeds opnieuw aangeroepen als de muis beweegt
+				int action = event.getAction();
+				if (v == buttonPrevious) {
+					if (action == MotionEvent.ACTION_DOWN)
+						rewinding = true;
+					if (action == MotionEvent.ACTION_UP) {
+						rewinding = false;
+					}
+				} else {
+					if (action == MotionEvent.ACTION_DOWN)
+						forwarding = true;
+					if (action == MotionEvent.ACTION_UP) {
+						forwarding = false;
+					}
+				}
+				
+				if (action == MotionEvent.ACTION_DOWN) {
+					longPressTimer = new Timer(); //Je moet een nieuwe Timer maken nadat je cancel() hebt aangeroepen
+					longPressTimer.schedule(new TimerTask(){
+						@Override
+						public void run() {
+							if (!forwarding && !rewinding) return;
+							waitDone = true;
+						}}, 900);
+				}
+				if (action == MotionEvent.ACTION_UP) {
+					longPressTimer.cancel();
+					waitDone = false;
+				}
+				
+				v.performClick(); //Of performLongClick of performHapticFeedback
+				return false; //OF TRUE?
+			}
+		};
+		
+		new Timer().schedule(new TimerTask(){
+			@Override
+			public void run() {
+				GameActivity.this.runOnUiThread(new Runnable(){
+					@Override
+					public void run() {
+						if (!waitDone) return;
+						if (forwarding)
+							GameActivity.this.step(1);
+						if (rewinding)
+							GameActivity.this.step(-1);
+					}});
+			}}, 0, 50);
 			
 		buttonBegin.setOnClickListener(clickListener);
 		buttonPrevious.setOnClickListener(clickListener);
@@ -110,8 +163,8 @@ public class GameActivity extends Activity {
 		buttonNext.setOnClickListener(clickListener);
 		buttonEnd.setOnClickListener(clickListener);
 		
-		buttonPrevious.setOnLongClickListener(longClickListener);
-		buttonNext.setOnLongClickListener(longClickListener);
+		buttonPrevious.setOnTouchListener(touchListener);
+		buttonNext.setOnTouchListener(touchListener);
 		//TODO laat dit herhalen
 		
 		CheckBox checkPlayer = (CheckBox) findViewById(R.id.checkBoxTrack);
