@@ -102,6 +102,7 @@ public class MatchMaking extends ActionBarActivity {
 			                        @Override
 			                        public void run() {
 			                            Intent i = new Intent("android.intent.action.FIGHTACTIVITY");
+			                            i.putExtra("mapData", "TODO put map data here");
 			                            startActivity(i);
 			                            finish();
 			                        }

@@ -103,7 +103,7 @@ public class GameView extends View {
 		invalidate();
 	}
 	
-	public GameView(Context context) {
+	public GameView(Context context, String mapData) {
 		super(context);
 		
 		this.setBackgroundColor(Color.WHITE);
@@ -111,6 +111,8 @@ public class GameView extends View {
 		//Waarschuwing - deze constructor wordt opnieuw aangeroepen als het scherm draait!
 		timeSegments = 30;
 		cells = new byte[cellCount][cellCount][timeSegments];
+		
+		//TODO - decodeer mapData
 		
 		//Plaats bots op willekeurige plekken
 		State[] statesPlayer = new State[timeSegments];
