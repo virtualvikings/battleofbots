@@ -1,5 +1,8 @@
 package com.virtualvikings.battleofthebots;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
 import java.util.Random;
 
 import org.json.JSONArray;
@@ -127,11 +130,18 @@ public class GameView extends View {
 	private void deserialize(String mapData) {
 		try {
 			
+			InputStream input = new ByteArrayInputStream(mapData.getBytes());
+			ObjectInputStream ois = new ObjectInputStream(input);
+			cells = (byte[][][]) ois.readObject(); 
+			ois.close();
+			
+			//TODO doe iets anders met de bots, misschien toch JSON?
+			//Zoiets:
 			//JSONObject obj = new JSONObject(mapData);
 			//JSONArray timeSlices = obj.getJSONArray("mapThings");
 			//timeSegments = timeSlices.length();
 			//JSONArray[] rowSlices = timeSlices.getJSONArray(0);
-			//cells = new byte[timeSegments][cellCount][cellCount];
+			
 			
 		} catch (Exception e) {
 			e.printStackTrace();
