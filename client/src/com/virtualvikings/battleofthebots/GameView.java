@@ -2,6 +2,10 @@ package com.virtualvikings.battleofthebots;
 
 import java.util.Random;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Canvas.VertexMode;
@@ -109,10 +113,35 @@ public class GameView extends View {
 		this.setBackgroundColor(Color.WHITE);
 		
 		//Waarschuwing - deze constructor wordt opnieuw aangeroepen als het scherm draait!
-		timeSegments = 30;
-		cells = new byte[cellCount][cellCount][timeSegments];
+
 		
-		//TODO - decodeer mapData
+		//deserialize(mapData);
+		makeDefaultLevel();
+		
+		brush = new Paint();
+		brush.setAntiAlias(true);
+		
+		invalidate();
+	}
+	
+	private void deserialize(String mapData) {
+		try {
+			
+			JSONObject obj = new JSONObject(mapData);
+			JSONArray timeSlices = obj.getJSONArray("mapThings");
+			timeSegments = timeSlices.length();
+			//JSONArray[] rowSlices = timeSlices.getJSONArray(0);
+			//cells = new byte[timeSegments][cellCount][cellCount];
+			
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void makeDefaultLevel() {
+
+		timeSegments = 30;
+		cells = new byte[timeSegments][cellCount][cellCount];
 		
 		//Plaats bots op willekeurige plekken
 		State[] statesPlayer = new State[timeSegments];
@@ -160,20 +189,15 @@ public class GameView extends View {
 		//Maak willekeurig level, ook eigenlijk een verantwoordelijkheid van de server
 		for (int i = 0; i < cellCount; i++)
 			for (int j = 0; j < cellCount; j++)
-				for (int k = 0; k < timeSegments; k++)
+				for (int t = 0; t < timeSegments; t++)
 				{
 					byte value = (byte) r.nextInt(7);
-					if (k > 0) //Alle andere arrays kopieren de eerste
-						value = cells[i][j][0];
-					cells[i][j][k] = value;
+					if (t > 0) //Alle andere arrays kopieren de eerste
+						value = cells[0][i][j];
+					cells[t][i][j] = value;
 				}
-		
-		brush = new Paint();
-		brush.setAntiAlias(true);
-		
-		invalidate();
 	}
-	
+
 	@Override
 	public void onDraw (Canvas canvas)
 	{
@@ -247,7 +271,7 @@ public class GameView extends View {
 				canvas.translate(x + radius, y + radius);
 				
 				brush.setColor(Color.GRAY);
-				if (cells[i][j][currentTime] == 0)
+				if (cells[currentTime][i][j] == 0)
 					drawObstacle(canvas, radius);
 				
 				pos.x = i;
