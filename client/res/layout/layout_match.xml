@@ -14,7 +14,7 @@
         android:id="@+id/matchTxt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/search"
+        android:text="Searching for match..."
         android:textSize="25sp" />
     
 </LinearLayout>
