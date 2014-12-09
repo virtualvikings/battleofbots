@@ -90,12 +90,8 @@ public class GameActivity extends Activity {
 			public void onClick(View v) {
 				if (v == buttonBegin)
 					clickBegin(v);
-				else if (v == buttonPrevious)
-					clickPrevious(v, 1);
 				else if (v == buttonPlay)
 					clickPlay(v);
-				else if (v == buttonNext)
-					clickNext(v, 1);
 				else if (v == buttonEnd)
 					clickEnd(v);
 			}};
@@ -107,18 +103,22 @@ public class GameActivity extends Activity {
 
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
-				
+
 				//Dit wordt steeds opnieuw aangeroepen als de muis beweegt
 				int action = event.getAction();
 				if (v == buttonPrevious) {
-					if (action == MotionEvent.ACTION_DOWN)
+					if (action == MotionEvent.ACTION_DOWN) {
 						rewinding = true;
+						clickPrevious(v, 1);
+					}
 					if (action == MotionEvent.ACTION_UP) {
 						rewinding = false;
 					}
-				} else {
-					if (action == MotionEvent.ACTION_DOWN)
+				} else if (v == buttonNext) {
+					if (action == MotionEvent.ACTION_DOWN) {
 						forwarding = true;
+						clickNext(v, 1);
+					}
 					if (action == MotionEvent.ACTION_UP) {
 						forwarding = false;
 					}
@@ -129,17 +129,17 @@ public class GameActivity extends Activity {
 					longPressTimer.schedule(new TimerTask(){
 						@Override
 						public void run() {
-							if (!forwarding && !rewinding) return;
+							if ((!forwarding && !rewinding)) return;
 							waitDone = true;
-						}}, 900);
+						}
+					}, 300); //Wacht 300ms voordat we gaan spoelen
 				}
 				if (action == MotionEvent.ACTION_UP) {
 					longPressTimer.cancel();
 					waitDone = false;
 				}
 				
-				v.performClick(); //Of performLongClick of performHapticFeedback
-				return false; //OF TRUE?
+				return false; //Consumeer deze gebeurtenis NIET
 			}
 		};
 		
@@ -151,21 +151,17 @@ public class GameActivity extends Activity {
 					public void run() {
 						if (!waitDone) return;
 						if (forwarding)
-							GameActivity.this.step(1);
+							clickNext(buttonNext, 1);
 						if (rewinding)
-							GameActivity.this.step(-1);
+							clickPrevious(buttonPrevious, 1);
 					}});
-			}}, 0, 50);
+			}}, 0, 50); //Spoel 1 stap elke 50ms
 			
 		buttonBegin.setOnClickListener(clickListener);
-		buttonPrevious.setOnClickListener(clickListener);
-		buttonPlay.setOnClickListener(clickListener);
-		buttonNext.setOnClickListener(clickListener);
-		buttonEnd.setOnClickListener(clickListener);
-		
 		buttonPrevious.setOnTouchListener(touchListener);
+		buttonPlay.setOnClickListener(clickListener);
 		buttonNext.setOnTouchListener(touchListener);
-		//TODO laat dit herhalen
+		buttonEnd.setOnClickListener(clickListener);
 		
 		CheckBox checkPlayer = (CheckBox) findViewById(R.id.checkBoxTrack);
 		checkPlayer.setOnClickListener(new OnClickListener(){
