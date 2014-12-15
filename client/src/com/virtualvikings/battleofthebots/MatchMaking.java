@@ -88,9 +88,7 @@ public class MatchMaking extends ActionBarActivity {
 				connected = true;
 				//matchTxt.setText("Searching opponent");
 				
-				play();
-				
-				/*try {
+				try {
 					makeToast("Searching opponent...");
 					String fromServer;
 					while ((fromServer = in.readLine()) != null) {
@@ -99,7 +97,16 @@ public class MatchMaking extends ActionBarActivity {
 							else if(fromServer.equals("requestData"))
 								out.println("poep, " + code);
 							else if(fromServer.equals("matchFound") || true){
-								play();
+								runOnUiThread(new Runnable() {
+
+			                        @Override
+			                        public void run() {
+			                            Intent i = new Intent("android.intent.action.FIGHTACTIVITY");
+			                            i.putExtra("mapData", "TODO put map data here");
+			                            startActivity(i);
+			                            finish();
+			                        }
+			                    });
 							}
 							else if (fromServer.equals("Server too busy, try again later."))
 								throw new IOException(fromServer);
@@ -109,26 +116,13 @@ public class MatchMaking extends ActionBarActivity {
 				} catch (IOException e) {
 					makeToast("Could not transmit data to server: " + e.getMessage());
 					finish();
-				}*/
+				}
 				
 			} catch (IOException e) {
 				makeToast("Could not connect to server: " + e.getMessage());
 				finish();
 			}
 		
-		}
-
-		private void play() {
-			runOnUiThread(new Runnable() {
-
-			    @Override
-			    public void run() {
-			        Intent i = new Intent("android.intent.action.FIGHTACTIVITY");
-			        i.putExtra("mapData", "TODO put map data here");
-			        startActivity(i);
-			        finish();
-			    }
-			});
 		}
 	};
 	
