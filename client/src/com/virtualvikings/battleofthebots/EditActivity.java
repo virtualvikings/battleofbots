@@ -11,12 +11,14 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.Toast;
 
 public class EditActivity extends ActionBarActivity{
 
-	EditText code;
+	AutoCompleteTextView code;
 	Boolean changed = false;
 	final String FileName = "Strategy";
 	
@@ -26,8 +28,16 @@ public class EditActivity extends ActionBarActivity{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.layout_edit);
 		
-		code = (EditText) findViewById(R.id.codeTxt);
+		code = (AutoCompleteTextView) findViewById(R.id.codeTxt);
 		code.setTypeface(Typeface.MONOSPACE); 
+		
+		 String[] countries  = new String[] {
+		         "Belgium", "France", "Italy", "Germany", "Spain"
+		     };
+
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_dropdown_item_1line, countries);
+		code.setAdapter(adapter);
 		
 		getSupportActionBar().setTitle("Edit Bot");
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
