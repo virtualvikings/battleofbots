@@ -47,7 +47,7 @@
             android:name=".GameActivity"
             android:label="@string/title_activity_game" >
              <intent-filter>
-                <action android:name="android.intent.action.FIGHTACTIVITY" />
+                <action android:name="android.intent.action.GAMEACTIVITY" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>

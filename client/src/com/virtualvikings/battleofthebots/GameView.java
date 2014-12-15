@@ -5,27 +5,16 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.util.Random;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Canvas.VertexMode;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.graphics.Path;
 import android.graphics.Point;
 import android.graphics.PointF;
-import android.graphics.Rect;
 import android.graphics.RectF;
-import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.MotionEventCompat;
-import android.view.GestureDetector;
-import android.view.GestureDetector.OnGestureListener;
-import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -71,7 +60,6 @@ public class GameView extends View {
 	private Random r = new Random();
 	private boolean trackPlayer;
 	public PointF cameraPos = new PointF();
-	private GestureDetectorCompat  detector;
 	
 	public int getDuration() {
 		return timeSegments;
@@ -100,8 +88,6 @@ public class GameView extends View {
 		super(context);
 		
 		this.setBackgroundColor(Color.WHITE);
-		
-		//Waarschuwing - deze constructor wordt opnieuw aangeroepen als het scherm draait!
 
 		System.out.println("Map data is: " + mapData);
 		//deserialize(mapData);
@@ -109,10 +95,6 @@ public class GameView extends View {
 		
 		brush = new Paint();
 		brush.setAntiAlias(true);
-		
-		//OnGestureListener listener = new GameListener();
-		//detector = new GestureDetectorCompat(context, listener);
-		//detector.setIsLongpressEnabled(false); //Enable scroll events
 
 		invalidate();
 	}
@@ -177,8 +159,8 @@ public class GameView extends View {
 				while (posEnemy.y < 0)
 					posEnemy.y += cellCount;
 				
-				statesPlayer[i] = new State((Point) posPlayer, direction); //CLONE
-				statesEnemy[i] = new State((Point) posEnemy, direction); //CLONE
+				statesPlayer[i] = new State(new Point(posPlayer), direction);
+				statesEnemy[i] = new State(new Point(posEnemy), direction);
 			}
 		}
 		catch (Exception e)
@@ -299,13 +281,13 @@ public class GameView extends View {
 	}
 	
 	final private int INVALID_POINTER_ID = -1;
-	private int mActivePointerId = INVALID_POINTER_ID;
-	private float mLastTouchX;
-	private float mLastTouchY;
+	private int activePointerId = INVALID_POINTER_ID;
+	private float lastTouchX;
+	private float lastTouchY;
 
-	//https://developer.android.com/training/gestures/scale.html
-	public boolean onTouchEvent(MotionEvent ev){ 
-        //detector.onTouchEvent(event);
+	
+	public boolean onTouchEvent(MotionEvent ev) { //https://developer.android.com/training/gestures/scale.html
+
 		System.out.println("onTouchEvent triggered!");
 		
 		final int action = MotionEventCompat.getActionMasked(ev); 
@@ -316,46 +298,39 @@ public class GameView extends View {
 		        final float x = MotionEventCompat.getX(ev, pointerIndex); 
 		        final float y = MotionEventCompat.getY(ev, pointerIndex); 
 		            
-		        // Remember where we started (for dragging)
-		        mLastTouchX = x;
-		        mLastTouchY = y;
-		        // Save the ID of this pointer (for dragging)
-		        mActivePointerId = MotionEventCompat.getPointerId(ev, 0);
+		        lastTouchX = x;
+		        lastTouchY = y;
+		        activePointerId = MotionEventCompat.getPointerId(ev, 0);
 		        break;
 		    }
 		            
 		    case MotionEvent.ACTION_MOVE: {
-		        // Find the index of the active pointer and fetch its position
+
 		        final int pointerIndex = 
-		                MotionEventCompat.findPointerIndex(ev, mActivePointerId);  
+		                MotionEventCompat.findPointerIndex(ev, activePointerId);  
 		            
 		        final float x = MotionEventCompat.getX(ev, pointerIndex);
 		        final float y = MotionEventCompat.getY(ev, pointerIndex);
-		            
-		        // Calculate the distance moved
-		        final float dx = x - mLastTouchX;
-		        final float dy = y - mLastTouchY;
+
+		        final float dx = x - lastTouchX;
+		        final float dy = y - lastTouchY;
 	
-		       // mPosX += dx;
-		        //mPosY += dy;
+		        lastTouchX = x;
+		        lastTouchY = y;
+		        
 		        cameraPos.offset(dx, dy);
-	
 		        invalidate();
-	
-		        // Remember this touch position for the next move event
-		        mLastTouchX = x;
-		        mLastTouchY = y;
 	
 		        break;
 		    }
 		            
 		    case MotionEvent.ACTION_UP: {
-		        mActivePointerId = INVALID_POINTER_ID;
+		        activePointerId = INVALID_POINTER_ID;
 		        break;
 		    }
 		            
 		    case MotionEvent.ACTION_CANCEL: {
-		        mActivePointerId = INVALID_POINTER_ID;
+		        activePointerId = INVALID_POINTER_ID;
 		        break;
 		    }
 		        
@@ -364,63 +339,18 @@ public class GameView extends View {
 		        final int pointerIndex = MotionEventCompat.getActionIndex(ev); 
 		        final int pointerId = MotionEventCompat.getPointerId(ev, pointerIndex); 
 	
-		        if (pointerId == mActivePointerId) {
-		            // This was our active pointer going up. Choose a new
-		            // active pointer and adjust accordingly.
+		        if (pointerId == activePointerId) {
 		            final int newPointerIndex = pointerIndex == 0 ? 1 : 0;
-		            mLastTouchX = MotionEventCompat.getX(ev, newPointerIndex); 
-		            mLastTouchY = MotionEventCompat.getY(ev, newPointerIndex); 
-		            mActivePointerId = MotionEventCompat.getPointerId(ev, newPointerIndex);
+		            lastTouchX = MotionEventCompat.getX(ev, newPointerIndex); 
+		            lastTouchY = MotionEventCompat.getY(ev, newPointerIndex); 
+		            activePointerId = MotionEventCompat.getPointerId(ev, newPointerIndex);
 		        }
 		        break;
 		    }
 	    }      
-		invalidate();
-        return true;//super.onTouchEvent(ev);
+
+        return true;
 	}
-	
-	/*class GameListener implements OnGestureListener {
-		
-		
-		@Override
-		public boolean onDown(MotionEvent e) {
-			//werkt wel
-			System.out.println("onDown triggered!");
-			return true; //Je moet hier true teruggeven of de andere events worden niet aangeroepen
-		}
-
-		@Override
-		public void onShowPress(MotionEvent e) {
-			System.out.println("onShowPress triggered!");
-		}
-
-		@Override
-		public boolean onSingleTapUp(MotionEvent e) {
-			System.out.println("onSingleTapUp triggered!");
-			return false;
-		}
-
-		@Override
-		public void onLongPress(MotionEvent e) {
-			System.out.println("onLongPress triggered!");
-		}
-
-		@Override
-		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
-				float velocityY) {
-			System.out.println("onFling triggered!");
-			return true;
-		}
-
-		@Override
-		public boolean onScroll(MotionEvent e1, MotionEvent e2,
-				float distanceX, float distanceY) {
-			GameView.this.cameraPos.offset(distanceX, distanceY);
-			GameView.this.invalidate();
-			System.out.println("onScroll triggered with coordinates " + distanceX + ", " + distanceY);
-			return true;
-		}
-	}*/
 }
 
 

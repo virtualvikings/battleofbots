@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,11 +25,13 @@ public class MatchMaking extends ActionBarActivity {
 	String code;
 	
 	final int port = 4444;
-	final String IP = "145.107.118.39";
+	final String IP = "10.0.2.2";
 	Boolean connected = false;
 	Socket socket;
 	PrintWriter out;
 	BufferedReader in;
+	
+	private static final String TAG = "MatchMaking";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +67,9 @@ public class MatchMaking extends ActionBarActivity {
 	Thread TalkToServer = new Thread(){
 		
 		public void run(){
+			
+			Log.w(TAG, "connecting...");
+			
 			try {
 				InetAddress serverAddr = InetAddress.getByName(IP);
 				socket = new Socket(serverAddr, port);
@@ -71,24 +77,29 @@ public class MatchMaking extends ActionBarActivity {
 				in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				connected = true;
 			} catch (IOException e) {
-				Toast.makeText(getApplicationContext(), "Could not connect to server, please try again later", Toast.LENGTH_LONG).show();
+				Log.w(TAG, "failed to connect");
+				//Toast.makeText(getApplicationContext(), "Could not connect to server, please try again later", Toast.LENGTH_LONG).show();
 				finish();
 			}
+			
+			Log.w(TAG, "connected");
 			
 			try {
 				String fromServer;
 				while ((fromServer = in.readLine()) != null) {
 						if(fromServer.equals("requestKey"))
-							out.println("Correct_Key");
-						else if(fromServer.equals("requestData"))
-							out.println("poep, " + code);
-						else if(fromServer.startsWith("matchFound")){
+							Log.w(TAG, "Correct_Key");
+						/*else*/ if(fromServer.equals("requestData"))
+							Log.w(TAG, "poep, " + code);
+						/*else*/ if(fromServer.startsWith("matchFound") || true){
 							final String mapData = fromServer.substring(10, fromServer.length());
 							closeConnection();
+							Log.w(TAG, "received map");
 							runOnUiThread(new Runnable() {
 
 		                        @Override
 		                        public void run() {
+		                        	Log.w(TAG, "going to activity");
 		                            Intent i = new Intent("android.intent.action.GAMEACTIVITY");
 		                            i.putExtra("mapData", mapData);
 		                            startActivity(i);
@@ -98,7 +109,8 @@ public class MatchMaking extends ActionBarActivity {
 						}
 				}
 			} catch (IOException e) {
-				Toast.makeText(getApplicationContext(), "Could not transmit data to server, please try again later", Toast.LENGTH_LONG).show();
+				Log.w(TAG, "failed to transmit data " + e);
+				//Toast.makeText(getApplicationContext(), "Could not transmit data to server, please try again later", Toast.LENGTH_LONG).show();
 				finish();
 			}
 		}
@@ -110,7 +122,8 @@ public class MatchMaking extends ActionBarActivity {
 				out.println("exit");
 				socket.close();
 			} catch (IOException e) {
-				Toast.makeText(getApplicationContext(), "Could not close the connection", Toast.LENGTH_SHORT).show();
+				Log.w(TAG, "could not close the connection");
+				//Toast.makeText(getApplicationContext(), "Could not close the connection", Toast.LENGTH_SHORT).show();
 			}
 		} 
 	}
