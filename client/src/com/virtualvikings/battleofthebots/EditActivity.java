@@ -66,8 +66,8 @@ public class EditActivity extends ActionBarActivity{
 		         "if (hp<3) {\n\n}", 
 		     };
 
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-				android.R.layout.simple_spinner_dropdown_item, suggestions);
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.autocomplete,
+				/*android.R.layout.simple_spinner_dropdown_item,*/ suggestions);
 		
 		code.setAdapter(adapter);
 		code.setThreshold(1);
