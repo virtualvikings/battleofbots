@@ -8,17 +8,21 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.MenuItem;
 import android.text.Editable;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
+import android.widget.MultiAutoCompleteTextView;
 import android.widget.Toast;
 
 public class EditActivity extends ActionBarActivity{
 
-	AutoCompleteTextView code;
+	MultiAutoCompleteTextView code;
 	Boolean changed = false;
 	final String FileName = "Strategy";
 	
@@ -28,16 +32,10 @@ public class EditActivity extends ActionBarActivity{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.layout_edit);
 		
-		code = (AutoCompleteTextView) findViewById(R.id.codeTxt);
+		code = (MultiAutoCompleteTextView) findViewById(R.id.codeTxt);
 		code.setTypeface(Typeface.MONOSPACE); 
 		
-		 String[] countries  = new String[] {
-		         "Belgium", "France", "Italy", "Germany", "Spain"
-		     };
-
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_dropdown_item_1line, countries);
-		code.setAdapter(adapter);
+		setupAutocomplete();
 		
 		getSupportActionBar().setTitle("Edit Bot");
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -59,6 +57,74 @@ public class EditActivity extends ActionBarActivity{
 			@Override
 			public void afterTextChanged(Editable s) { }
 		});
+	}
+
+	private void setupAutocomplete() {
+		String[] suggestions  = new String[] {
+		         "move_up()", "move_left()", "move_right()", "move_down()", "scan()",
+		         "if (hp<3) {\n\n}", 
+		     };
+
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_dropdown_item_1line, suggestions);
+		code.setAdapter(adapter);
+		code.setThreshold(1);
+		code.setTokenizer(new MultiAutoCompleteTextView.Tokenizer() { //http://grepcode.com/file_/repository.grepcode.com/java/ext/com.google.android/android/4.0.1_r1/android/widget/MultiAutoCompleteTextView.java/?v=source
+			
+			private final char token = '\n';
+			private final char end = ';';
+			private final char space = ' ';
+			
+			public int findTokenStart(CharSequence text, int cursor) {
+	            int i = cursor;
+
+	            while (i > 0 && text.charAt(i - 1) != token) {
+	                i--;
+	            }
+	            while (i < cursor && text.charAt(i) == space) {
+	                i++;
+	            }
+
+	            return i;
+	        }
+
+	        public int findTokenEnd(CharSequence text, int cursor) {
+	            int i = cursor;
+	            int len = text.length();
+
+	            while (i < len) {
+	                if (text.charAt(i) == token) {
+	                    return i;
+	                } else {
+	                    i++;
+	                }
+	            }
+
+	            return len;
+	        }
+
+	        public CharSequence terminateToken(CharSequence text) {
+	            int i = text.length();
+
+	            while (i > 0 && text.charAt(i - 1) == space) {
+	                i--;
+	            }
+
+	            if (i > 0 && text.charAt(i - 1) == token) {
+	                return text;
+	            } else {
+	            	String autoCompleted = new StringBuilder().append(text).append(end).append(token).toString();
+	                if (text instanceof Spanned) {
+	                    SpannableString sp = new SpannableString(autoCompleted);
+	                    TextUtils.copySpansFrom((Spanned) text, 0, text.length(),
+	                                            Object.class, sp, 0);
+	                    return sp;
+	                } else {
+	                    return autoCompleted;
+	                }
+	            }
+	        }
+		} );
 	}
 	
 	@Override
