@@ -21,6 +21,8 @@ import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.support.v4.view.GestureDetectorCompat;
+import android.support.v4.view.MotionEventCompat;
 import android.view.GestureDetector;
 import android.view.GestureDetector.OnGestureListener;
 import android.view.GestureDetector.SimpleOnGestureListener;
@@ -69,6 +71,7 @@ public class GameView extends View {
 	private Random r = new Random();
 	private boolean trackPlayer;
 	public PointF cameraPos = new PointF();
+	private GestureDetectorCompat  detector;
 	
 	public int getDuration() {
 		return timeSegments;
@@ -107,10 +110,10 @@ public class GameView extends View {
 		brush = new Paint();
 		brush.setAntiAlias(true);
 		
-		OnGestureListener listener = new GameListener();
-		GestureDetector detector = new GestureDetector(context, listener);
-		detector.setIsLongpressEnabled(false); //Enable scroll events
-		
+		//OnGestureListener listener = new GameListener();
+		//detector = new GestureDetectorCompat(context, listener);
+		//detector.setIsLongpressEnabled(false); //Enable scroll events
+
 		invalidate();
 	}
 	
@@ -295,24 +298,129 @@ public class GameView extends View {
 		canvas.restore();
 	}
 	
-	class GameListener extends SimpleOnGestureListener {
-		@Override
-		public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX,
-				float distanceY) {
-			//werkt niet
-			GameView.this.cameraPos.offset(distanceX, distanceY);
-			GameView.this.invalidate();
-			System.out.println("scrolled with coordinates " + distanceX + ", " + distanceY);
-			return true;
-		}
+	final private int INVALID_POINTER_ID = -1;
+	private int mActivePointerId = INVALID_POINTER_ID;
+	private float mLastTouchX;
+	private float mLastTouchY;
+
+	//https://developer.android.com/training/gestures/scale.html
+	public boolean onTouchEvent(MotionEvent ev){ 
+        //detector.onTouchEvent(event);
+		System.out.println("onTouchEvent triggered!");
+		
+		final int action = MotionEventCompat.getActionMasked(ev); 
+        
+	    switch (action) { 
+		    case MotionEvent.ACTION_DOWN: {
+		        final int pointerIndex = MotionEventCompat.getActionIndex(ev); 
+		        final float x = MotionEventCompat.getX(ev, pointerIndex); 
+		        final float y = MotionEventCompat.getY(ev, pointerIndex); 
+		            
+		        // Remember where we started (for dragging)
+		        mLastTouchX = x;
+		        mLastTouchY = y;
+		        // Save the ID of this pointer (for dragging)
+		        mActivePointerId = MotionEventCompat.getPointerId(ev, 0);
+		        break;
+		    }
+		            
+		    case MotionEvent.ACTION_MOVE: {
+		        // Find the index of the active pointer and fetch its position
+		        final int pointerIndex = 
+		                MotionEventCompat.findPointerIndex(ev, mActivePointerId);  
+		            
+		        final float x = MotionEventCompat.getX(ev, pointerIndex);
+		        final float y = MotionEventCompat.getY(ev, pointerIndex);
+		            
+		        // Calculate the distance moved
+		        final float dx = x - mLastTouchX;
+		        final float dy = y - mLastTouchY;
+	
+		       // mPosX += dx;
+		        //mPosY += dy;
+		        cameraPos.offset(dx, dy);
+	
+		        invalidate();
+	
+		        // Remember this touch position for the next move event
+		        mLastTouchX = x;
+		        mLastTouchY = y;
+	
+		        break;
+		    }
+		            
+		    case MotionEvent.ACTION_UP: {
+		        mActivePointerId = INVALID_POINTER_ID;
+		        break;
+		    }
+		            
+		    case MotionEvent.ACTION_CANCEL: {
+		        mActivePointerId = INVALID_POINTER_ID;
+		        break;
+		    }
+		        
+		    case MotionEvent.ACTION_POINTER_UP: {
+		            
+		        final int pointerIndex = MotionEventCompat.getActionIndex(ev); 
+		        final int pointerId = MotionEventCompat.getPointerId(ev, pointerIndex); 
+	
+		        if (pointerId == mActivePointerId) {
+		            // This was our active pointer going up. Choose a new
+		            // active pointer and adjust accordingly.
+		            final int newPointerIndex = pointerIndex == 0 ? 1 : 0;
+		            mLastTouchX = MotionEventCompat.getX(ev, newPointerIndex); 
+		            mLastTouchY = MotionEventCompat.getY(ev, newPointerIndex); 
+		            mActivePointerId = MotionEventCompat.getPointerId(ev, newPointerIndex);
+		        }
+		        break;
+		    }
+	    }      
+		invalidate();
+        return true;//super.onTouchEvent(ev);
+	}
+	
+	/*class GameListener implements OnGestureListener {
+		
 		
 		@Override
 		public boolean onDown(MotionEvent e) {
-			//werkt misschien
+			//werkt wel
 			System.out.println("onDown triggered!");
+			return true; //Je moet hier true teruggeven of de andere events worden niet aangeroepen
+		}
+
+		@Override
+		public void onShowPress(MotionEvent e) {
+			System.out.println("onShowPress triggered!");
+		}
+
+		@Override
+		public boolean onSingleTapUp(MotionEvent e) {
+			System.out.println("onSingleTapUp triggered!");
+			return false;
+		}
+
+		@Override
+		public void onLongPress(MotionEvent e) {
+			System.out.println("onLongPress triggered!");
+		}
+
+		@Override
+		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
+				float velocityY) {
+			System.out.println("onFling triggered!");
 			return true;
 		}
-	}
+
+		@Override
+		public boolean onScroll(MotionEvent e1, MotionEvent e2,
+				float distanceX, float distanceY) {
+			GameView.this.cameraPos.offset(distanceX, distanceY);
+			GameView.this.invalidate();
+			System.out.println("onScroll triggered with coordinates " + distanceX + ", " + distanceY);
+			return true;
+		}
+	}*/
 }
 
 
