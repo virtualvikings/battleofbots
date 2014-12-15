@@ -80,6 +80,7 @@ public class MatchMaking extends ActionBarActivity {
 				Log.w(TAG, "failed to connect");
 				//Toast.makeText(getApplicationContext(), "Could not connect to server, please try again later", Toast.LENGTH_LONG).show();
 				finish();
+				return; //stop
 			}
 			
 			Log.w(TAG, "connected");
@@ -112,6 +113,7 @@ public class MatchMaking extends ActionBarActivity {
 				Log.w(TAG, "failed to transmit data " + e);
 				//Toast.makeText(getApplicationContext(), "Could not transmit data to server, please try again later", Toast.LENGTH_LONG).show();
 				finish();
+				return; //stop
 			}
 		}
 	};

@@ -17,7 +17,9 @@
         android:ems="10"
         android:gravity="top"
         android:hint="@string/codeHint"
-        android:inputType="textMultiLine|textNoSuggestions" >
+        android:inputType="textMultiLine|textNoSuggestions"
+        android:dropDownWidth="match_parent" 
+        android:dropDownHeight="120dp" >
 
         <requestFocus />
     </MultiAutoCompleteTextView >
