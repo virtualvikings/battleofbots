@@ -17,36 +17,18 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.graphics.Path;
+import android.graphics.Point;
+import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.view.GestureDetector;
+import android.view.GestureDetector.OnGestureListener;
+import android.view.GestureDetector.SimpleOnGestureListener;
+import android.view.MotionEvent;
 import android.view.View;
 
 import com.virtualvikings.battleofthebots.GameView.Bot.State;
 
-class Vector2
-{
-	public int x;
-	public int y;
-	public Vector2(int x, int y)
-	{
-		this.x = x;
-		this.y = y;
-	}
-	
-	public boolean equals(Vector2 other) {
-		return other.x == x && other.y == y;
-	}
-	
-	@Override
-	protected Object clone() {
-		return new Vector2(x, y);
-	}
-
-	public void add(Vector2 toAdd) {
-		x += toAdd.x;
-		y += toAdd.y;
-	}
-}
 
 public class GameView extends View {
 	
@@ -54,10 +36,10 @@ public class GameView extends View {
 		
 		public static class State {
 			
-			private Vector2 position;
+			private Point position;
 			private byte direction;
 			
-			public State(Vector2 position, byte direction) {
+			public State(Point position, byte direction) {
 				this.position = position;
 				this.direction = direction;
 			}
@@ -86,6 +68,7 @@ public class GameView extends View {
 	private Paint brush;
 	private Random r = new Random();
 	private boolean trackPlayer;
+	public PointF cameraPos = new PointF();
 	
 	public int getDuration() {
 		return timeSegments;
@@ -124,6 +107,10 @@ public class GameView extends View {
 		brush = new Paint();
 		brush.setAntiAlias(true);
 		
+		OnGestureListener listener = new GameListener();
+		GestureDetector detector = new GestureDetector(context, listener);
+		detector.setIsLongpressEnabled(false); //Enable scroll events
+		
 		invalidate();
 	}
 	
@@ -157,8 +144,8 @@ public class GameView extends View {
 		//Plaats bots op willekeurige plekken
 		State[] statesPlayer = new State[timeSegments];
 		State[] statesEnemy = new State[timeSegments];
-		Vector2 posPlayer = new Vector2(2, 4);
-		Vector2 posEnemy = new Vector2(3, 7);
+		Point posPlayer = new Point(2, 4);
+		Point posEnemy = new Point(3, 7);
 		
 		//Simuleer een gevecht, dit moet eigenlijk op de server gebeuren maar dit is om het te testen
 		try
@@ -167,10 +154,10 @@ public class GameView extends View {
 
 				//Kies willekeurige richting
 				byte direction = (byte) r.nextInt(4); //0-3
-				Vector2 toAdd = new Vector2((int)Math.round(Math.cos(direction / 2f * Math.PI)), (int)Math.round(Math.sin(direction / 2f * Math.PI)));
+				Point toAdd = new Point((int)Math.round(Math.cos(direction / 2f * Math.PI)), (int)Math.round(Math.sin(direction / 2f * Math.PI)));
 				
-				posPlayer.add(toAdd);
-				posEnemy.add(toAdd);
+				posPlayer.offset(toAdd.x, toAdd.y);
+				posEnemy.offset(toAdd.x, toAdd.y);
 				
 				//Spring naar andere kant als bot uit het veld gelopen is
 				posPlayer.x = posPlayer.x % cellCount;
@@ -187,8 +174,8 @@ public class GameView extends View {
 				while (posEnemy.y < 0)
 					posEnemy.y += cellCount;
 				
-				statesPlayer[i] = new State((Vector2) posPlayer.clone(), direction);
-				statesEnemy[i] = new State((Vector2) posEnemy.clone(), direction);
+				statesPlayer[i] = new State((Point) posPlayer, direction); //CLONE
+				statesEnemy[i] = new State((Point) posEnemy, direction); //CLONE
 			}
 		}
 		catch (Exception e)
@@ -219,6 +206,7 @@ public class GameView extends View {
 		State playerState = player.states[currentTime];
 		State enemyState = enemy.states[currentTime];
 		
+		canvas.translate(cameraPos.x, cameraPos.y);
 		if (!trackPlayer) {
 			if (minWH == canvas.getWidth())
 				canvas.translate(0, canvas.getHeight() / 2f - minWH / 2f);
@@ -250,26 +238,9 @@ public class GameView extends View {
 				canvas.drawRect(rect, brush);
 			}
 		}
-		
-		//Teken lijnen NIET
-		if (false) {
-			brush.setStrokeWidth(2);
-			brush.setColor(Color.WHITE);
-			for (int i = 0; i <= cellCount; i++)
-			{
-				for (int j = 0; j <= cellCount; j++)
-				{
-					float x = i * cellS;
-					float y = j * cellS;
-					
-					canvas.drawLine(x, 0, x, minWH, brush);
-					canvas.drawLine(0, y, minWH, y, brush);
-				}
-			}
-		}
 
 		//Teken obstakels en bots
-		Vector2 pos = new Vector2(0, 0);
+		Point pos = new Point(0, 0);
 		for (int i = 0; i < cellCount; i++)
 		{
 			for (int j = 0; j < cellCount; j++)
@@ -323,5 +294,25 @@ public class GameView extends View {
 		canvas.drawPath(path, brush);
 		canvas.restore();
 	}
-
+	
+	class GameListener extends SimpleOnGestureListener {
+		@Override
+		public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX,
+				float distanceY) {
+			//werkt niet
+			GameView.this.cameraPos.offset(distanceX, distanceY);
+			GameView.this.invalidate();
+			System.out.println("scrolled with coordinates " + distanceX + ", " + distanceY);
+			return true;
+		}
+		
+		@Override
+		public boolean onDown(MotionEvent e) {
+			//werkt misschien
+			System.out.println("onDown triggered!");
+			return true;
+		}
+	}
 }
+
+
