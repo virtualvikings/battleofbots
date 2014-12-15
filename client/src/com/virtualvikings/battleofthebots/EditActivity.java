@@ -14,6 +14,7 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
@@ -66,9 +67,11 @@ public class EditActivity extends ActionBarActivity{
 		     };
 
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_dropdown_item_1line, suggestions);
+				android.R.layout.simple_spinner_dropdown_item, suggestions);
+		
 		code.setAdapter(adapter);
 		code.setThreshold(1);
+		//???.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT); //TODO: maak de popup groter!
 		code.setTokenizer(new MultiAutoCompleteTextView.Tokenizer() { //http://grepcode.com/file_/repository.grepcode.com/java/ext/com.google.android/android/4.0.1_r1/android/widget/MultiAutoCompleteTextView.java/?v=source
 			
 			private final char token = '\n';
@@ -113,7 +116,7 @@ public class EditActivity extends ActionBarActivity{
 	            if (i > 0 && text.charAt(i - 1) == token) {
 	                return text;
 	            } else {
-	            	String autoCompleted = new StringBuilder().append(text).append(end).append(token).toString();
+	            	String autoCompleted = new StringBuilder().append(text).append(end)/*.append(token)*/.toString();
 	                if (text instanceof Spanned) {
 	                    SpannableString sp = new SpannableString(autoCompleted);
 	                    TextUtils.copySpansFrom((Spanned) text, 0, text.length(),
