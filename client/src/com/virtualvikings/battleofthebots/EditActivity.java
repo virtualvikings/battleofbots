@@ -1,11 +1,19 @@
 package com.virtualvikings.battleofthebots;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
+
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
+import android.util.TypedValue;
 import android.view.MenuItem;
 import android.text.Editable;
 import android.text.SpannableString;
@@ -14,11 +22,19 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.BaseAdapter;
 import android.widget.EditText;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.MultiAutoCompleteTextView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class EditActivity extends ActionBarActivity{
@@ -45,14 +61,21 @@ public class EditActivity extends ActionBarActivity{
 		String readCode = settings.getString("code", "");
 		code.setText(readCode);
 		
+		
 		code.addTextChangedListener(new TextWatcher(){
 
+			//boolean avoidStackOverflow = false;
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
 
+			//@SuppressLint("NewApi")
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
 				changed = true;
+				//if (avoidStackOverflow) return;
+				//avoidStackOverflow = true;
+				//code.setText(code.getText(), false); //zet filtering uit!
+				//avoidStackOverflow = false;
 			}
 
 			@Override
@@ -61,15 +84,19 @@ public class EditActivity extends ActionBarActivity{
 	}
 
 	private void setupAutocomplete() {
-		String[] suggestions  = new String[] {
-		         "move_up()", "move_left()", "move_right()", "move_down()", "scan()",
-		         "if (__) {\n\n}", "else {\n\n}",  "else if (__) {\n\n}", /*"hp<",*/ 
-		     };
 
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.autocomplete, suggestions);
+		//ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.autocomplete, suggestions);
+		//code.setAdapter(adapter);
 		
-		code.setAdapter(adapter);
-		code.setThreshold(1);
+		code.setAdapter(new AutoCompleteAdapter());
+		
+		code.setThreshold(1); //0 wordt 1
+		code.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				code.showDropDown();
+			}});
+		
 		code.setTokenizer(new MultiAutoCompleteTextView.Tokenizer() { //http://grepcode.com/file_/repository.grepcode.com/java/ext/com.google.android/android/4.0.1_r1/android/widget/MultiAutoCompleteTextView.java/?v=source
 			
 			private final char token = '\n';
@@ -130,6 +157,77 @@ public class EditActivity extends ActionBarActivity{
 	            }
 	        }
 		} );
+	}
+	
+	class AutoCompleteAdapter extends BaseAdapter implements Filterable { //https://github.com/android/platform_frameworks_base/blob/master/core/java/android/widget/ArrayAdapter.java
+		
+		String[] suggestions = new String[] {
+		         "if (?) {\n\n}", "else {\n\n}",  "else if (?) {\n\n}", /*"hp<",*/ 
+		         "move_up()", "move_left()", "move_right()", "move_down()", "scan()"
+		     };
+		
+		List<String> suggestionsFiltered = new ArrayList<String>();
+		
+		@Override
+		public int getCount() {
+			return suggestionsFiltered.size();
+		}
+
+		@Override
+		public Object getItem(int position) {
+			return suggestionsFiltered.get(position);
+		}
+
+		@Override
+		public long getItemId(int position) {
+			return getItem(position).hashCode();
+		}
+
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			TextView view = new TextView(parent.getContext());
+			view.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, AbsListView.LayoutParams.MATCH_PARENT));
+			int pad = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5, getResources().getDisplayMetrics());
+			view.setPadding(pad, pad, pad, pad);
+			view.setText((String)getItem(position));
+			view.setTypeface(Typeface.MONOSPACE);
+			return view;
+		}
+
+		@Override
+		public Filter getFilter() {
+			return new Filter() {
+				
+				@SuppressLint("NewApi")
+				@Override
+				protected FilterResults performFiltering(CharSequence constraint) {
+					FilterResults results = new FilterResults();
+					
+					List<String> resultList = new ArrayList<String>();
+					for (int i = 0; i < suggestions.length; i++) {
+						String suggestion = suggestions[i];
+						if (suggestion.contains(constraint))
+							resultList.add(suggestion);
+					}
+					
+					results.values = resultList;
+					results.count = resultList.size();
+					return results;
+				}
+
+				@Override
+				protected void publishResults(CharSequence constraint, FilterResults results) {
+					suggestionsFiltered = (List<String>) results.values;
+					if (suggestionsFiltered == null)
+						suggestionsFiltered = new ArrayList<String>(); //Avoid nullreference
+					
+					if (results.count > 0) {
+						notifyDataSetChanged();
+					} else {
+						notifyDataSetInvalidated();
+					}
+				}};
+		}
 	}
 	
 	@Override

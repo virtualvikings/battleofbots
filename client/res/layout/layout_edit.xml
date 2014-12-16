@@ -18,7 +18,7 @@
         android:gravity="top"
         android:hint="@string/codeHint"
         android:inputType="textMultiLine|textNoSuggestions"
-        android:dropDownWidth="match_parent" 
+        android:dropDownWidth="wrap_content" 
         android:dropDownHeight="120dp" >
 
         <requestFocus />
