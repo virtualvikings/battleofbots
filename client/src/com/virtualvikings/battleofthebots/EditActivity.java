@@ -16,6 +16,7 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.MenuItem;
 import android.text.Editable;
+import android.text.Html;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -90,12 +91,12 @@ public class EditActivity extends ActionBarActivity{
 		
 		code.setAdapter(new AutoCompleteAdapter());
 		
-		code.setThreshold(1); //0 wordt 1
-		code.setOnClickListener(new OnClickListener(){
+		code.setThreshold(1);
+		/*code.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
 				code.showDropDown();
-			}});
+			}});*/
 		
 		code.setTokenizer(new MultiAutoCompleteTextView.Tokenizer() { //http://grepcode.com/file_/repository.grepcode.com/java/ext/com.google.android/android/4.0.1_r1/android/widget/MultiAutoCompleteTextView.java/?v=source
 			
@@ -167,6 +168,7 @@ public class EditActivity extends ActionBarActivity{
 		     };
 		
 		List<String> suggestionsFiltered = new ArrayList<String>();
+		String lastConstraint;	
 		
 		@Override
 		public int getCount() {
@@ -185,13 +187,23 @@ public class EditActivity extends ActionBarActivity{
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
+			
 			TextView view = new TextView(parent.getContext());
 			view.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, AbsListView.LayoutParams.MATCH_PARENT));
 			int pad = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5, getResources().getDisplayMetrics());
 			view.setPadding(pad, pad, pad, pad);
-			view.setText((String)getItem(position));
+			
+			String text = (String)getItem(position);
+			int start = text.indexOf(lastConstraint);
+			int end = start + lastConstraint.length();
+			String startTag = "<u><b>";
+			String endTag = "</b></u>";
+			view.setText(Html.fromHtml(new StringBuilder(text).insert(start, startTag).insert(end + startTag.length(), endTag).toString()));
+			//Underline and bold matched part of the text
+			
 			view.setTypeface(Typeface.MONOSPACE);
 			return view;
+			
 		}
 
 		@Override
@@ -203,10 +215,14 @@ public class EditActivity extends ActionBarActivity{
 				protected FilterResults performFiltering(CharSequence constraint) {
 					FilterResults results = new FilterResults();
 					
+					constraint = ((String) constraint).trim(); //Remove spaces
+					lastConstraint = (String) constraint;
+					//However this method never gets called when the constraint is empty!
+					
 					List<String> resultList = new ArrayList<String>();
 					for (int i = 0; i < suggestions.length; i++) {
 						String suggestion = suggestions[i];
-						if (suggestion.contains(constraint))
+						if (/*constraint.length() == 0 || */suggestion.contains(constraint))
 							resultList.add(suggestion);
 					}
 					
