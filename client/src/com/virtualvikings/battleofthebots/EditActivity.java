@@ -9,6 +9,7 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -21,6 +22,10 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.text.style.BackgroundColorSpan;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
+import android.text.style.UnderlineSpan;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
@@ -196,10 +201,12 @@ public class EditActivity extends ActionBarActivity{
 			String text = (String)getItem(position);
 			int start = text.indexOf(lastConstraint);
 			int end = start + lastConstraint.length();
-			String startTag = "<u><b>";
-			String endTag = "</b></u>";
-			view.setText(Html.fromHtml(new StringBuilder(text).insert(start, startTag).insert(end + startTag.length(), endTag).toString()));
-			//Underline and bold matched part of the text
+
+			SpannableString content = new SpannableString(text);
+			//content.setSpan(new UnderlineSpan(), start, end, 0);
+			content.setSpan(new StyleSpan(Typeface.BOLD), start, end, 0);
+			content.setSpan(new ForegroundColorSpan(Color.BLUE), start, end, 0);
+			view.setText(content);
 			
 			view.setTypeface(Typeface.MONOSPACE);
 			return view;
