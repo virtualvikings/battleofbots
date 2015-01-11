@@ -70,18 +70,6 @@ public class MatchMaking extends ActionBarActivity {
 			
 			Log.w(TAG, "connecting...");
 			
-			runOnUiThread(new Runnable() {
-
-                @Override
-                public void run() {
-                	Log.w(TAG, "going to activity");
-                    Intent i = new Intent("android.intent.action.GAMEACTIVITY");
-                    i.putExtra("mapData", "niks");
-                    startActivity(i);
-                    finish();
-                }
-            });
-			
 			try {
 				InetAddress serverAddr = InetAddress.getByName(IP);
 				socket = new Socket(serverAddr, port);
@@ -108,7 +96,7 @@ public class MatchMaking extends ActionBarActivity {
 							final String mapData = fromServer.substring(10, fromServer.length());
 							closeConnection();
 							Log.w(TAG, "received map");
-							/*runOnUiThread(new Runnable() {
+							runOnUiThread(new Runnable() {
 
 		                        @Override
 		                        public void run() {
@@ -118,7 +106,7 @@ public class MatchMaking extends ActionBarActivity {
 		                            startActivity(i);
 		                            finish();
 		                        }
-		                    });*/
+		                    });
 						}
 				}
 			} catch (IOException e) {
