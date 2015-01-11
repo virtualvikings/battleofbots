@@ -33,8 +33,10 @@ public class MainActivity extends Activity {
         editBtn.setOnClickListener(new OnClickListener(){
         	
         	public void onClick(View v){
-        		Intent EditActivity = new Intent("android.intent.action.EDITACTIVITY");
-        		startActivity(EditActivity);
+        		//Intent EditActivity = new Intent("android.intent.action.SIMPLEEDITACTIVITY");
+        		//startActivity(EditActivity);
+        		Intent a = new Intent(getApplicationContext(), SimpleEditActivity.class);
+        		startActivity(a);
         	}
         });
         

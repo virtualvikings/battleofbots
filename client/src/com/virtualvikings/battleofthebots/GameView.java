@@ -88,6 +88,7 @@ public class GameView extends View {
 		super(context);
 		
 		this.setBackgroundColor(Color.WHITE);
+		
 
 		System.out.println("Map data is: " + mapData);
 		//deserialize(mapData);
