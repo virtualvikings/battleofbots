@@ -2,14 +2,19 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:yourapp="http://schemas.android.com/apk/res-auto">
 
+    <item android:id="@+id/action_clear"
+          android:icon="@drawable/ic_action_discard"
+          android:title="@string/clear"
+          yourapp:showAsAction="always"  /> 
+          
     <item android:id="@+id/action_save"
           android:title="Save"
-          yourapp:showAsAction="ifRoom"
-            />
+          android:icon="@drawable/ic_action_save"
+          yourapp:showAsAction="always" />
 
     <item android:id="@+id/action_add"
           android:icon="@drawable/ic_action_new"
           android:title="Add condition"
-          yourapp:showAsAction="ifRoom" />
+          yourapp:showAsAction="always" />
 
 </menu>

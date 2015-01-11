@@ -8,12 +8,17 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.Message;
 import android.support.v7.app.ActionBarActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -27,14 +32,17 @@ import android.widget.Toast;
 
 public class SimpleEditActivity extends ActionBarActivity {
 
-    private static final String PREFS_NAME = "B0B";
-    private final String identifier = "code_storage";
+    public static final String PREFS_NAME = "B0TB";
+    public final String identifier = "code_storage";
     private LinearLayout mainList;
+    private Boolean changed = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.simple_edit);
+        
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mainList = (LinearLayout) this.findViewById(R.id.mainList);
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
@@ -53,16 +61,68 @@ public class SimpleEditActivity extends ActionBarActivity {
         switch (item.getItemId()) {
             case R.id.action_add:
                 addNewPair("", "");
+                changed = true;
                 return true;
             case R.id.action_save:
                 save();
+                return true;
+            case R.id.action_clear: {
+	            	AlertDialog ad = new AlertDialog.Builder(SimpleEditActivity.this).create();
+	            	ad.setTitle("Clear code");
+	            	ad.setMessage("Are you sure you want to erase your code?");
+	            	ad.setButton(DialogInterface.BUTTON_POSITIVE, "Yes", new DialogInterface.OnClickListener() {
+	    				@Override
+	    				public void onClick(DialogInterface dialog, int which) {
+	    					clear();
+	    				}
+	    			});
+	            	ad.setButton(DialogInterface.BUTTON_NEGATIVE, "No", new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							//do nothing
+						}});
+	            	ad.show();
+	            	return true;
+            	}
+            case android.R.id.home: 
+            	if(!changed)
+    				finish();
+    			else{
+    				AlertDialog ad = new AlertDialog.Builder(SimpleEditActivity.this).create();
+    				ad.setTitle("Discard unsaved changes?");
+    				ad.setMessage("The code has been changed, but not saved. What do you want to do?");
+    				ad.setButton(DialogInterface.BUTTON_POSITIVE, "Save", new DialogInterface.OnClickListener() {
+    					@Override
+    					public void onClick(DialogInterface dialog, int which) {
+    						save();
+    						finish();						
+    					}
+    				});
+    				ad.setButton(DialogInterface.BUTTON_NEGATIVE, "Discard", new DialogInterface.OnClickListener() {
+    					@Override
+    					public void onClick(DialogInterface dialog, int which) {
+    						finish();
+    					}
+    				});
+    				ad.setButton(DialogInterface.BUTTON_NEUTRAL, "Cancel", new DialogInterface.OnClickListener(){
+    					@Override
+    					public void onClick(DialogInterface dialog, int which){
+    						//Do Nothing
+    					}
+    				});
+    				ad.show();
+    			}	
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
-    private void save() {
+    protected void clear() {
+		mainList.removeAllViews();
+	}
+
+	private void save() {
 
         try {
 
@@ -82,6 +142,9 @@ public class SimpleEditActivity extends ActionBarActivity {
             edit.putString(identifier, result);
             edit.commit();
             //edit.apply(); //not supported on API level 8
+            
+            changed = false;
+            Toast.makeText(getApplicationContext(), "Saved!", Toast.LENGTH_LONG).show();
 
         } catch (JSONException e) {
             Toast.makeText(getApplicationContext(), "Failed to save code.", Toast.LENGTH_LONG).show();
@@ -92,7 +155,11 @@ public class SimpleEditActivity extends ActionBarActivity {
 
     private void load(String str) {
 
-        if (str == null) return; //Load nothing
+        if (str == null) {
+        	//add empty condition when no save is detected
+        	this.addNewPair("", "");
+        	return;
+        }
 
         try {
 
@@ -235,6 +302,7 @@ public class SimpleEditActivity extends ActionBarActivity {
 
         final int hintColor = Color.argb(100, 255, 255, 255);
         final int pad;
+		private TextWatcher watcher;
 
         @SuppressLint("NewApi") //Warning - this might cause crashes on devices API level < 11
         
@@ -279,6 +347,23 @@ public class SimpleEditActivity extends ActionBarActivity {
             condition.setHint("Conditions");
             condition.setHintTextColor(hintColor);
             condition.setTypeface(Typeface.MONOSPACE);
+            
+           watcher = new TextWatcher(){
+				@Override
+				public void beforeTextChanged(CharSequence s, int start,
+						int count, int after) {
+				}
+
+				@Override
+				public void onTextChanged(CharSequence s, int start,
+						int before, int count) {
+					 SimpleEditActivity.this.changed = true;
+				}
+
+				@Override
+				public void afterTextChanged(Editable s) {
+				}};
+            condition.addTextChangedListener(watcher);
 
            //TODO add icon here
 
@@ -302,6 +387,7 @@ public class SimpleEditActivity extends ActionBarActivity {
                 @Override
                 public boolean onMenuItemClick(MenuItem menuItem) {
                     ((ViewGroup)ConditionActionPair.this.getParent()).removeView(ConditionActionPair.this);
+                    SimpleEditActivity.this.changed = true;
                     return false;
                 }
             });
@@ -309,6 +395,7 @@ public class SimpleEditActivity extends ActionBarActivity {
                 @Override
                 public boolean onMenuItemClick(MenuItem menuItem) {
                     addPair(new ConditionActionPair(context, "", ""), ConditionActionPair.this);
+                    SimpleEditActivity.this.changed = true;
                     return false;
                 }
             });
@@ -316,6 +403,7 @@ public class SimpleEditActivity extends ActionBarActivity {
                 @Override
                 public boolean onMenuItemClick(MenuItem menuItem) {
                     ConditionActionPair.this.addActionText(context, ""); //Don't enter null here or it won't do anything
+                     SimpleEditActivity.this.changed = true;
                     return false; 
                 }
             });*/
@@ -323,6 +411,7 @@ public class SimpleEditActivity extends ActionBarActivity {
                 @Override
                 public boolean onMenuItemClick(MenuItem menuItem) {
                     swap(-1);
+                    SimpleEditActivity.this.changed = true;
                     return false;
                 }
             });
@@ -330,6 +419,7 @@ public class SimpleEditActivity extends ActionBarActivity {
                 @Override
                 public boolean onMenuItemClick(MenuItem menuItem) {
                     swap(1);
+                    SimpleEditActivity.this.changed = true;
                     return false;
                 }
             });
@@ -354,6 +444,7 @@ public class SimpleEditActivity extends ActionBarActivity {
             action.setTypeface(Typeface.MONOSPACE);
             action.setPadding(pad * 2, pad * 2, pad * 2, pad * 2);
             action.setText(tempActions);
+            action.addTextChangedListener(watcher);
 
             actionWrapper.addView(action);
         }
