@@ -7,6 +7,12 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -42,8 +48,33 @@ public class MatchMaking extends ActionBarActivity {
 
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		
-		SharedPreferences readCode = getSharedPreferences(FileName, MODE_PRIVATE);
-		code = readCode.getString("code", "");
+		//SharedPreferences readCode = getSharedPreferences(FileName, MODE_PRIVATE);
+		//code = readCode.getString("code", "");
+		
+		try {
+			 code = SimpleEditActivity.loadCode();
+			 if (code == null || code == "") {
+				new AlertDialog.Builder(this)
+				.setTitle("Error")
+				.setMessage("You haven't entered any code yet!")
+				.setIcon(android.R.drawable.ic_dialog_alert)
+				.setPositiveButton("OK", new OnClickListener(){
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						finish();
+					}})
+				.show();
+				 
+				 //finish();
+				 return;
+			 }
+			 Toast.makeText(getApplicationContext(), code, Toast.LENGTH_LONG).show();
+		}
+		catch (Exception e) {
+			Toast.makeText(getApplicationContext(), "Failed to load stored code. " + e.getMessage(), Toast.LENGTH_LONG).show();
+			e.printStackTrace();
+			finish();
+		}
 	}
 	
 	@Override

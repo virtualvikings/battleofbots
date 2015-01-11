@@ -32,10 +32,11 @@ import android.widget.Toast;
 
 public class SimpleEditActivity extends ActionBarActivity {
 
-    public static final String PREFS_NAME = "B0TB";
-    public final String identifier = "code_storage";
+
+    public final static String identifier = "code_storage";
     private LinearLayout mainList;
     private Boolean changed = false;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -45,8 +46,7 @@ public class SimpleEditActivity extends ActionBarActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mainList = (LinearLayout) this.findViewById(R.id.mainList);
-        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-        load(settings.getString(identifier, null));
+        load();
     }
 
     @Override
@@ -126,8 +126,7 @@ public class SimpleEditActivity extends ActionBarActivity {
 
         try {
 
-            SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-            SharedPreferences.Editor edit = settings.edit();
+            SharedPreferences.Editor edit = MainActivity.settings.edit();
 
             JSONObject json = new JSONObject();
             JSONArray everything = new JSONArray();
@@ -153,7 +152,9 @@ public class SimpleEditActivity extends ActionBarActivity {
 
     }
 
-    private void load(String str) {
+    private void load() {
+    	
+    	String str = MainActivity.settings.getString(identifier, null);
 
         if (str == null) {
         	//add empty condition when no save is detected
@@ -162,24 +163,33 @@ public class SimpleEditActivity extends ActionBarActivity {
         }
 
         try {
-
             JSONArray json = new JSONObject(str).getJSONArray(identifier);
-            StringBuilder builder = new StringBuilder();
 
             for (int i = 0; i < json.length(); i++) {
                 JSONObject obj = json.getJSONObject(i);
-
                 addPair(layoutFromJSON(obj), mainList);
-                builder.append(codeFromJSON(obj));
             }
-
-            String result = builder.toString();
-            Toast.makeText(getApplicationContext(), result, Toast.LENGTH_LONG).show();
 
         } catch (JSONException e) {
             Toast.makeText(getApplicationContext(), "Failed to load code.", Toast.LENGTH_LONG).show();
             e.printStackTrace();
         }
+    }
+    
+    public static String loadCode() throws JSONException {
+        
+        String str = MainActivity.settings.getString(identifier, null);
+        if (str == null) return null;
+        
+        JSONArray json = new JSONObject(str).getJSONArray(identifier);
+        StringBuilder builder = new StringBuilder();
+
+        for (int i = 0; i < json.length(); i++) {
+            JSONObject obj = json.getJSONObject(i);
+            builder.append(codeFromJSON(obj));
+        }
+
+        return builder.toString();
     }
 
     private ConditionActionPair layoutFromJSON(JSONObject json) throws JSONException {
@@ -200,7 +210,7 @@ public class SimpleEditActivity extends ActionBarActivity {
         return parent;
     }
 
-    private String codeFromJSON(JSONObject json) throws JSONException {
+    public static String codeFromJSON(JSONObject json) throws JSONException {
         String condition = json.optString("condition");
         JSONArray actions = json.optJSONArray("actions");
 
