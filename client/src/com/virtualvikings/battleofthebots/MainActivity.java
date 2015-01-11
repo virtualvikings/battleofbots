@@ -22,21 +22,14 @@ public class MainActivity extends Activity {
         quitBtn = (Button) findViewById(R.id.quitBtn);
         
         matchBtn.setOnClickListener(new OnClickListener(){
-        	
         	public void onClick(View v){
-        		Intent MatchMaking = new Intent("android.intent.action.MATCHMAKING");
-        		startActivity(MatchMaking);
+        		startActivity(new Intent(getApplicationContext(), MatchMaking.class));
         	}
-        	
         });
         
         editBtn.setOnClickListener(new OnClickListener(){
-        	
         	public void onClick(View v){
-        		//Intent EditActivity = new Intent("android.intent.action.SIMPLEEDITACTIVITY");
-        		//startActivity(EditActivity);
-        		Intent a = new Intent(getApplicationContext(), SimpleEditActivity.class);
-        		startActivity(a);
+        		startActivity(new Intent(getApplicationContext(), SimpleEditActivity.class));
         	}
         });
         
