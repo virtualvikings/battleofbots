@@ -15,7 +15,6 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.os.Message;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -32,11 +31,9 @@ import android.widget.Toast;
 
 public class SimpleEditActivity extends ActionBarActivity {
 
-
     public final static String identifier = "code_storage";
     private LinearLayout mainList;
     private Boolean changed = false;
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -119,14 +116,12 @@ public class SimpleEditActivity extends ActionBarActivity {
         }
     }
 
-    protected void clear() {
+    private void clear() {
 		mainList.removeAllViews();
 	}
 
 	private void save() {
-
         try {
-
             SharedPreferences.Editor edit = MainActivity.settings.edit();
 
             JSONObject json = new JSONObject();
@@ -145,7 +140,7 @@ public class SimpleEditActivity extends ActionBarActivity {
             
             changed = false;
             Toast.makeText(getApplicationContext(), "Saved!", Toast.LENGTH_LONG).show();
-
+            
         } catch (JSONException e) {
             Toast.makeText(getApplicationContext(), "Failed to save code.", Toast.LENGTH_LONG).show();
             e.printStackTrace();
@@ -193,25 +188,7 @@ public class SimpleEditActivity extends ActionBarActivity {
         return builder.toString();
     }
 
-    private ConditionActionPair layoutFromJSON(JSONObject json) throws JSONException {
-
-        String condition = json.optString("condition");
-        JSONArray actions = json.optJSONArray("actions");
-
-        ConditionActionPair parent = new ConditionActionPair(getApplicationContext(), condition, null);
-
-        for (int i = 0; i < actions.length(); i++) {
-            Object value = actions.get(i);
-            if (value instanceof String)
-                parent.addActionText(getApplicationContext(), (String) value);
-            else if (value instanceof JSONObject)
-                addPair(layoutFromJSON((JSONObject) value), parent);
-        }
-
-        return parent;
-    }
-
-    public static String codeFromJSON(JSONObject json) throws JSONException {
+    private static String codeFromJSON(JSONObject json) throws JSONException {
         String condition = json.optString("condition");
         JSONArray actions = json.optJSONArray("actions");
 
@@ -245,6 +222,24 @@ public class SimpleEditActivity extends ActionBarActivity {
             result = String.format("if (%s) %s", condition, rest);
 
         return result;
+    }
+    
+    private ConditionActionPair layoutFromJSON(JSONObject json) throws JSONException {
+
+        String condition = json.optString("condition");
+        JSONArray actions = json.optJSONArray("actions");
+
+        ConditionActionPair parent = new ConditionActionPair(getApplicationContext(), condition, null);
+
+        for (int i = 0; i < actions.length(); i++) {
+            Object value = actions.get(i);
+            if (value instanceof String)
+                parent.addActionText(getApplicationContext(), (String) value);
+            else if (value instanceof JSONObject)
+                addPair(layoutFromJSON((JSONObject) value), parent);
+        }
+
+        return parent;
     }
 
     private JSONObject layoutToJSON(ConditionActionPair pair) throws JSONException {
@@ -284,35 +279,8 @@ public class SimpleEditActivity extends ActionBarActivity {
 
         private final EditText condition;
         private final LinearLayout actionWrapper;
-
-        public String getCondition() {
-            return condition.getText().toString();
-        }
-
-        public List<Object> getActions() {
-
-            List<Object> actions = new ArrayList<Object>();
-
-            int children = actionWrapper.getChildCount();
-            for (int i = 0; i < children; i++) {
-
-                View child = actionWrapper.getChildAt(i);
-
-                if (child instanceof ConditionActionPair)
-                    actions.add(child);
-                else
-                    actions.add(((EditText) child).getText().toString());
-
-            }
-            return actions;
-        }
-
-        public void add(ConditionActionPair pair) {
-            actionWrapper.addView(pair);
-        }
-
-        final int hintColor = Color.argb(100, 255, 255, 255);
-        final int pad;
+        private final int hintColor = Color.argb(100, 255, 255, 255);
+        private final int pad;
 		private TextWatcher watcher;
 
         @SuppressLint("NewApi") //Warning - this might cause crashes on devices API level < 11
@@ -441,6 +409,31 @@ public class SimpleEditActivity extends ActionBarActivity {
 
             addView(conditionWrapper);
             addView(actionWrapper);
+        }
+        
+        public String getCondition() {
+            return condition.getText().toString();
+        }
+
+        public List<Object> getActions() {
+            List<Object> actions = new ArrayList<Object>();
+
+            int children = actionWrapper.getChildCount();
+            for (int i = 0; i < children; i++) {
+
+                View child = actionWrapper.getChildAt(i);
+
+                if (child instanceof ConditionActionPair)
+                    actions.add(child);
+                else
+                    actions.add(((EditText) child).getText().toString());
+
+            }
+            return actions;
+        }
+
+        public void add(ConditionActionPair pair) {
+            actionWrapper.addView(pair);
         }
 
         public void addActionText(Context context, String tempActions) {
