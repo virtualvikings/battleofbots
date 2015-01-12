@@ -6,10 +6,9 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
-
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
@@ -39,6 +38,8 @@ public class MatchMaking extends ActionBarActivity {
 	
 	private static final String TAG = "MatchMaking";
 
+	@SuppressLint("NewApi") //Warning - will crash on android API < 11
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 
@@ -56,8 +57,8 @@ public class MatchMaking extends ActionBarActivity {
 			 if (code == null || code == "") {
 				new AlertDialog.Builder(this)
 				.setTitle("Error")
-				.setMessage("You haven't entered any code yet!")
-				.setIcon(android.R.drawable.ic_dialog_alert)
+				.setMessage("Your code is empty!")
+				.setIconAttribute(android.R.attr.alertDialogIcon)
 				.setPositiveButton("OK", new OnClickListener(){
 					@Override
 					public void onClick(DialogInterface dialog, int which) {

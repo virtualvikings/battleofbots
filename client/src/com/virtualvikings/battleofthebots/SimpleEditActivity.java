@@ -74,6 +74,7 @@ public class SimpleEditActivity extends ActionBarActivity {
 	    				@Override
 	    				public void onClick(DialogInterface dialog, int which) {
 	    					clear();
+	    					changed = true;
 	    				}
 	    			});
 	            	ad.setButton(DialogInterface.BUTTON_NEGATIVE, "No", new DialogInterface.OnClickListener() {
@@ -384,6 +385,7 @@ public class SimpleEditActivity extends ActionBarActivity {
             conditionWrapper.addView(condition);
             conditionWrapper.addView(condButton);
 
+            //PopupMenu is not supported on android < 2.3
             final PopupMenu popup = new PopupMenu(SimpleEditActivity.this, condButton);
             Menu popupMenu = popup.getMenu();
             condButton.setOnClickListener(new View.OnClickListener() {
