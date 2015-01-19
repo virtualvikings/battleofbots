@@ -14,7 +14,7 @@ public class Main {
         Match.Result result = match.getResult();
 
         //Results...
-        ArrayList<ArrayList<Bot.State>> states = result.getStates(); //One ArrayList for every bot: states.get(0) for bot 1, states.get(1) for bot 2
+        ArrayList<ArrayList<Robot.State>> states = result.getStates(); //One ArrayList for every bot: states.get(0) for bot 1, states.get(1) for bot 2
         byte[][] field = result.getField(); //Obstacles (not bots!)
         int winner = result.getWinnerId(); //-1 if no winner
 

@@ -21,7 +21,7 @@ public class Match {
         this.codes = codes;
     }
 
-    private void copyAllStates(ArrayList<ArrayList<Bot.State>> states) throws CloneNotSupportedException {
+    private void copyAllStates(ArrayList<ArrayList<Robot.State>> states) throws CloneNotSupportedException {
         for (int i = 0; i < botCount; i++)
             states.get(i).add(vm.copyState(i)); //TODO: this is right, right?
     }
@@ -32,9 +32,9 @@ public class Match {
             throw new IllegalStateException("Match cannot be started twice");
 
         int turns = 0;
-        ArrayList<ArrayList<Bot.State>> states = new ArrayList<ArrayList<Bot.State>>(botCount);
+        ArrayList<ArrayList<Robot.State>> states = new ArrayList<ArrayList<Robot.State>>(botCount);
         for (int i = 0; i < botCount; i++)
-            states.add(new ArrayList<Bot.State>()); //Every bot has their own state list
+            states.add(new ArrayList<Robot.State>()); //Every bot has their own state list
 
         int winnerId = -1;
 
@@ -67,7 +67,7 @@ public class Match {
                     break;
                 }
 
-                Bot winner = vm.getWinner();
+                Robot winner = vm.getWinner();
                 if (winner != null) {
                     winnerId = vm.getBotId(winner);
                     break;
@@ -97,14 +97,14 @@ public class Match {
     public static class Result {
 
         private final int winnerId;
-        private final ArrayList<ArrayList<Bot.State>> states;
+        private final ArrayList<ArrayList<Robot.State>> states;
         private final byte[][] field;
 
         public int getWinnerId() {
             return winnerId;
         }
 
-        public Result(int winnerId, ArrayList<ArrayList<Bot.State>> states, byte[][] field) {
+        public Result(int winnerId, ArrayList<ArrayList<Robot.State>> states, byte[][] field) {
             this.winnerId = winnerId;
             this.states = states;
             this.field = field;
@@ -114,7 +114,7 @@ public class Match {
             return winnerId > -1; //-1 and lower are invalid winner ids
         }
 
-        public ArrayList<ArrayList<Bot.State>> getStates() {
+        public ArrayList<ArrayList<Robot.State>> getStates() {
             return states;
         }
 

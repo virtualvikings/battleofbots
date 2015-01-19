@@ -2,7 +2,7 @@ package com.company;
 
 import java.awt.*;
 
-public class Bot {
+public class Robot {
 
     private final State state;
 
@@ -60,7 +60,7 @@ public class Bot {
         }
     }
 
-    public Bot(Point point, byte dir, int hp) {
+    public Robot(Point point, byte dir, int hp) {
         state = new State(point, dir, hp);
     }
 

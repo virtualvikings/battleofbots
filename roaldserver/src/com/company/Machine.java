@@ -6,7 +6,7 @@ import java.util.Random;
 
 public class Machine {
 
-    private final Bot[] bots;
+    private final Robot[] bots;
     private final byte[][] field;
     private final byte fieldSize;
     //private int time;
@@ -18,7 +18,7 @@ public class Machine {
 
         Random r = new Random();
 
-        bots = new Bot[botCount];
+        bots = new Robot[botCount];
         for (int i = 0; i < botCount; i++) {
 
             int x = 0;
@@ -35,7 +35,7 @@ public class Machine {
                 dir = 1; //Left
             }
 
-            bots[i] = new Bot(new Point(x, y), dir, hp);
+            bots[i] = new Robot(new Point(x, y), dir, hp);
         }
 
         field = new byte[fieldSize][fieldSize];
@@ -56,13 +56,13 @@ public class Machine {
         return bots[botId].executeCommand(this, command);
     }
 
-    public Bot getWinner() {
+    public Robot getWinner() {
 
         int aliveCount = getAliveCount();
         if (aliveCount == 1) {
-            Bot winner = null;
+            Robot winner = null;
 
-            for (Bot bot : bots)
+            for (Robot bot : bots)
                 if (!bot.isDead())
                     winner = bot;
 
@@ -77,14 +77,14 @@ public class Machine {
     public int getAliveCount() {
         int aliveCount = 0;
 
-        for (Bot bot : bots)
+        for (Robot bot : bots)
             if (!bot.isDead())
                 aliveCount++;
 
         return aliveCount;
     }
 
-    public int getBotId(Bot bot) {
+    public int getBotId(Robot bot) {
         for (int i = 0; i < bots.length; i++) {
             if (bot == bots[i])
                 return i;
@@ -96,11 +96,11 @@ public class Machine {
         return scanAhead(bots[botId]);
     }
 
-    private byte scanAhead(Bot current) { //Scan the cell in front of the bot, returns 0 if nothing, -1 if enemy and something else if obstacle
+    private byte scanAhead(Robot current) { //Scan the cell in front of the bot, returns 0 if nothing, -1 if enemy and something else if obstacle
         Point scanPos = getPointInFrontOf(current);
         if (!insideBounds(scanPos)) return 1; //Outside bounds is always solid
 
-        Bot scanBot = getBotAt(scanPos);
+        Robot scanBot = getBotAt(scanPos);
 
         boolean enemySeen = scanBot != null && scanBot != current && !scanBot.isDead();
         byte obstacle = field[scanPos.x][scanPos.y];
@@ -111,18 +111,18 @@ public class Machine {
             return obstacle; //Should be 0 if no obstacle
     }
 
-    private Bot scanBot(Bot current) {
+    private Robot scanBot(Robot current) {
         Point scanPos = getPointInFrontOf(current);
 
         if (!insideBounds(scanPos)) return null;
         return getBotAt(scanPos);
     }
 
-    private Point getPointInFrontOf(Bot current) {
+    private Point getPointInFrontOf(Robot current) {
         return getLocalPoint(current, 0, 1);
     }
 
-    private Point getLocalPoint(Bot current, int x, int y) {
+    private Point getLocalPoint(Robot current, int x, int y) {
         Point currentPos = current.getPosition();
         Point scanPos = (Point) currentPos.clone();
         Point rotated = current.rotate(x, y, current.getDirection());
@@ -130,7 +130,7 @@ public class Machine {
         return scanPos;
     }
 
-    private Bot getBotAt(Point scanPos) {
+    private Robot getBotAt(Point scanPos) {
         return getBotAt(scanPos.x, scanPos.y);
     }
 
@@ -142,14 +142,14 @@ public class Machine {
         return (x >= 0 && x < fieldSize && y >= 0 && y < fieldSize);
     }
 
-    private Bot getEnemy(Bot bot) {
-        for (Bot other : bots)
+    private Robot getEnemy(Robot bot) {
+        for (Robot other : bots)
             if (other != bot)
                 return other;
         return null;
     }
 
-    public Bot.State copyState(int botId) throws CloneNotSupportedException {
+    public Robot.State copyState(int botId) throws CloneNotSupportedException {
         return bots[botId].copyState();
     }
 
@@ -160,7 +160,7 @@ public class Machine {
                 byte value = field[x][y];
                 String character = ".";
 
-                Bot b = getBotAt(x, y);
+                Robot b = getBotAt(x, y);
                 if (b != null) {
                     if (!b.isDead())
                         switch (b.getDirection()) {
@@ -182,11 +182,11 @@ public class Machine {
         }
     }
 
-    private Bot getBotAt(int x, int y) {
+    private Robot getBotAt(int x, int y) {
 
-        ArrayList<Bot> candidates = new ArrayList<Bot>();
+        ArrayList<Robot> candidates = new ArrayList<Robot>();
 
-        for (Bot bot : bots) {
+        for (Robot bot : bots) {
             Point pos = bot.getPosition();
             if (pos.x == x && pos.y == y)
                 candidates.add(bot);
@@ -195,7 +195,7 @@ public class Machine {
         if (candidates.isEmpty()) return null; //No bots at this position
 
         int aliveCount = 0;
-        for (Bot candidate : candidates) {
+        for (Robot candidate : candidates) {
             if (!candidate.isDead())
                 aliveCount++;
         }
@@ -203,7 +203,7 @@ public class Machine {
         if (aliveCount == 0) //Every bot on this position is dead, so get the first one
             return candidates.get(0);
         else
-            for (Bot candidate : candidates) { //Not all bots are dead, so get the first alive one
+            for (Robot candidate : candidates) { //Not all bots are dead, so get the first alive one
                 if (!candidate.isDead())
                     return candidate;
             }
@@ -211,7 +211,7 @@ public class Machine {
         return null;
     }
 
-    public Bot getBotById(int id) {
+    public Robot getBotById(int id) {
         return bots[id];
     }
 
@@ -236,7 +236,7 @@ public class Machine {
             type = toUse;
         }
 
-        public boolean execute(Bot bot, Machine vm) {
+        public boolean execute(Robot bot, Machine vm) {
 
             if (executed) {
                 System.out.println("Warning - same command cannot be executed twice!");
@@ -253,7 +253,7 @@ public class Machine {
 
                     boolean attacked = bot.attack();
                     if (attacked) {
-                        Bot enemy = vm.scanBot(bot);
+                        Robot enemy = vm.scanBot(bot);
                         if (enemy != null && !enemy.isDead()) {
                             enemy.hurt(1);
                             if (enemy.isDead())
@@ -318,7 +318,7 @@ public class Machine {
                         return false;
                     }
 
-                    Bot botAt = vm.getBotAt(newX, newY);
+                    Robot botAt = vm.getBotAt(newX, newY);
                     if (botAt != null) {
                         if (!botAt.isDead()) {
                             System.out.println("Bot tried to move into another bot!");
