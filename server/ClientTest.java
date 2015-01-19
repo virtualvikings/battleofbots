@@ -25,18 +25,24 @@ public class ClientTest {
 
 					// Message from server.
 					while ((fromServer = in.readLine()) != null) {
-						//System.out.println("Server: " + fromServer);
+						System.out.println("Server: " + fromServer);
 						fromUser = "";
 						if (fromServer.equals("exit"))
 							break;
 						if (fromServer.equals("requestKey"))
 							fromUser = "Correct_Key";
 						if (fromServer.equals("requestData"))
-							fromUser = "Bobbie, for (int i = 0; i < tiles; i++) { getHealth(); }";
-							
+							fromUser = "Data:Bobbie, for (int i = 0; i < tiles; i++) {"
+									+ "getHealth(); "
+									+ "}";
+						if (fromServer.equals("matchFound"))
+							fromUser = "requestField";
+						if (fromServer.contains("field"))
+							fromUser = "requestMoves";
+					
 						if (!fromServer.equals("RESULT")) {
 							out.println(fromUser);
-							//System.out.println("Client: " + fromUser);
+							System.out.println("Client: " + fromUser);
 						}
 						
 					}
