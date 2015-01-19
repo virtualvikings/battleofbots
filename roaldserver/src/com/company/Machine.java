@@ -20,9 +20,21 @@ public class Machine {
 
         bots = new Bot[botCount];
         for (int i = 0; i < botCount; i++) {
-            int x = r.nextInt(fieldSize);
-            int y = r.nextInt(fieldSize);
-            byte dir = (byte) r.nextInt(4);
+
+            int x = 0;
+            int y = 0;
+            byte dir = 3; //Right
+
+            if (i > 1) { //If more than 2 bots, put them a random position
+                x = r.nextInt(fieldSize);
+                y = r.nextInt(fieldSize);
+                dir = (byte) r.nextInt(4);
+            } else if (i == 1) {
+                x = fieldSize - 1;
+                y = fieldSize - 1;
+                dir = 1; //Left
+            }
+
             bots[i] = new Bot(new Point(x, y), dir, hp);
         }
 
