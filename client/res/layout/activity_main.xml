@@ -12,45 +12,34 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.virtualvikings.battleofthebots.MainActivity" >
 
-    <TextView
-        android:id="@+id/textTitle"
+    <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="@string/title"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="#FFF"
-        android:textSize="35sp"
-        android:textStyle="bold" />
+        android:src="@drawable/bobtag" />"
 
-    <Button
+    <ImageButton
         android:id="@+id/matchBtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:drawableStart="@drawable/fight"
-   		android:drawableLeft="@drawable/fight"
-        android:text="@string/matchBtn"
-        android:textSize="25sp"
-        android:textStyle="bold" />
+        android:layout_marginTop="25dp"
+        android:src="@drawable/fight"
+        android:onClick="@drawable/fightdown"
+        android:background="@null" />
 
-    <Button
+    <ImageButton
         android:id="@+id/editBtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:drawableStart="@drawable/edit"
-        android:drawableLeft="@drawable/edit"
-        android:text="@string/editBtn"
-        android:textSize="20sp" />
+        android:layout_marginTop="10dp"
+        android:src="@drawable/edit"
+        android:background="@null" />
 
-    <Button
+    <ImageButton
         android:id="@+id/quitBtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:drawableStart="@drawable/quit"
-        android:drawableLeft="@drawable/quit"
-        android:text="@string/quitBtn"
-        android:textSize="20sp" />
+        android:layout_marginTop="10dp"
+        android:src="@drawable/quit"
+        android:background="@null" />
 
 </LinearLayout>

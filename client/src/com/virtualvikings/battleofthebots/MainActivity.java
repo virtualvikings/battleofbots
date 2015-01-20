@@ -6,12 +6,12 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
+import android.widget.ImageButton;
 
 
 public class MainActivity extends Activity {
 
-	Button matchBtn, editBtn, quitBtn;
+	ImageButton matchBtn, editBtn, quitBtn;
 	
     public static final String PREFS_NAME = "B0TB";
 	public static SharedPreferences settings;
@@ -23,13 +23,14 @@ public class MainActivity extends Activity {
         
         settings = getSharedPreferences(PREFS_NAME, 0);
         
-        matchBtn = (Button) findViewById(R.id.matchBtn);
-        editBtn = (Button) findViewById(R.id.editBtn);
-        quitBtn = (Button) findViewById(R.id.quitBtn);
+        matchBtn = (ImageButton) findViewById(R.id.matchBtn);
+        editBtn = (ImageButton) findViewById(R.id.editBtn);
+        quitBtn = (ImageButton) findViewById(R.id.quitBtn);
         
         matchBtn.setOnClickListener(new OnClickListener(){
         	@Override
 			public void onClick(View v){
+        		matchBtn.setImageResource(R.drawable.fightdown);
         		startActivity(new Intent(getApplicationContext(), MatchMaking.class));
         	}
         });
@@ -37,6 +38,7 @@ public class MainActivity extends Activity {
         editBtn.setOnClickListener(new OnClickListener(){
         	@Override
 			public void onClick(View v){
+        		editBtn.setImageResource(R.drawable.editdown);
         		startActivity(new Intent(getApplicationContext(), SimpleEditActivity.class));
         	}
         });
@@ -48,4 +50,13 @@ public class MainActivity extends Activity {
         	}
         });
     }
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		matchBtn.setImageResource(R.drawable.fight);
+		editBtn.setImageResource(R.drawable.edit);
+	}
+    
+    
 }
