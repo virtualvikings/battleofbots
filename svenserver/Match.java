@@ -16,7 +16,7 @@ public class Match {
 
         botCount = 2;
         timeLimit = 1000;
-        vm = new Machine(botCount, timeLimit, 6); //TODO: should be 20
+        vm = new Machine(botCount, timeLimit, 16); //TODO: should be 20
 
         this.codes = codes;
     }

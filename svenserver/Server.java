@@ -26,7 +26,7 @@ public class Server {
 				if(Clients.size() < 4){
 					Socket clientSocket = socket.accept();
 					
-					MultiThread connection = new MultiThread(clientSocket, arena);
+					MultiThread connection = new MultiThread(clientSocket, arena, Clients);
 					Clients.add(connection);
 					
 					System.out.println("Client connected from " + clientSocket.getRemoteSocketAddress() + " Assigned ID: " + connection.getId());

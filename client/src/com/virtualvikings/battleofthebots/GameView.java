@@ -6,6 +6,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import org.json.JSONArray;
@@ -106,7 +110,7 @@ public class GameView extends View {
 			cells = decodeField(mapData);
 			cellCount = cells.length; //Length of 1 side
 			
-			ArrayList<ArrayList<State>> moves = decodeMoves(moveData);
+			ArrayList<ArrayList<State>> moves = decodeMoves(moveData); //First arraylist is the player
 			timeSegments = moves.get(0).size();
 			
 			State[] statesPlayer = new State[timeSegments];
@@ -116,7 +120,7 @@ public class GameView extends View {
 				for (int s = 0; s < timeSegments; s++) {
 					if (b == 0) //Player
 						statesPlayer[s] = moves.get(b).get(s);
-					else if (b == 1) //Player
+					else if (b == 1) //Enemy
 						statesEnemy[s] = moves.get(b).get(s);
 					else
 						throw new Exception("More than 2 players not supported right now");
@@ -160,12 +164,25 @@ public class GameView extends View {
 
 		ArrayList<ArrayList<State>> moves = new ArrayList<ArrayList<State>>();
 
-		JSONArray botMoves = new JSONArray(stripped);
-		int botCount = botMoves.length();
+		JSONArray bots = new JSONArray(stripped);
+		int botCount = bots.length();
+		
+		String myName = MainActivity.settings.getString("name", null);
+		String loserName = null;
+		boolean reverse = false;
+		
+		Map<String, Integer> lastHP = new HashMap<String, Integer>();
 
 		for (int b = 0; b < botCount; b++) {
-
-            JSONArray botStates = botMoves.getJSONArray(b);
+			
+			JSONObject stuff = bots.getJSONObject(b);
+			String name = stuff.getString("name");
+			
+			if (b == 0 && !name.equals(myName)) //If this is the first bot and it's the enemy, reverse it
+				reverse = true;
+			
+            JSONArray botStates = stuff.getJSONArray("moves");
+            
             int stateCount = botStates.length(); //TODO: ensure all lists are the same length
 
             ArrayList<State> stateList = new ArrayList<State>();
@@ -180,9 +197,46 @@ public class GameView extends View {
                 int hp = obj.getInt("hp");
 
 				stateList.add(new State(pos, dir, hp));
+				
+				if (s == stateCount - 1) //Last round
+					lastHP.put(name, hp);
 
             }
         }
+		
+		//Still not perfect, sometimes both bots lose when there is clearly a winner
+		Integer firstHP = (Integer) lastHP.values().toArray()[0];
+		boolean allTheSame = true;
+		for (Integer i = 0; i < lastHP.values().toArray().length; i++) {
+			if (!i.equals(firstHP)) {
+				allTheSame = false;
+				break;
+			}
+		}
+
+		if (!allTheSame) {
+			int lowestHP = 10;
+			for (String name : lastHP.keySet()) {
+				Integer hp = lastHP.get(name);
+				if (hp < lowestHP) {
+					lowestHP = hp;
+					loserName = name;
+				}
+			}
+		}
+		
+		if (reverse)
+			Collections.reverse(moves);
+		//After this, the first bot in the arraylist is guaranteed to be the player
+
+		System.out.println("The loser is " + loserName);
+		if (loserName == null)
+			GameActivity.won = 0; //draw
+		else if (loserName.equals(myName))
+			GameActivity.won = -1; //lost
+		else
+			GameActivity.won = 1; //won
+		
 		return moves;
 	}
 
