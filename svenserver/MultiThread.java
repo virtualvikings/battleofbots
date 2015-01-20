@@ -15,6 +15,7 @@ public class MultiThread extends Thread {
 	MatchMaker arena;
 	int matchIndex;
 	long threadId;
+	Bot bot;
 	
 	Socket socket = null;
 	PrintWriter out = null;
@@ -57,13 +58,12 @@ public class MultiThread extends Thread {
 						String botName = info[0].substring(5, info[0].length()); 
 						String code = info[1];
 						
-						Bot bot = new Bot(botName, code, threadId);
+						bot = new Bot(botName, code, threadId);
 						matchIndex = (arena.add(bot) - 1) / 2; //Manier om bij te houden in welke playThrough de Thread zit.
 						
-						if(arena.matchedThreads.contains(threadId) || arena.createMatch()){ //Kijk eerst of 'ik' al in een match zit, zoniet probeer er dan een aan te maken
-							
+						if(arena.matchedThreads.contains(threadId) || arena.createMatch()) //Kijk eerst of 'ik' al in een match zit, zoniet probeer er dan een aan te maken
 							Send("matchFound");
-						}
+							
 						else //Er is nog geen match gevonden, dus ga om de seconde kijken (timeOut wordt uitgesteld in timerTask)
 							timer.schedule(timerTask, 0, 1000);
 					}
@@ -96,6 +96,8 @@ public class MultiThread extends Thread {
 	}
 	
 	public void RemoveClient(){
+		if(bot != null && arena.freeBots.contains(bot))
+			arena.freeBots.remove(bot);
 		Clients.remove(MultiThread.this);
 		System.out.println("Currently connected clients(" + Clients.size() + "): ");
 		for(int i = 0; i < Clients.size(); i++)

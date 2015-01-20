@@ -97,6 +97,7 @@ public class Match {
     public static class Result {
 
         private final int winnerId;
+        public int getStateCount = 0;
         private final ArrayList<ArrayList<Robot.State>> states;
         private final byte[][] field;
 
@@ -115,6 +116,7 @@ public class Match {
         }
 
         public ArrayList<ArrayList<Robot.State>> getStates() {
+        	getStateCount++;
             return states;
         }
 
