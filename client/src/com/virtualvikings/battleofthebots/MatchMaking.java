@@ -126,7 +126,7 @@ public class MatchMaking extends ActionBarActivity {
 							Log.w(TAG, "Correct_Key");
 						}
 						else if(fromServer.equals("requestData")){
-							out.println("Data: Naam, " + code);
+							out.println("Data:" + MainActivity.settings.getString("name", null) +", " + code);
 							Log.w(TAG, "Naam, " + code);
 						}
 						else if(fromServer.startsWith("matchFound")){
