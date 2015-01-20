@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.sql.Date;
-import java.text.SimpleDateFormat;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -30,7 +28,7 @@ public class MultiThread extends Thread {
 			this.threadId = this.getId();
 			this.arena = Arena;
 			this.socket = clientSocket;
-			this.out = new PrintWriter(clientSocket.getOutputStream(), true);
+			this.out = new PrintWriter(clientSocket.getOutputStream(), false); //Disable autoflush!!!
 			this.in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 		} catch(Exception e){
 			e.printStackTrace();
@@ -68,10 +66,10 @@ public class MultiThread extends Thread {
 					}
 					
 					else if(fromClient.equals("requestField"))
-						Send(arena.Field(matchIndex));
+						Send(arena.Field());
 					
 					else if(fromClient.equals("requestMoves"))
-						Send(arena.Moves(matchIndex));
+						Send(arena.Moves());
 					
 					else if(fromClient.equals("exit")){
 						//TODO: zorg ervoor dat de weggevallen client uit de lijst van in MatchMaker wordt verwijdert
@@ -90,6 +88,7 @@ public class MultiThread extends Thread {
 	private void Send(String text) {
 		System.out.println("Send to Client " + threadId + ": " + text);
 		out.println(text);
+		out.flush(); //Required because autoflush is disabled
 	}
 
 	//Check of er ondertussen al een match is gevonden.
