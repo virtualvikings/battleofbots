@@ -35,6 +35,9 @@ public class GameActivity extends Activity {
 	private boolean forwarding;
 	private boolean waitDone;
 	//private boolean cancelled;
+	
+	public static int won; //-1 = lost, 1 = won, 0 = draw
+	TextView text;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -54,17 +57,21 @@ public class GameActivity extends Activity {
 		LinearLayout layout = (LinearLayout) findViewById(R.id.test);
 		layout.addView(game, 0); //Plaats de GameView voor de andere views
 		
-		final TextView text = (TextView) findViewById(R.id.textTime);
+		text = (TextView) findViewById(R.id.textTime);
 		//LinearLayout mediaButtons = (LinearLayout) findViewById(R.id.mediaButtons);
 		//mediaButtons.setVisibility(View.GONE);
+		setText(0);
 		
 		bar = (SeekBar) findViewById(R.id.seekBar); 
 		bar.setMax(game.getDuration() - 1); 
 		bar.setOnSeekBarChangeListener(new OnSeekBarChangeListener(){
+			
+
 			@Override
 			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 				GameActivity.this.game.seek(progress);
-				text.setText(String.format("%d/%d", progress + 1, game.getDuration()));
+				
+				setText(progress);
 				
 				if (fromUser)
 					setPlaying(false);
@@ -237,6 +244,13 @@ public class GameActivity extends Activity {
 	public void clickPrevious(View v, int steps) {
 		setPlaying(false);
 		step(-steps);
+	}
+
+	private void setText(int progress) {
+		String win = "Draw...";
+		if (won == -1) win = "Loser!";
+		if (won == 1) win = "Winner!";
+		text.setText(String.format("%s %d/%d", win, progress + 1, game.getDuration()));
 	}
 	
 	

@@ -204,6 +204,7 @@ public class GameView extends View {
             }
         }
 		
+		//Still not perfect, sometimes both bots lose when there is clearly a winner
 		Integer firstHP = (Integer) lastHP.values().toArray()[0];
 		boolean allTheSame = true;
 		for (Integer i = 0; i < lastHP.values().toArray().length; i++) {
@@ -230,11 +231,11 @@ public class GameView extends View {
 
 		System.out.println("The loser is " + loserName);
 		if (loserName == null)
-			System.out.println("Draw!");
+			GameActivity.won = 0; //draw
 		else if (loserName.equals(myName))
-			System.out.println("That's me...");
+			GameActivity.won = -1; //lost
 		else
-			System.out.println("I won!");
+			GameActivity.won = 1; //won
 		
 		return moves;
 	}
