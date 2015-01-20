@@ -112,6 +112,9 @@ public class MatchMaker {
 				}
 			}
 
+			if(matches.get(Matchindex).getStateCount >= 2)
+				matches.remove(Matchindex);
+			
 			return "moves_start" + botMoves.toString(); //toString(void) adds no whitespace/newlines!
 
 		}
