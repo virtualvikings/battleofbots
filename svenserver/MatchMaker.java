@@ -13,8 +13,9 @@ import org.json.JSONObject;
 
 public class MatchMaker {
 	ArrayList<Bot>freeBots = new ArrayList<Bot>();
+	ArrayList<Match.Result>matches = new ArrayList<Match.Result>();
 	ArrayList<Long>matchedThreads = new ArrayList<Long>();
-	private Match.Result result;
+	//private Match.Result result;
 
 	public int add(Bot bot){
 		freeBots.add(bot);
@@ -39,21 +40,21 @@ public class MatchMaker {
 			matchedThreads.add(freeBots.get(1).getConnectedThread());
 			
 			//Match wordt aangemaakt en vervolgens wordt twee keer het eerste element in de list verwijdert, zodat altijd freeBots.get(0) en freeBots.get(1) gebruikt kan worden
-
+			matches.add(match.getResult());
 			freeBots.remove(0);
 			freeBots.remove(0);
 
-			result = match.getResult(); //TODO: this call can take multiple seconds so be aware of thread bugs
+			//result = match.getResult(); //TODO: this call can take multiple seconds so be aware of thread bugs
 			return true;
 		} else{
 			return false;
 		}
 	}
 	
-	public String Field(){
+	public String Field(int Matchindex){
 
 		try {
-			byte[][] field = result.getField();
+			byte[][] field = matches.get(Matchindex).getField();
 
 			ByteOutputStream bytes = new ByteOutputStream();
 			DataOutputStream data = new DataOutputStream(bytes);
@@ -74,9 +75,9 @@ public class MatchMaker {
 		}
 	}
 	
-	public String Moves() {
+	public String Moves(int Matchindex) {
 		try {
-			ArrayList<ArrayList<Robot.State>> states = result.getStates();
+			ArrayList<ArrayList<Robot.State>> states = matches.get(Matchindex).getStates();
 			ArrayList<Robot.State> firstStates = states.get(0);
 
 			//int botCount = states.size(); //Don't remove this, might be useful for later

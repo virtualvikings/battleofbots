@@ -5,11 +5,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
 public class MultiThread extends Thread {
 
+	ArrayList<Thread>Clients;
 	MatchMaker arena;
 	int matchIndex;
 	long threadId;
@@ -23,9 +25,10 @@ public class MultiThread extends Thread {
 	Timer timer = new Timer();
 	int time = 0;
 
-	public MultiThread(Socket clientSocket, MatchMaker Arena){
+	public MultiThread(Socket clientSocket, MatchMaker Arena, ArrayList<Thread> clients){
 		try{
 			this.threadId = this.getId();
+			this.Clients = clients;
 			this.arena = Arena;
 			this.socket = clientSocket;
 			this.out = new PrintWriter(clientSocket.getOutputStream(), false); //Disable autoflush!!!
@@ -51,7 +54,7 @@ public class MultiThread extends Thread {
 					
 					else if(fromClient.startsWith("Data:")){ //Data ontvangen, zet data in bot en kijk of er een match is gevonden
 						String[] info = fromClient.split(",");
-						String botName = info[0]; //TODO: filter het stukje 'Data:' voor de naam weg
+						String botName = info[0].substring(5, info[0].length()); 
 						String code = info[1];
 						
 						Bot bot = new Bot(botName, code, threadId);
@@ -66,14 +69,15 @@ public class MultiThread extends Thread {
 					}
 					
 					else if(fromClient.equals("requestField"))
-						Send(arena.Field());
+						Send(arena.Field(matchIndex));
 					
 					else if(fromClient.equals("requestMoves"))
-						Send(arena.Moves());
+						Send(arena.Moves(matchIndex));
 					
 					else if(fromClient.equals("exit")){
 						//TODO: zorg ervoor dat de weggevallen client uit de lijst van in MatchMaker wordt verwijdert
 						System.out.println("Client " + socket.getRemoteSocketAddress() + " has left.");
+						RemoveClient();
 						timeOut.cancel();
 						break;
 					}
@@ -89,6 +93,13 @@ public class MultiThread extends Thread {
 		System.out.println("Send to Client " + threadId + ": " + text);
 		out.println(text);
 		out.flush(); //Required because autoflush is disabled
+	}
+	
+	public void RemoveClient(){
+		Clients.remove(MultiThread.this);
+		System.out.println("Currently connected clients(" + Clients.size() + "): ");
+		for(int i = 0; i < Clients.size(); i++)
+			System.out.println("   - " + Clients.get(i).getId());
 	}
 
 	//Check of er ondertussen al een match is gevonden.
@@ -116,6 +127,7 @@ public class MultiThread extends Thread {
 				try{
 					System.out.println("Timeout occurred. Lost connection with client " + socket.getRemoteSocketAddress() + " Assigned ID: "  + threadId);
 					listening = false;
+					RemoveClient();
 					timeOut.cancel();
 				} catch(Exception e){
 					e.printStackTrace();
