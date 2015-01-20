@@ -6,14 +6,11 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -30,13 +27,15 @@ public class MatchMaking extends ActionBarActivity {
 	String code;
 	
 	final int port = 4444;
-	final String IP = "10.0.2.2";
+	final String IP = "145.107.119.34";
 	Boolean connected = false;
 	Socket socket;
 	PrintWriter out;
 	BufferedReader in;
 	
 	private static final String TAG = "MatchMaking";
+	String mapData;
+	String moves;
 
 	@SuppressLint("NewApi") //Warning - will crash on android API < 11
 	
@@ -84,6 +83,7 @@ public class MatchMaking extends ActionBarActivity {
 		TalkToServer.start();
 	}
 
+	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
@@ -98,6 +98,7 @@ public class MatchMaking extends ActionBarActivity {
 	
 	Thread TalkToServer = new Thread(){
 		
+		@Override
 		public void run(){
 			
 			Log.w(TAG, "connecting...");
@@ -120,14 +121,28 @@ public class MatchMaking extends ActionBarActivity {
 			try {
 				String fromServer;
 				while ((fromServer = in.readLine()) != null) {
-						if(fromServer.equals("requestKey"))
+						if(fromServer.equals("requestKey")){
+							out.println("Correct_Key");
 							Log.w(TAG, "Correct_Key");
-						/*else*/ if(fromServer.equals("requestData"))
-							Log.w(TAG, "poep, " + code);
-						/*else*/ if(fromServer.startsWith("matchFound") || true){
-							final String mapData = fromServer.substring(10, fromServer.length());
+						}
+						else if(fromServer.equals("requestData")){
+							out.println("Data: Naam, " + code);
+							Log.w(TAG, "Naam, " + code);
+						}
+						else if(fromServer.startsWith("matchFound")){
+							out.println("requestField");
+							Log.w(TAG, "Match Found");
+						}
+						else if(fromServer.startsWith("field:")){
+							out.println("requestMoves");
+							mapData = fromServer;
+							Log.w(TAG, "Field Received");
+						}
+						else if(fromServer.startsWith("moves:")){
+							Log.w(TAG, "Moves received, closing connection");
+							moves = fromServer;
 							closeConnection();
-							Log.w(TAG, "received map");
+							
 							runOnUiThread(new Runnable() {
 
 		                        @Override
@@ -135,6 +150,7 @@ public class MatchMaking extends ActionBarActivity {
 		                        	Log.w(TAG, "going to activity");
 		                            Intent i = new Intent("android.intent.action.GAMEACTIVITY");
 		                            i.putExtra("mapData", mapData);
+		                            i.putExtra("moves", moves);
 		                            startActivity(i);
 		                            finish();
 		                        }

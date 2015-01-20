@@ -287,6 +287,7 @@ public class GameView extends View {
 	private float lastTouchY;
 
 	
+	@Override
 	public boolean onTouchEvent(MotionEvent ev) { //https://developer.android.com/training/gestures/scale.html
 
 		System.out.println("onTouchEvent triggered!");

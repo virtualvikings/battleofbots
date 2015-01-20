@@ -1,11 +1,10 @@
 package com.virtualvikings.battleofthebots;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 
 import android.annotation.SuppressLint;
+import android.app.ActionBar.LayoutParams;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -13,30 +12,21 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.MenuItem;
 import android.text.Editable;
-import android.text.Html;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
-import android.text.style.UnderlineSpan;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.AbsListView;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.BaseAdapter;
-import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.MultiAutoCompleteTextView;
@@ -109,6 +99,7 @@ public class EditActivity extends ActionBarActivity{
 			private final char end = ';';
 			private final char space = ' ';
 			
+			@Override
 			public int findTokenStart(CharSequence text, int cursor) {
 	            int i = cursor;
 
@@ -122,7 +113,8 @@ public class EditActivity extends ActionBarActivity{
 	            return i;
 	        }
 
-	        public int findTokenEnd(CharSequence text, int cursor) {
+	        @Override
+			public int findTokenEnd(CharSequence text, int cursor) {
 	            int i = cursor;
 	            int len = text.length();
 
@@ -137,7 +129,8 @@ public class EditActivity extends ActionBarActivity{
 	            return len;
 	        }
 
-	        public CharSequence terminateToken(CharSequence text) {
+	        @Override
+			public CharSequence terminateToken(CharSequence text) {
 	            int i = text.length();
 
 	            while (i > 0 && text.charAt(i - 1) == space) {
@@ -194,7 +187,7 @@ public class EditActivity extends ActionBarActivity{
 		public View getView(int position, View convertView, ViewGroup parent) {
 			
 			TextView view = new TextView(parent.getContext());
-			view.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, AbsListView.LayoutParams.MATCH_PARENT));
+			view.setLayoutParams(new AbsListView.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 			int pad = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5, getResources().getDisplayMetrics());
 			view.setPadding(pad, pad, pad, pad);
 			
@@ -261,6 +254,7 @@ public class EditActivity extends ActionBarActivity{
 	    return super.onCreateOptionsMenu(menu);
 	}
 	
+	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
         case android.R.id.home: 

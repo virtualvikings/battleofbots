@@ -28,19 +28,22 @@ public class MainActivity extends Activity {
         quitBtn = (Button) findViewById(R.id.quitBtn);
         
         matchBtn.setOnClickListener(new OnClickListener(){
-        	public void onClick(View v){
+        	@Override
+			public void onClick(View v){
         		startActivity(new Intent(getApplicationContext(), MatchMaking.class));
         	}
         });
         
         editBtn.setOnClickListener(new OnClickListener(){
-        	public void onClick(View v){
+        	@Override
+			public void onClick(View v){
         		startActivity(new Intent(getApplicationContext(), SimpleEditActivity.class));
         	}
         });
         
         quitBtn.setOnClickListener(new OnClickListener(){
-        	public void onClick(View v){
+        	@Override
+			public void onClick(View v){
         		finish();
         	}
         });
