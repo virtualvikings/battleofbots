@@ -18,6 +18,7 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -185,6 +186,7 @@ public class SimpleEditActivity extends ActionBarActivity {
             builder.append(codeFromJSON(obj));
         }
 
+        Log.e("stuff", builder.toString());
         return builder.toString();
     }
 
@@ -205,8 +207,10 @@ public class SimpleEditActivity extends ActionBarActivity {
 
             if (value instanceof String)
                 linesToAdd = ((String) value).split("\n");
-            else if (value instanceof JSONObject)
-                linesToAdd = codeFromJSON((JSONObject)value).split("\n");
+            else if (value instanceof JSONObject) {
+            	String xc = codeFromJSON((JSONObject)value);
+                linesToAdd = xc.substring(0, xc.length() - 1).split("\n"); //remove last ;
+            }
 
             for (String s : linesToAdd) 
             	actionStr += s + ";";
@@ -219,9 +223,9 @@ public class SimpleEditActivity extends ActionBarActivity {
         
         String result;
         if (condition.equalsIgnoreCase("else"))
-            result = String.format("%s; %s end", condition, rest);
+            result = String.format(" %s; %s end;", condition, rest);
         else
-            result = String.format("if (%s); %s end; ", condition, rest);
+            result = String.format(" if (%s); %s end;", condition, rest);
 
         return result;
     }
