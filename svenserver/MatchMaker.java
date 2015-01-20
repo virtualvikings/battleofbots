@@ -17,6 +17,8 @@ public class MatchMaker {
 	ArrayList<Long>matchedThreads = new ArrayList<Long>();
 	//private Match.Result result;
 
+	ArrayList<String> names = new ArrayList<>();
+
 	public int add(Bot bot){
 		freeBots.add(bot);
 		return freeBots.size();
@@ -38,6 +40,10 @@ public class MatchMaker {
 			//Kan door in de matchedThreads list te zoeken naar een eigen threadId
 			matchedThreads.add(freeBots.get(0).getConnectedThread());
 			matchedThreads.add(freeBots.get(1).getConnectedThread());
+
+			names.clear();
+			for (Bot freeBot : freeBots)
+				names.add(freeBot.Name());
 			
 			//Match wordt aangemaakt en vervolgens wordt twee keer het eerste element in de list verwijdert, zodat altijd freeBots.get(0) en freeBots.get(1) gebruikt kan worden
 			matches.add(match.getResult());
@@ -83,7 +89,7 @@ public class MatchMaker {
 			//int botCount = states.size(); //Don't remove this, might be useful for later
 			int stateCount = firstStates.size(); //States per bot (so total amount of states is botCount * stateCount)
 
-			JSONArray botMoves = new JSONArray();
+			JSONArray bots = new JSONArray();
 
 			//TODO: THIS IS REALLY IMPORTANT
 			//There is no way yet to determine which bot is yours and which is the enemy's!
@@ -94,10 +100,22 @@ public class MatchMaker {
 				//wrapper.put("your_id", i); //But where do you get i from?
 				//wrapper.put("moves", botMoves);
 
-			for (ArrayList<Robot.State> botState : states) { //For every bot...
+			//[
+			//	{"name": "a","moves": []},
+			//  {"name": "b", "moves": []}
+			//]
 
+			for (int i = 0; i < states.size(); i++) { //For every bot...
+
+				ArrayList<Robot.State> botState = states.get(i);
+
+				JSONObject botObj = new JSONObject();
+				bots.put(botObj);
+
+				String botName = names.get(i);
+				botObj.put("name", botName);
 				JSONArray currentBotStates = new JSONArray();
-				botMoves.put(currentBotStates);
+				botObj.put("moves", currentBotStates);
 
 				for (int s = 0; s < stateCount; s++) { //For every timeslot...
 					Robot.State currentState = botState.get(s);
@@ -115,7 +133,7 @@ public class MatchMaker {
 			if(matches.get(Matchindex).getStateCount >= 2)
 				matches.remove(Matchindex);
 			
-			return "moves_start" + botMoves.toString(); //toString(void) adds no whitespace/newlines!
+			return "moves_start" + bots.toString(); //toString(void) adds no whitespace/newlines!
 
 		}
 		catch (Exception e) {

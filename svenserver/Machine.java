@@ -47,8 +47,8 @@ public class Machine {
 
     private void makeTestLevel() {
         Random r = new Random();
-        for (int y = 0; y < fieldSize; y++)
-            for (int x = 0; x < fieldSize; x++)
+        for (int y = 1; y < fieldSize - 1; y++)
+            for (int x = 1; x < fieldSize - 1; x++)
                 field[x][y] = (byte) Math.round(Math.pow(r.nextGaussian() / 2, 2));
         printStateForDebugging();
     }
