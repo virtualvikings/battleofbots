@@ -68,7 +68,6 @@ public class GameView extends View {
 	private Bot enemy;
 	
 	private Paint brush;
-	private Random r = new Random();
 	private boolean trackPlayer;
 	public PointF cameraPos = new PointF();
 	
@@ -98,7 +97,7 @@ public class GameView extends View {
 	public GameView(Context context, String mapData, String moveData) {
 		super(context);
 		
-		this.setBackgroundColor(Color.WHITE);
+		setBackgroundColor(Color.WHITE);
 		
 		System.out.println("Map data is: " + mapData);
 		System.out.println("Move data is: " + moveData);
@@ -107,7 +106,7 @@ public class GameView extends View {
 			cells = decodeField(mapData);
 			cellCount = cells.length; //Length of 1 side
 			
-			ArrayList<ArrayList<State>> moves = decodeMoves(moveData); //TODO: Assuming there are only two bots here
+			ArrayList<ArrayList<State>> moves = decodeMoves(moveData);
 			timeSegments = moves.get(0).size();
 			
 			State[] statesPlayer = new State[timeSegments];
@@ -127,13 +126,11 @@ public class GameView extends View {
 			player = new Bot(statesPlayer);
 			enemy = new Bot(statesEnemy);
 			
-			//TODO: maybe you have to double the amount of states/copy them? Right now bots will move at the same time...
-			//TODO: moves = ...
+			//TODO: maybe you have to double the amount of states/copy them? 
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-		//makeDefaultLevel();
 		
 		brush = new Paint();
 		brush.setAntiAlias(true);
@@ -162,7 +159,6 @@ public class GameView extends View {
 		String stripped = fromServer.replace("moves_start", ""); //Remove identifier
 
 		ArrayList<ArrayList<State>> moves = new ArrayList<ArrayList<State>>();
-		//System.out.println(stripped);
 
 		JSONArray botMoves = new JSONArray(stripped);
 		int botCount = botMoves.length();
@@ -188,64 +184,6 @@ public class GameView extends View {
             }
         }
 		return moves;
-	}
-	
-	private void makeDefaultLevel() {
-
-		cellCount = 20;
-		timeSegments = 30;
-		cells = new byte[cellCount][cellCount];
-		
-		//Plaats bots op willekeurige plekken
-		State[] statesPlayer = new State[timeSegments];
-		State[] statesEnemy = new State[timeSegments];
-		Point posPlayer = new Point(2, 4);
-		Point posEnemy = new Point(3, 7);
-		
-		//Simuleer een gevecht, dit moet eigenlijk op de server gebeuren maar dit is om het te testen
-		try
-		{
-			for (int i = 0; i < timeSegments; i++) {
-
-				//Kies willekeurige richting
-				byte direction = (byte) r.nextInt(4); //0-3
-				Point toAdd = new Point((int)Math.round(Math.cos(direction / 2f * Math.PI)), (int)Math.round(Math.sin(direction / 2f * Math.PI)));
-				
-				posPlayer.offset(toAdd.x, toAdd.y);
-				posEnemy.offset(toAdd.x, toAdd.y);
-				
-				//Spring naar andere kant als bot uit het veld gelopen is
-				posPlayer.x = posPlayer.x % cellCount;
-				posPlayer.y = posPlayer.y % cellCount;
-				posEnemy.x = posEnemy.x % cellCount;
-				posEnemy.y = posEnemy.y % cellCount;
-				
-				while (posPlayer.x < 0)
-					posPlayer.x += cellCount;
-				while (posPlayer.y < 0)
-					posPlayer.y += cellCount;
-				while (posEnemy.x < 0)
-					posEnemy.x += cellCount;
-				while (posEnemy.y < 0)
-					posEnemy.y += cellCount;
-				
-				statesPlayer[i] = new State(new Point(posPlayer), direction, 10);
-				statesEnemy[i] = new State(new Point(posEnemy), direction, 10);
-			}
-		}
-		catch (Exception e)
-		{}
-		
-		player = new Bot(statesPlayer);
-		enemy = new Bot(statesEnemy);
-		
-		//Maak willekeurig level, ook eigenlijk een verantwoordelijkheid van de server
-		for (int i = 0; i < cellCount; i++)
-			for (int j = 0; j < cellCount; j++)
-				{
-					byte value = (byte) r.nextInt(7);
-					cells[i][j] = value;
-				}
 	}
 
 	@Override
