@@ -1,14 +1,22 @@
 package com.virtualvikings.battleofthebots;
 
 import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
+import java.util.ArrayList;
 import java.util.Random;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Paint.Align;
 import android.graphics.Paint.Style;
 import android.graphics.Path;
 import android.graphics.Point;
@@ -29,10 +37,12 @@ public class GameView extends View {
 			
 			private Point position;
 			private byte direction;
+			private int health;
 			
-			public State(Point position, byte direction) {
+			public State(Point position, byte direction, int health) {
 				this.position = position;
 				this.direction = direction;
+				this.health = health;
 			}
 			
 			@Override
@@ -50,12 +60,13 @@ public class GameView extends View {
 	}
 	
 	private int cellCount;
-	private byte[][][] cells;
+	private byte[][] cells;
 	private int timeSegments;
 	private int currentTime;
 	
 	private Bot player;
 	private Bot enemy;
+	
 	private Paint brush;
 	private Random r = new Random();
 	private boolean trackPlayer;
@@ -84,15 +95,45 @@ public class GameView extends View {
 		invalidate();
 	}
 	
-	public GameView(Context context, String mapData) {
+	public GameView(Context context, String mapData, String moveData) {
 		super(context);
 		
 		this.setBackgroundColor(Color.WHITE);
 		
-
 		System.out.println("Map data is: " + mapData);
-		//deserialize(mapData);
-		makeDefaultLevel();
+		System.out.println("Move data is: " + moveData);
+		
+		try {
+			cells = decodeField(mapData);
+			cellCount = cells.length; //Length of 1 side
+			
+			ArrayList<ArrayList<State>> moves = decodeMoves(moveData); //TODO: Assuming there are only two bots here
+			timeSegments = moves.get(0).size();
+			
+			State[] statesPlayer = new State[timeSegments];
+			State[] statesEnemy = new State[timeSegments];
+			
+			for (int b = 0; b < moves.size(); b++) {
+				for (int s = 0; s < timeSegments; s++) {
+					if (b == 0) //Player
+						statesPlayer[s] = moves.get(b).get(s);
+					else if (b == 1) //Player
+						statesEnemy[s] = moves.get(b).get(s);
+					else
+						throw new Exception("More than 2 players not supported right now");
+				}
+			}
+			
+			player = new Bot(statesPlayer);
+			enemy = new Bot(statesEnemy);
+			
+			//TODO: maybe you have to double the amount of states/copy them? Right now bots will move at the same time...
+			//TODO: moves = ...
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		//makeDefaultLevel();
 		
 		brush = new Paint();
 		brush.setAntiAlias(true);
@@ -100,32 +141,60 @@ public class GameView extends View {
 		invalidate();
 	}
 	
-	private void deserialize(String mapData) {
-		try {
-			
-			InputStream input = new ByteArrayInputStream(mapData.getBytes());
-			ObjectInputStream ois = new ObjectInputStream(input);
-			cells = (byte[][][]) ois.readObject(); 
-			ois.close();
-			
-			//TODO doe iets anders met de bots, misschien toch JSON?
-			//Zoiets:
-			//JSONObject obj = new JSONObject(mapData);
-			//JSONArray timeSlices = obj.getJSONArray("mapThings");
-			//timeSegments = timeSlices.length();
-			//JSONArray[] rowSlices = timeSlices.getJSONArray(0);
-			
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	private byte[][] decodeField(String fromServer) throws IOException {
+
+		String stripped = fromServer.substring(0, fromServer.length() - "field".length()); //Remove the field string from the end
+		ByteArrayInputStream bytes = new ByteArrayInputStream(stripped.getBytes()); //Convert string to byte stream
+		DataInputStream data = new DataInputStream(bytes); //Prepare to read data from byte stream
+
+		byte fieldSize = data.readByte();
+		byte[][] field = new byte[fieldSize][fieldSize]; //Width = height
+		for (int x = 0; x < fieldSize; x++)
+            for (int y = 0; y < fieldSize; y++)
+                field[x][y] = data.readByte(); //TODO: hidden bug, if a byte is 10 (newline) the message gets split and everything breaks
+
+		data.close();
+		return field;
+	}
+
+	private ArrayList<ArrayList<State>> decodeMoves(String fromServer) throws JSONException {
+
+		String stripped = fromServer.replace("moves_start", ""); //Remove identifier
+
+		ArrayList<ArrayList<State>> moves = new ArrayList<ArrayList<State>>();
+		//System.out.println(stripped);
+
+		JSONArray botMoves = new JSONArray(stripped);
+		int botCount = botMoves.length();
+
+		for (int b = 0; b < botCount; b++) {
+
+            JSONArray botStates = botMoves.getJSONArray(b);
+            int stateCount = botStates.length(); //TODO: ensure all lists are the same length
+
+            ArrayList<State> stateList = new ArrayList<State>();
+            moves.add(stateList);
+
+            for (int s = 0; s < stateCount; s++) {
+
+                JSONObject obj = botStates.getJSONObject(s);
+
+                Point pos = new Point(obj.getInt("x"), obj.getInt("y"));
+                byte dir = (byte) obj.getInt("dir"); //TODO: conversion from int to byte might break
+                int hp = obj.getInt("hp");
+
+				stateList.add(new State(pos, dir, hp));
+
+            }
+        }
+		return moves;
 	}
 	
 	private void makeDefaultLevel() {
 
 		cellCount = 20;
 		timeSegments = 30;
-		cells = new byte[timeSegments][cellCount][cellCount];
+		cells = new byte[cellCount][cellCount];
 		
 		//Plaats bots op willekeurige plekken
 		State[] statesPlayer = new State[timeSegments];
@@ -160,8 +229,8 @@ public class GameView extends View {
 				while (posEnemy.y < 0)
 					posEnemy.y += cellCount;
 				
-				statesPlayer[i] = new State(new Point(posPlayer), direction);
-				statesEnemy[i] = new State(new Point(posEnemy), direction);
+				statesPlayer[i] = new State(new Point(posPlayer), direction, 10);
+				statesEnemy[i] = new State(new Point(posEnemy), direction, 10);
 			}
 		}
 		catch (Exception e)
@@ -173,12 +242,9 @@ public class GameView extends View {
 		//Maak willekeurig level, ook eigenlijk een verantwoordelijkheid van de server
 		for (int i = 0; i < cellCount; i++)
 			for (int j = 0; j < cellCount; j++)
-				for (int t = 0; t < timeSegments; t++)
 				{
 					byte value = (byte) r.nextInt(7);
-					if (t > 0) //Alle andere arrays kopieren de eerste
-						value = cells[0][i][j];
-					cells[t][i][j] = value;
+					cells[i][j] = value;
 				}
 	}
 
@@ -239,20 +305,20 @@ public class GameView extends View {
 				canvas.translate(x + radius, y + radius);
 				
 				brush.setColor(Color.GRAY);
-				if (cells[currentTime][i][j] == 0)
-					drawObstacle(canvas, radius);
+				if (cells[i][j] != 0)
+					drawObstacle(canvas, radius); //TODO draw different obstacles
 				
 				pos.x = i;
 				pos.y = j;
 				
 				if (playerState.position.equals(pos)) {
 					brush.setColor(Color.GREEN);
-					drawBot(canvas, radius, playerState.direction); //Waarom niet bot.draw()?
+					drawBot(canvas, radius, playerState.direction, playerState.health); //Waarom niet bot.draw()?
 				}
 
 				if (enemyState.position.equals(pos)) {
 					brush.setColor(Color.RED);
-					drawBot(canvas, radius, enemyState.direction);
+					drawBot(canvas, radius, enemyState.direction, enemyState.health);
 				}
 				
 				canvas.restore();
@@ -266,7 +332,7 @@ public class GameView extends View {
 		//canvas.drawCircle(x + radius, y + radius, radius / 2, brush);
 	}
 	
-	private void drawBot(Canvas canvas, float halfSize, byte rotation) {
+	private void drawBot(Canvas canvas, float halfSize, byte rotation, int hp) {
 		brush.setStyle(Style.FILL);
 		
 		Path path = new Path();
@@ -274,11 +340,18 @@ public class GameView extends View {
 		path.lineTo(halfSize, 0);
 		path.lineTo(-halfSize, halfSize);
 		path.lineTo(-halfSize, -halfSize);
+		
+		
 
 		canvas.save();
-		canvas.rotate(rotation * 90);
+		canvas.rotate((rotation+1) * 90);
 		canvas.drawPath(path, brush);
 		canvas.restore();
+		
+		brush.setColor(Color.BLACK);
+		brush.setTextSize(30);
+		brush.setTextAlign(Align.CENTER);
+		canvas.drawText(hp == 0 ? "DEAD" : Integer.toString(hp), 0, 0, brush);
 	}
 	
 	final private int INVALID_POINTER_ID = -1;

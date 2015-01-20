@@ -192,7 +192,7 @@ public class SimpleEditActivity extends ActionBarActivity {
         String condition = json.optString("condition");
         JSONArray actions = json.optJSONArray("actions");
 
-        String actionStr = "\n";
+        String actionStr = "";//"\n"; AVOID NEWLINES
         String indentation = "  ";
 
         for (int i = 0; i < actions.length(); i++) {
@@ -207,13 +207,13 @@ public class SimpleEditActivity extends ActionBarActivity {
                 linesToAdd = codeFromJSON((JSONObject)value).split("\n");
 
             for (String s : linesToAdd) {
-                actionStr += indentation + s + "\n";
+                actionStr += indentation + s;// + "\n";
             }
 
         }
 
         //TODO use StringBuilder for extra performance
-        String rest = String.format("{%s}\n", actionStr);
+        String rest = String.format("{%s}"/*\n"*/, actionStr);
 
         String result;
         if (condition.equalsIgnoreCase("else"))

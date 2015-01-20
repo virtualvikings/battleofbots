@@ -41,7 +41,10 @@ public class GameActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_game);
 		
-		game = new GameView(getApplicationContext(), getIntent().getExtras().getString("mapData"));
+		game = new GameView(getApplicationContext(),
+				getIntent().getExtras().getString("mapData"),
+				getIntent().getExtras().getString("moveData") );
+		
 		LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 android.view.ViewGroup.LayoutParams.MATCH_PARENT,
                 android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
