@@ -1,11 +1,10 @@
 package nl.virtualvikings.parser;
 
-import java.lang.*;
 import java.util.Random;
 
 public class BotVariable extends Variable {
 	public BotVariable(String name) {
-		super(name, new Number(0));
+		super(name, new Constant(0));
 	}
 	
 		

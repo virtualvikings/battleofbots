@@ -10,7 +10,6 @@ public class Block implements Statement{
 	}
 	
 	public String result(byte[] stats) {
-		System.out.println("THIS " + this);
 		for (int i = 0; i < statements.size(); i++) {
 			//System.out.println(i + " " + statements.get(i) + " "+ statements.get(i).result(stats));
 			String s = statements.get(i).result(stats);

@@ -1,7 +1,6 @@
 package nl.virtualvikings.parser;
 
 import java.io.IOException;
-import java.lang.*;
 import java.nio.charset.Charset;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -27,18 +26,18 @@ public class Test {
 			ArrayList<UserVariable> variables = new ArrayList<UserVariable>();
 			String[] userVariables = {"a", "b", "c", "d", "e"};
 			for (int i = 0; i < userVariables.length; i++) {
-				variables.add(new UserVariable(userVariables[i], new Number(0)));
+				variables.add(new UserVariable(userVariables[i], new Constant(0)));
 			}
 			
 			Parser parser = new Parser(variables);
-			//try {
+			try {
 				Statement parsed = parser.parse(code);
 				System.out.println("PARSED: " + parsed);
 				byte[] stats = {1, 100, 5, 0, 1, 100};
 				System.out.println("RESULT: " + parsed.result(stats));
-			//} catch (Exception e) {
-			//	System.err.println("Onjuiste code!");
-			//}
+			} catch (Exception e) {
+				e.printStackTrace(System.out);
+			}
 			
 	}
 }

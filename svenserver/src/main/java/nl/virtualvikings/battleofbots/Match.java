@@ -19,8 +19,8 @@ public class Match {
     public Match(Statement... codes) {
 
         botCount = 2;
-        timeLimit = 1000;
-        vm = new Machine(botCount, timeLimit, 16); //TODO: should be 20
+        timeLimit = 2000;
+        vm = new Machine(botCount, timeLimit, 12); //TODO: should be 20
 
         this.codes = codes;
     }
@@ -47,11 +47,11 @@ public class Match {
         try {
             copyAllStates(states); //First make a copy of all bots starting state
             while (true) {
-                System.out.println("----TURN " + (turns+1) + "----");
+                //System.out.println("----TURN " + (turns+1) + "----");
 
                 for (int i = 0; i < botCount; i++) {
 
-                    System.out.print("[BOT " + (i + 1) + "]");
+                    //System.out.print("[BOT " + (i + 1) + "]");
 
                     byte[] stats = new byte[] {
                             vm.getBotById(i).getDirection(),
@@ -78,14 +78,14 @@ public class Match {
                         }
 
                     if (!vm.executeCommand(i, command))
-                        System.out.println("Failed to do anything useful");
+                        ;//System.out.println("Failed to do anything useful");
                     else
                         vm.printStateForDebugging();
                 }
 
                 turns++;
                 copyAllStates(states);
-                System.out.println();
+                //System.out.println();
 
                 if (vm.getAliveCount() == 0) //Everyone is dead
                     break;
