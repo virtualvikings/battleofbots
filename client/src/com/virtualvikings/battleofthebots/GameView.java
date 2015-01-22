@@ -305,7 +305,7 @@ public class GameView extends View {
 				canvas.translate(x + radius, y + radius);
 				
 				if (cells[i][j] != 0)
-					drawObstacle(canvas, radius, cells[i][j]); 
+					drawObstacle(canvas, radius, cells[i][j], i, j); 
 				
 				pos.x = i;
 				pos.y = j;
@@ -323,7 +323,7 @@ public class GameView extends View {
 	
 	//Random r = new Random();
 	
-	private void drawObstacle(Canvas canvas, float radius, int obs) {
+	private void drawObstacle(Canvas canvas, float radius, int obs, int x, int y) {
 		int res = 0;
 		boolean randomlyRotate = false;
 		switch (obs) {
@@ -335,9 +335,7 @@ public class GameView extends View {
 		
 		canvas.save();
 		if (randomlyRotate) {
-			float[] pts = new float[] {10, 10};
-			canvas.getMatrix().mapPoints(pts);
-			int rotation = (int) (pts[0] + pts[1]);
+			int rotation = (int) (x + y);
 			canvas.rotate(rotation * 90); //Rotate randomly but not every frame
 		}
 		
