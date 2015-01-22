@@ -15,7 +15,7 @@ public class BotVariable extends Variable {
 		case "POS-X": return stats[2];
 		case "POS-Y": return stats[3];
 		case "RANDOM": return new Random().nextInt(100);
-		case "VIEW": return stats[5];
+		case "VIEW": return stats[4];
 		}
 		return -1;
 	}
