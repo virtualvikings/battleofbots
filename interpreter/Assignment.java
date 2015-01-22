@@ -10,7 +10,7 @@ public class Assignment implements Statement {
 	}
 	
 	public String result(byte[] stats) {
-		left.setValue(new Number(right.result(stats)));
+		left.setValue(new Constant(right.result(stats)));
 		return null;
 	}
 	
