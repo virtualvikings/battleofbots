@@ -92,17 +92,54 @@ public class Parser {
 		Expression right;
 		
 		// Test if right-hand side is a variable or a number.
-		if (isUserVariable(parts[1])) {
-			right = getUserVariable(parts[1]);
-		} else if (isBotVariable(parts[1])){
-			right = new BotVariable(parts[1]);
-		} else {
-			right = new Number(Integer.parseInt(parts[1]));
-		}
+		right = parseMath(parts[1]);
 		
 		UserVariable left = getUserVariable(parts[0]);
 		return new Assignment(left, right);
 			
+	}
+	
+	public Expression parseMath(String e) {
+		String[] splitParts = e.split("\\+|\\-|\\*|\\/");
+		ArrayList<Expression> parts = new ArrayList<Expression>();
+		
+		String operatorString = e.replaceAll("[0-9]","");
+		String[] operatorParts = operatorString.split("");
+		ArrayList<String> operators = new ArrayList<String>();
+		
+		for (int i = 0; i < splitParts.length; i++) {
+			if (!splitParts[i].equals("")) {
+				parts.add(new Constant(Integer.parseInt(splitParts[i])));
+			}
+		}
+		
+		for (int i = 0; i < operatorParts.length; i++) {
+			if (!operatorParts[i].equals("")) {
+				operators.add(operatorParts[i]);
+			}
+		}
+		
+		String[] allOperators = {"*/", "+-"};
+		
+		for (int ao = 0; ao < allOperators.length; ao++) {
+			for (int i = 0; i < operators.size(); i++) {
+				if (allOperators[ao].contains(operators.get(i))) {
+					Expression left = parts.get(i);
+					Expression right = parts.get(i + 1);
+					parts.remove(left);
+					parts.remove(right);
+					switch (operators.get(i)) {
+					case "*": parts.add(i, new Product(left, right)); break;
+					case "/": parts.add(i, new Quotient(left, right)); break;
+					case "+": parts.add(i, new Sum(left, right)); break;
+					case "-": parts.add(i, new Difference(left, right)); break;
+					}
+					operators.remove(operators.get(i));
+					i = i - 1;
+				}
+			}
+		}
+		return parts.get(0);
 	}
 	
 	public UserVariable getUserVariable(String s) {
@@ -160,8 +197,7 @@ public class Parser {
 		Expression[] parsedParts = new Expression[2];
 		for (int i = 0; i < parts.length; i++) {
 			try {
-				int parsed = Integer.parseInt(parts[i]);
-				parsedParts[i] = new Number(parsed);
+				parsedParts[i] = parseMath(parts[i]);
 			} catch (Exception e) {
 				Variable v;
 				if (isUserVariable(parts[i])) {
@@ -173,7 +209,6 @@ public class Parser {
 				
 			}
 		}
-		System.out.println(parsedParts[0].getClass() + " " + parsedParts[1].getClass());
 		
 		return new Condition(parsedParts[0], operator, parsedParts[1]);
 	}

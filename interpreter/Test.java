@@ -26,7 +26,7 @@ public class Test {
 			ArrayList<UserVariable> variables = new ArrayList<UserVariable>();
 			String[] userVariables = {"a", "b", "c", "d", "e"};
 			for (int i = 0; i < userVariables.length; i++) {
-				variables.add(new UserVariable(userVariables[i], new Number(0)));
+				variables.add(new UserVariable(userVariables[i], new Constant(0)));
 			}
 			
 			Parser parser = new Parser(variables);
