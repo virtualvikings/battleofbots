@@ -1,6 +1,5 @@
 package nl.virtualvikings.parser;
 
-import java.lang.*;
 import java.util.ArrayList;
 
 public class Parser {
@@ -17,7 +16,7 @@ public class Parser {
 		this.userVariables = variables;
 	}
 	
-	public Statement parse(String strategy) {
+	public Statement parse(String strategy) throws Exception {
 		strategy = strategy.replaceAll("\\s+","");
 		System.out.println(strategy + "\n");
 		ArrayList<String> lines = new ArrayList<String>();
@@ -39,7 +38,7 @@ public class Parser {
 		return readLines(lines);
 	}
 	
-	public Statement readLines(ArrayList<String> lines) {
+	public Statement readLines(ArrayList<String> lines) throws Exception {
 		
 		ArrayList<Statement> block = new ArrayList<Statement>();
 		for (int i = 0; i < lines.size(); i++) {
@@ -78,7 +77,7 @@ public class Parser {
 				Assignment a = parseAssignment(currentLine);
 				block.add(a);	
 			} else if (!(currentLine.contains("else") || currentLine.contains("e") || currentLine.equals(""))){
-				System.err.println("Regel " + (i + 1) + " (" + currentLine + ") is geen geldige code!");
+				throw new Exception("Line " + (i + 1) + " (" + currentLine + ") could not be parsed correctly.");
 			}
 			
 		}
@@ -93,17 +92,59 @@ public class Parser {
 		Expression right;
 		
 		// Test if right-hand side is a variable or a number.
-		if (isUserVariable(parts[1])) {
-			right = getUserVariable(parts[1]);
-		} else if (isBotVariable(parts[1])){
-			right = new BotVariable(parts[1]);
-		} else {
-			right = new Number(Integer.parseInt(parts[1]));
-		}
+		right = parseMath(parts[1]);
 		
 		UserVariable left = getUserVariable(parts[0]);
 		return new Assignment(left, right);
 			
+	}
+	
+	public Expression parseMath(String e) {
+		String[] splitParts = e.split("\\+|\\-|\\*|\\/");
+		ArrayList<Expression> parts = new ArrayList<Expression>();
+		
+		String operatorString = e.replaceAll("[a-z0-9]","");
+		String[] operatorParts = operatorString.split("");
+		ArrayList<String> operators = new ArrayList<String>();
+		
+		for (int i = 0; i < splitParts.length; i++) {
+			if (!splitParts[i].equals("")) {
+				try {
+					parts.add(new Constant(Integer.parseInt(splitParts[i])));
+				} catch (Exception x) {
+					parts.add(getUserVariable(splitParts[i]));
+				}
+			}
+		}
+		
+		for (int i = 0; i < operatorParts.length; i++) {
+			if (!operatorParts[i].equals("")) {
+				operators.add(operatorParts[i]);
+			}
+		}
+		
+		String[] allOperators = {"*/", "+-"};
+		
+		for (int ao = 0; ao < allOperators.length; ao++) {
+			for (int i = 0; i < operators.size(); i++) {
+				if (allOperators[ao].contains(operators.get(i))) {
+					Expression left = parts.get(i);
+					Expression right = parts.get(i + 1);
+					parts.remove(left);
+					parts.remove(right);
+					switch (operators.get(i)) {
+					case "*": parts.add(i, new Product(left, right)); break;
+					case "/": parts.add(i, new Quotient(left, right)); break;
+					case "+": parts.add(i, new Sum(left, right)); break;
+					case "-": parts.add(i, new Difference(left, right)); break;
+					}
+					operators.remove(operators.get(i));
+					i = i - 1;
+				}
+			}
+			System.out.println(parts);
+		}
+		return parts.get(0);
 	}
 	
 	public UserVariable getUserVariable(String s) {
@@ -161,8 +202,7 @@ public class Parser {
 		Expression[] parsedParts = new Expression[2];
 		for (int i = 0; i < parts.length; i++) {
 			try {
-				int parsed = Integer.parseInt(parts[i]);
-				parsedParts[i] = new Number(parsed);
+				parsedParts[i] = parseMath(parts[i]);
 			} catch (Exception e) {
 				Variable v;
 				if (isUserVariable(parts[i])) {
@@ -174,7 +214,6 @@ public class Parser {
 				
 			}
 		}
-		System.out.println(parsedParts[0].getClass() + " " + parsedParts[1].getClass());
 		
 		return new Condition(parsedParts[0], operator, parsedParts[1]);
 	}

@@ -8,9 +8,9 @@ import java.nio.charset.Charset;
 import java.sql.Wrapper;
 import java.util.ArrayList;
 
+import nl.virtualvikings.parser.Constant;
 import nl.virtualvikings.parser.Parser;
 import nl.virtualvikings.parser.UserVariable;
-import nl.virtualvikings.parser.Number;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -31,13 +31,13 @@ public class MatchMaker {
 		freeBots.remove(bot);
 	}
 	
-	public boolean createMatch(){
+	public boolean createMatch() throws Exception {
 		if(freeBots.size() >= 2){
 
 			ArrayList<UserVariable> variables = new ArrayList<UserVariable>();
 			String[] userVariables = {"a", "b", "c", "d", "e"};
 			for (int i = 0; i < userVariables.length; i++) {
-				variables.add(new UserVariable(userVariables[i], new Number(0)));
+				variables.add(new UserVariable(userVariables[i], new Constant(0)));
 			}
 
 			//Parser parser = new Parser(variables);
@@ -46,6 +46,7 @@ public class MatchMaker {
 			Match match = new Match(
 					new Parser(variables).parse(freeBots.get(0).code),
 					new Parser(variables).parse(freeBots.get(1).code));
+			//TODO: abort if parse() throws exception
 
 			//Een match wordt slechts door een MultiThread getriggered, dus moet de andere kunnen kijken of er al een match voor hem is gevonden.
 			//Kan door in de matchedThreads list te zoeken naar een eigen threadId
@@ -58,10 +59,10 @@ public class MatchMaker {
 			
 			//Match wordt aangemaakt en vervolgens wordt twee keer het eerste element in de list verwijdert, zodat altijd freeBots.get(0) en freeBots.get(1) gebruikt kan worden
 			matches.add(match.getResult());
+			//TODO: bug: if you get an exception here because the list is empty, one of the clients doesn't receive the result
 			freeBots.remove(0);
 			freeBots.remove(0);
 
-			//result = match.getResult(); //TODO: this call can take multiple seconds so be aware of thread bugs
 			return true;
 		} else{
 			return false;

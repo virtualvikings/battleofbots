@@ -83,7 +83,7 @@ public class MultiThread extends Thread {
 					}
 			}
 			socket.close();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return;
@@ -110,10 +110,14 @@ public class MultiThread extends Thread {
 		@Override
 		public void run() {
 			time = 0;
-			if(arena.matchedThreads.contains(threadId) || arena.createMatch()){ //Is er een match gevonden
-				Send("matchFound");
-				timer.cancel();
-			} 
+			try {
+				if(arena.matchedThreads.contains(threadId) || arena.createMatch()){ //Is er een match gevonden
+                    Send("matchFound");
+                    timer.cancel();
+                }
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		
 	};

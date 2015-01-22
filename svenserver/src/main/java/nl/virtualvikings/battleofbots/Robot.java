@@ -66,7 +66,7 @@ public class Robot {
 
     public boolean executeCommand(Machine vm, Machine.Command command) {
 
-        System.out.println(" HP = " + getHealth());
+        //System.out.println(" HP = " + getHealth());
         if (isDead()) {
             System.out.println("Bot is dead and cannot execute any commands!");
             return false;
@@ -78,7 +78,7 @@ public class Robot {
     public boolean move(int xOffset, int yOffset) {
         //gets passed absolute movement
         state.position.translate(xOffset, yOffset);
-        System.out.println("Bot moved to x=" + state.position.x + ", y=" + state.position.y);
+        //System.out.println("Bot moved to x=" + state.position.x + ", y=" + state.position.y);
 
         return true; //TODO return false if out of fuel or something
     }
@@ -122,7 +122,7 @@ public class Robot {
             case 2: dirStr = "Up"; break;
             case 3: dirStr = "Right"; break;
         }
-        System.out.println("Bot rotated to " + dirStr);
+        //System.out.println("Bot rotated to " + dirStr);
 
         return true; //TODO return false if out of fuel or something
     }

@@ -1,7 +1,5 @@
 package nl.virtualvikings.parser;
 
-import java.lang.*;
-
 public class Assignment implements Statement {
 	UserVariable left;
 	Expression right;
@@ -12,7 +10,7 @@ public class Assignment implements Statement {
 	}
 	
 	public String result(byte[] stats) {
-		left.setValue(new Number(right.result(stats)));
+		left.setValue(new Constant(right.result(stats)));
 		return null;
 	}
 	

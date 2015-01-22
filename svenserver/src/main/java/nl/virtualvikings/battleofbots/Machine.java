@@ -49,7 +49,7 @@ public class Machine {
         Random r = new Random();
         for (int y = 1; y < fieldSize - 1; y++)
             for (int x = 1; x < fieldSize - 1; x++)
-                field[x][y] = (byte) Math.round(Math.pow(r.nextGaussian() / 2, 2));
+                field[x][y] = r.nextDouble() > 0.7 ? (byte) r.nextInt(4) : 0;
         printStateForDebugging();
     }
 
@@ -261,14 +261,14 @@ public class Machine {
                         Robot enemy = vm.scanBot(bot);
                         if (enemy != null && !enemy.isDead()) {
                             enemy.hurt(1);
-                            if (enemy.isDead())
-                                System.out.println("Bot attacked the other bot and killed it!");
-                            else
-                                System.out.println("Bot attacked the other bot!");
+                            //if (enemy.isDead())
+                            //    System.out.println("Bot attacked the other bot and killed it!");
+                            //else
+                            //    System.out.println("Bot attacked the other bot!");
                             return true;
                         }
                         else {
-                            System.out.println("Bot tried to attack but missed!"); //Bot also misses if the enemy is already dead
+                            //System.out.println("Bot tried to attack but missed!"); //Bot also misses if the enemy is already dead
                             return false;
                         }
                     }
@@ -278,12 +278,12 @@ public class Machine {
 
                     int turnOffset = arguments[0];
                     if (Math.abs(turnOffset) > 1) {
-                        System.out.println("Bot tried to turn too much");
+                        //System.out.println("Bot tried to turn too much");
                         return false;
                     }
 
                     if (turnOffset == 0) {
-                        System.out.println("Bot didn't turn at all");
+                        //System.out.println("Bot didn't turn at all");
                         return false;
                     }
 
@@ -304,33 +304,33 @@ public class Machine {
                     //TODo: If the bot is stuck in an obstacle you should remove the obstacle instead...
 
                     if (xOffset == 0 && yOffset == 0) {
-                        System.out.println("Bot didn't move at all");
+                        //System.out.println("Bot didn't move at all");
                         return false;
                     }
 
                     if (Math.abs(xOffset) + Math.abs(yOffset) > 1) {
-                        System.out.println("Bot tried to move too much");
+                        //System.out.println("Bot tried to move too much");
                         return false;
                     }
 
                     if (!vm.insideBounds(newX, newY)) {
-                        System.out.println("Bot tried to move out of bounds");
+                        //System.out.println("Bot tried to move out of bounds");
                         return false;
                     }
 
                     if (vm.field[newX][newY] != 0) {
-                        System.out.println("Bot tried to move into an obstacle");
+                        //System.out.println("Bot tried to move into an obstacle");
                         return false;
                     }
 
                     Robot botAt = vm.getBotAt(newX, newY);
                     if (botAt != null) {
                         if (!botAt.isDead()) {
-                            System.out.println("Bot tried to move into another bot!");
+                            //System.out.println("Bot tried to move into another bot!");
                             return false;
                         }
-                        else
-                            System.out.println("Bot stepped on the corpse of another bot");
+                        //else
+                        //    System.out.println("Bot stepped on the corpse of another bot");
                     }
 
                     return bot.move(xOffset, yOffset);
