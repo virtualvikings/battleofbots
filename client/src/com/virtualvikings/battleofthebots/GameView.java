@@ -104,7 +104,7 @@ public class GameView extends View {
 	public GameView(Context context, String mapData, String moveData) {
 		super(context);
 		
-		setBackgroundColor(Color.WHITE);
+		setBackgroundColor(Color.rgb(238, 238, 238)); //or the grass color?
 		
 		System.out.println("Map data is: " + mapData);
 		System.out.println("Move data is: " + moveData);
@@ -304,38 +304,46 @@ public class GameView extends View {
 				canvas.save();
 				canvas.translate(x + radius, y + radius);
 				
-				//brush.setColor(Color.GRAY);
 				if (cells[i][j] != 0)
 					drawObstacle(canvas, radius, cells[i][j]); 
 				
 				pos.x = i;
 				pos.y = j;
 				
-				if (playerState.position.equals(pos)) {
-					//brush.setColor(Color.GREEN);
+				if (playerState.position.equals(pos))
 					drawBot(canvas, radius, playerState.direction, playerState.health, true);
-				}
 
-				if (enemyState.position.equals(pos)) {
-					//brush.setColor(Color.RED);
+				if (enemyState.position.equals(pos)) 
 					drawBot(canvas, radius, enemyState.direction, enemyState.health, false);
-				}
 				
 				canvas.restore();
 			}
 		}
 	}
 	
+	//Random r = new Random();
+	
 	private void drawObstacle(Canvas canvas, float radius, int obs) {
 		int res = 0;
+		boolean randomlyRotate = false;
 		switch (obs) {
 			case 1: res = R.drawable.tree; break;
 			case 2: res = R.drawable.stone; break;
-			case 3: res = R.drawable.water; break;
+			case 3: res = R.drawable.water; randomlyRotate = true; break;
 			default: res = R.drawable.stone; break;
 		}
+		
+		canvas.save();
+		if (randomlyRotate) {
+			float[] pts = new float[] {10, 10};
+			canvas.getMatrix().mapPoints(pts);
+			int rotation = (int) (pts[0] + pts[1]);
+			canvas.rotate(rotation * 90); //Rotate randomly but not every frame
+		}
+		
 		Bitmap b = BitmapFactory.decodeResource(getResources(), res);
 		canvas.drawBitmap(b, new Rect(0, 0, b.getWidth(), b.getHeight()), new RectF(-radius, -radius, radius, radius), brush);
+		canvas.restore();
 	}
 	
 	private void drawBot(Canvas canvas, float halfSize, byte rotation, int hp, boolean isPlayer) {
@@ -347,10 +355,11 @@ public class GameView extends View {
 		canvas.drawBitmap(b, new Rect(0, 0, b.getWidth(), b.getHeight()), new RectF(-halfSize, -halfSize, halfSize, halfSize), brush);
 		canvas.restore();
 		
-		brush.setColor(Color.BLACK);
-		brush.setTextSize(30);
-		brush.setTextAlign(Align.CENTER);
-		canvas.drawText(hp == 0 ? "DEAD" : Integer.toString(hp), 0, 0, brush);
+		//TODO: make health display less ugly
+		//brush.setColor(Color.BLACK);
+		//brush.setTextSize(30);
+		//brush.setTextAlign(Align.CENTER);
+		//canvas.drawText(hp == 0 ? "DEAD" : Integer.toString(hp), 0, 0, brush);
 	}
 	
 	final private int INVALID_POINTER_ID = -1;
