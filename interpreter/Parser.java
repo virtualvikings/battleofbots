@@ -16,7 +16,7 @@ public class Parser {
 		this.userVariables = variables;
 	}
 	
-	public Statement parse(String strategy) {
+	public Statement parse(String strategy) throws Exception {
 		strategy = strategy.replaceAll("\\s+","");
 		System.out.println(strategy + "\n");
 		ArrayList<String> lines = new ArrayList<String>();
@@ -38,7 +38,7 @@ public class Parser {
 		return readLines(lines);
 	}
 	
-	public Statement readLines(ArrayList<String> lines) {
+	public Statement readLines(ArrayList<String> lines) throws Exception {
 		
 		ArrayList<Statement> block = new ArrayList<Statement>();
 		for (int i = 0; i < lines.size(); i++) {
@@ -77,7 +77,7 @@ public class Parser {
 				Assignment a = parseAssignment(currentLine);
 				block.add(a);	
 			} else if (!(currentLine.contains("else") || currentLine.contains("e") || currentLine.equals(""))){
-				System.err.println("Regel " + (i + 1) + " (" + currentLine + ") is geen geldige code!");
+				throw new Exception("Line " + (i + 1) + " (" + currentLine + ") could not be parsed correctly.");
 			}
 			
 		}
@@ -103,13 +103,17 @@ public class Parser {
 		String[] splitParts = e.split("\\+|\\-|\\*|\\/");
 		ArrayList<Expression> parts = new ArrayList<Expression>();
 		
-		String operatorString = e.replaceAll("[0-9]","");
+		String operatorString = e.replaceAll("[a-z0-9]","");
 		String[] operatorParts = operatorString.split("");
 		ArrayList<String> operators = new ArrayList<String>();
 		
 		for (int i = 0; i < splitParts.length; i++) {
 			if (!splitParts[i].equals("")) {
-				parts.add(new Constant(Integer.parseInt(splitParts[i])));
+				try {
+					parts.add(new Constant(Integer.parseInt(splitParts[i])));
+				} catch (Exception x) {
+					parts.add(getUserVariable(splitParts[i]));
+				}
 			}
 		}
 		
@@ -138,6 +142,7 @@ public class Parser {
 					i = i - 1;
 				}
 			}
+			System.out.println(parts);
 		}
 		return parts.get(0);
 	}
