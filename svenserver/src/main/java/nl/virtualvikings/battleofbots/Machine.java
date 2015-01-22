@@ -108,7 +108,7 @@ public class Machine {
         byte obstacle = field[scanPos.x][scanPos.y];
 
         if (enemySeen)
-            return -1;
+            return 100; //-1;
         else
             return obstacle; //Should be 0 if no obstacle
     }
