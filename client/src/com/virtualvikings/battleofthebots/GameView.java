@@ -178,7 +178,7 @@ public class GameView extends View {
 			JSONObject stuff = bots.getJSONObject(b);
 			String name = stuff.getString("name");
 			
-			if (b == 0 && !name.equals(myName)) //If this is the first bot and it's the enemy, reverse it
+			if (b == 0 && !name.equals(myName)) //If this is the first bot and it's the enemy, swap the lists
 				reverse = true;
 			
             JSONArray botStates = stuff.getJSONArray("moves");
@@ -205,6 +205,11 @@ public class GameView extends View {
         }
 		
 		//Still not perfect, sometimes both bots lose when there is clearly a winner
+		//TODO: go debug this!
+		
+		if (lastHP.size() != 2)
+			throw new IllegalStateException("Two players have the same name");
+		
 		Integer firstHP = (Integer) lastHP.values().toArray()[0];
 		boolean allTheSame = true;
 		for (Integer i = 0; i < lastHP.values().toArray().length; i++) {
@@ -226,8 +231,7 @@ public class GameView extends View {
 		}
 		
 		if (reverse)
-			Collections.reverse(moves);
-		//After this, the first bot in the arraylist is guaranteed to be the player
+			Collections.reverse(moves); //After this, the first bot in the arraylist is guaranteed to be the player
 
 		System.out.println("The loser is " + loserName);
 		if (loserName == null)

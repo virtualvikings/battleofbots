@@ -28,11 +28,10 @@ public class MainActivity extends Activity {
         
         settings = getSharedPreferences(PREFS_NAME, 0);
         
-<<<<<<< HEAD
         matchBtn = (ImageButton) findViewById(R.id.matchBtn);
         editBtn = (ImageButton) findViewById(R.id.editBtn);
         quitBtn = (ImageButton) findViewById(R.id.quitBtn);
-=======
+
         String key = "name";
         
         if (!settings.contains(key)) {
@@ -44,11 +43,6 @@ public class MainActivity extends Activity {
         	Log.e("stuff", a);
         	editor.commit();
         }
-        
-        matchBtn = (Button) findViewById(R.id.matchBtn);
-        editBtn = (Button) findViewById(R.id.editBtn);
-        quitBtn = (Button) findViewById(R.id.quitBtn);
->>>>>>> origin/master
         
         matchBtn.setOnClickListener(new OnClickListener(){
         	@Override

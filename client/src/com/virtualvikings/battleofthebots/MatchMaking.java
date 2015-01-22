@@ -5,7 +5,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketAddress;
+
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -15,6 +18,7 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,7 +31,7 @@ public class MatchMaking extends ActionBarActivity {
 	String code;
 	
 	final int port = 4444;
-	final String IP = "10.0.2.2";//"145.107.119.34";
+	String IP = "10.0.2.2";//"145.107.119.34";
 	Boolean connected = false;
 	Socket socket;
 	PrintWriter out;
@@ -45,6 +49,7 @@ public class MatchMaking extends ActionBarActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.layout_match);
 		matchTxt = (TextView) findViewById(R.id.matchTxt);
+	
 
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		
@@ -75,12 +80,30 @@ public class MatchMaking extends ActionBarActivity {
 			e.printStackTrace();
 			finish();
 		}
+		
+		final EditText txtUrl = new EditText(this);
+		txtUrl.setText(IP);
+
+		new AlertDialog.Builder(this)
+		.setTitle("Connect")
+		.setMessage("Enter the IP address of the server:")
+		.setView(txtUrl)
+		.setPositiveButton("Go", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int whichButton) {
+				IP =  txtUrl.getText().toString();
+				TalkToServer.start();
+			}
+		})
+		//.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+		//	public void onClick(DialogInterface dialog, int whichButton) {
+		//	} } )
+		.show(); 
 	}
 	
 	@Override
 	protected void onStart() {
 		super.onStart();
-		TalkToServer.start();
+		//TalkToServer.start(); //moved to input dialog
 	}
 
 	@Override
@@ -105,7 +128,8 @@ public class MatchMaking extends ActionBarActivity {
 			
 			try {
 				InetAddress serverAddr = InetAddress.getByName(IP);
-				socket = new Socket(serverAddr, port);
+				socket = new Socket();
+				socket.connect(new InetSocketAddress(serverAddr, port), 20 * 1000); //wait 20 seconds
 				out = new PrintWriter(socket.getOutputStream(), true);
 				in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				connected = true;
