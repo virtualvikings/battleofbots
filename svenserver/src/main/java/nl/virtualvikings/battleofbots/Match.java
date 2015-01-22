@@ -1,7 +1,11 @@
 package nl.virtualvikings.battleofbots;
 
 
+import nl.virtualvikings.parser.Parser;
+import nl.virtualvikings.parser.Statement;
+
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Match {
 
@@ -10,9 +14,9 @@ public class Match {
     private final int timeLimit;
     private boolean matchOver;
 
-    private final Parser.ExpressionTree[] codes;
+    private final Statement[] codes;
 
-    public Match(Parser.ExpressionTree... codes) {
+    public Match(Statement... codes) {
 
         botCount = 2;
         timeLimit = 1000;
@@ -25,6 +29,8 @@ public class Match {
         for (int i = 0; i < botCount; i++)
             states.get(i).add(vm.copyState(i)); //TODO: this is right, right?
     }
+
+    Random r = new Random();
 
     public Result getResult() {
 
@@ -47,7 +53,29 @@ public class Match {
 
                     System.out.print("[BOT " + (i + 1) + "]");
 
-                    Machine.Command command = codes[i].getNextCommand(vm, i);
+                    byte[] stats = new byte[] {
+                            vm.getBotById(i).getDirection(),
+                            (byte)vm.getBotById(i).getHealth(),
+                            (byte)vm.getBotById(i).getPosition().x,
+                            (byte)vm.getBotById(i).getPosition().y,
+                            vm.scanAhead(i),
+                            0//(byte)r.nextInt(100) NOPE, random needs to be random every time
+                    };
+
+                    String result = codes[i].result(stats);
+                    Machine.Command command;
+
+                    if (result == null)
+                        command = new Machine.Command(Machine.Command.Type.None);
+                    else
+                        switch(result) {
+                            case "TurnLeft": command = new Machine.Command(Machine.Command.Type.Turn, -1); break;
+                            case "TurnRight": command = new Machine.Command(Machine.Command.Type.Turn, 1); break;
+                            case "GoForward": command = new Machine.Command(Machine.Command.Type.Move, 1); break;
+                            case "GoBackward": command = new Machine.Command(Machine.Command.Type.Move, -1); break;
+                            case "Attack": command = new Machine.Command(Machine.Command.Type.Attack); break;
+                            default: throw new Exception("Unknown command " + result);
+                        }
 
                     if (!vm.executeCommand(i, command))
                         System.out.println("Failed to do anything useful");

@@ -8,6 +8,9 @@ import java.nio.charset.Charset;
 import java.sql.Wrapper;
 import java.util.ArrayList;
 
+import nl.virtualvikings.parser.Parser;
+import nl.virtualvikings.parser.UserVariable;
+import nl.virtualvikings.parser.Number;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -31,10 +34,18 @@ public class MatchMaker {
 	public boolean createMatch(){
 		if(freeBots.size() >= 2){
 
-			Parser parser = new Parser();
+			ArrayList<UserVariable> variables = new ArrayList<UserVariable>();
+			String[] userVariables = {"a", "b", "c", "d", "e"};
+			for (int i = 0; i < userVariables.length; i++) {
+				variables.add(new UserVariable(userVariables[i], new Number(0)));
+			}
+
+			//Parser parser = new Parser(variables);
+			//Every bot needs their own parser, or variables will be shared
+
 			Match match = new Match(
-					parser.parse(freeBots.get(0).code),
-					parser.parse(freeBots.get(1).code));
+					new Parser(variables).parse(freeBots.get(0).code),
+					new Parser(variables).parse(freeBots.get(1).code));
 
 			//Een match wordt slechts door een MultiThread getriggered, dus moet de andere kunnen kijken of er al een match voor hem is gevonden.
 			//Kan door in de matchedThreads list te zoeken naar een eigen threadId
