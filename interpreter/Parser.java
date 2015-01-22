@@ -4,14 +4,13 @@ import java.util.ArrayList;
 
 public class Parser {
 	
-	String[] actions = {"TurnLeft", "TurnRight", "GoForward", "GoBackward"};
+	String[] actions = {"TurnLeft", "TurnRight", "GoForward", "GoBackward", "Attack"};
 	String[] operators = {"<", ">", "<=", ">=", "==", "!="};
 	String[] botVariables = {"HP", "POS-X", "POS-Y", "VIEW", "DIRECTION", "RANDOM"};
 	
 	ArrayList<UserVariable> userVariables;
 	
 	char split = ';';
-	Statement start;
 	
 	public Parser(ArrayList<UserVariable> variables) {
 		this.userVariables = variables;
