@@ -101,6 +101,8 @@ public class GameView extends View {
 		invalidate();
 	}
 	
+	HashMap<String, Bitmap> bitmaps = new HashMap<String, Bitmap>();
+	
 	public GameView(Context context, String mapData, String moveData) {
 		super(context);
 		
@@ -109,6 +111,14 @@ public class GameView extends View {
 		System.out.println("Map data is: " + mapData);
 		System.out.println("Move data is: " + moveData);
 		
+		//BitmapFactory.decodeResource is VERY slow so this needs to be done beforehand
+		bitmaps.put("bluebot", BitmapFactory.decodeResource(getResources(), R.drawable.bluebot));
+		bitmaps.put("redbot", BitmapFactory.decodeResource(getResources(), R.drawable.redbot));
+		bitmaps.put("tree", BitmapFactory.decodeResource(getResources(), R.drawable.tree));
+		bitmaps.put("stone", BitmapFactory.decodeResource(getResources(), R.drawable.stone));
+		bitmaps.put("water", BitmapFactory.decodeResource(getResources(), R.drawable.water));
+		bitmaps.put("bg", BitmapFactory.decodeResource(getResources(), R.drawable.backgroundtile));
+
 		try {
 			cells = decodeField(mapData);
 			cellCount = cells.length; //Length of 1 side
@@ -273,7 +283,7 @@ public class GameView extends View {
 		//brush.setColor(Color.rgb(200, 200, 200));
 		//canvas.drawRect(new RectF(0, 0, minWH, minWH), brush);
 		
-		Bitmap b = BitmapFactory.decodeResource(getResources(), R.drawable.backgroundtile);
+		Bitmap b = bitmaps.get("bg");
 		canvas.drawBitmap(b, new Rect(0, 0, b.getWidth(), b.getHeight()), new RectF(0, 0, minWH, minWH), brush);
 	
 		
@@ -324,13 +334,13 @@ public class GameView extends View {
 	//Random r = new Random();
 	
 	private void drawObstacle(Canvas canvas, float radius, int obs, int x, int y) {
-		int res = 0;
+		String res;
 		boolean randomlyRotate = false;
 		switch (obs) {
-			case 1: res = R.drawable.tree; break;
-			case 2: res = R.drawable.stone; break;
-			case 3: res = R.drawable.water; randomlyRotate = true; break;
-			default: res = R.drawable.stone; break;
+			case 1: res = "tree"; break;
+			case 2: res = "stone"; break;
+			case 3: res = "water"; randomlyRotate = true; break;
+			default: res = "stone"; break;
 		}
 		
 		canvas.save();
@@ -339,7 +349,7 @@ public class GameView extends View {
 			canvas.rotate(rotation * 90); //Rotate randomly but not every frame
 		}
 		
-		Bitmap b = BitmapFactory.decodeResource(getResources(), res);
+		Bitmap b = bitmaps.get(res);
 		canvas.drawBitmap(b, new Rect(0, 0, b.getWidth(), b.getHeight()), new RectF(-radius, -radius, radius, radius), brush);
 		canvas.restore();
 	}
@@ -349,15 +359,15 @@ public class GameView extends View {
 		
 		canvas.save();
 		canvas.rotate(rotation * 90);
-		Bitmap b = BitmapFactory.decodeResource(getResources(), isPlayer ? R.drawable.bluebot : R.drawable.redbot);
+		Bitmap b = bitmaps.get(isPlayer ? "bluebot" : "redbot");
 		canvas.drawBitmap(b, new Rect(0, 0, b.getWidth(), b.getHeight()), new RectF(-halfSize, -halfSize, halfSize, halfSize), brush);
 		canvas.restore();
 		
 		//TODO: make health display less ugly
-		//brush.setColor(Color.BLACK);
-		//brush.setTextSize(30);
-		//brush.setTextAlign(Align.CENTER);
-		//canvas.drawText(hp == 0 ? "DEAD" : Integer.toString(hp), 0, 0, brush);
+		brush.setColor(Color.WHITE);
+		brush.setTextSize(20);
+		brush.setTextAlign(Align.CENTER);
+		canvas.drawText(hp == 0 ? "DEAD" : Integer.toString(hp), 0, 0, brush);
 	}
 	
 	final private int INVALID_POINTER_ID = -1;
