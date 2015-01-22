@@ -33,7 +33,7 @@ public class Test {
 			//try {
 				Statement parsed = parser.parse(code);
 				System.out.println("PARSED: " + parsed);
-				byte[] stats = {1, 100, 5, 0, 1};
+				byte[] stats = {1, 100, 5, 0, 1, 1};
 				System.out.println("RESULT: " + parsed.result(stats));
 			//} catch (Exception e) {
 			//	System.err.println("Onjuiste code!");

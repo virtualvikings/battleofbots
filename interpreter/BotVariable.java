@@ -12,7 +12,8 @@ public class BotVariable extends Variable {
 		case "HP": return stats[1];
 		case "POS-X": return stats[2];
 		case "POS-Y": return stats[3];
-		case "VIEW": return stats[4];
+		case "RANDOM": return stats[4];
+		case "VIEW": return stats[5];
 		}
 		return -1;
 	}
