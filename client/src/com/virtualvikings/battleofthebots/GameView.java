@@ -17,6 +17,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -25,6 +27,7 @@ import android.graphics.Paint.Style;
 import android.graphics.Path;
 import android.graphics.Point;
 import android.graphics.PointF;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.support.v4.view.MotionEventCompat;
 import android.view.MotionEvent;
@@ -267,17 +270,18 @@ public class GameView extends View {
 		}
 		
 		//Teken blokken
-		brush.setColor(Color.rgb(200, 200, 200));
-		canvas.drawRect(new RectF(0, 0, minWH, minWH), brush);
+		//brush.setColor(Color.rgb(200, 200, 200));
+		//canvas.drawRect(new RectF(0, 0, minWH, minWH), brush);
+		
+		Bitmap b = BitmapFactory.decodeResource(getResources(), R.drawable.backgroundtile);
+		canvas.drawBitmap(b, new Rect(0, 0, b.getWidth(), b.getHeight()), new RectF(0, 0, minWH, minWH), brush);
+	
 		
 		RectF rect = new RectF(0, 0, cellS, cellS);
-		for (int i = 0; i < cellCount; i++)
+		/*for (int i = 0; i < cellCount; i++)
 		{
 			for (int j = 0; j < cellCount; j++)
 			{
-				int gray = 210; 
-				if ((i + j) % 2 == 0) continue; //Maak schaakbord patroon
-				
 				float x = i * cellS;
 				float y = j * cellS;
 				
@@ -285,7 +289,7 @@ public class GameView extends View {
 				rect.offsetTo(x, y);
 				canvas.drawRect(rect, brush);
 			}
-		}
+		}*/
 
 		//Teken obstakels en bots
 		Point pos = new Point(0, 0);
@@ -300,21 +304,21 @@ public class GameView extends View {
 				canvas.save();
 				canvas.translate(x + radius, y + radius);
 				
-				brush.setColor(Color.GRAY);
+				//brush.setColor(Color.GRAY);
 				if (cells[i][j] != 0)
-					drawObstacle(canvas, radius); //TODO draw different obstacles
+					drawObstacle(canvas, radius, cells[i][j]); 
 				
 				pos.x = i;
 				pos.y = j;
 				
 				if (playerState.position.equals(pos)) {
-					brush.setColor(Color.GREEN);
-					drawBot(canvas, radius, playerState.direction, playerState.health); //Waarom niet bot.draw()?
+					//brush.setColor(Color.GREEN);
+					drawBot(canvas, radius, playerState.direction, playerState.health, true);
 				}
 
 				if (enemyState.position.equals(pos)) {
-					brush.setColor(Color.RED);
-					drawBot(canvas, radius, enemyState.direction, enemyState.health);
+					//brush.setColor(Color.RED);
+					drawBot(canvas, radius, enemyState.direction, enemyState.health, false);
 				}
 				
 				canvas.restore();
@@ -322,26 +326,25 @@ public class GameView extends View {
 		}
 	}
 	
-	private void drawObstacle(Canvas canvas, float radius) {
-		canvas.drawCircle(0, 0, radius, brush);
-		//brush.setColor(Color.BLACK);
-		//canvas.drawCircle(x + radius, y + radius, radius / 2, brush);
+	private void drawObstacle(Canvas canvas, float radius, int obs) {
+		int res = 0;
+		switch (obs) {
+			case 1: res = R.drawable.tree; break;
+			case 2: res = R.drawable.stone; break;
+			case 3: res = R.drawable.water; break;
+			default: res = R.drawable.stone; break;
+		}
+		Bitmap b = BitmapFactory.decodeResource(getResources(), res);
+		canvas.drawBitmap(b, new Rect(0, 0, b.getWidth(), b.getHeight()), new RectF(-radius, -radius, radius, radius), brush);
 	}
 	
-	private void drawBot(Canvas canvas, float halfSize, byte rotation, int hp) {
+	private void drawBot(Canvas canvas, float halfSize, byte rotation, int hp, boolean isPlayer) {
 		brush.setStyle(Style.FILL);
 		
-		Path path = new Path();
-		path.moveTo(-halfSize, -halfSize);
-		path.lineTo(halfSize, 0);
-		path.lineTo(-halfSize, halfSize);
-		path.lineTo(-halfSize, -halfSize);
-		
-		
-
 		canvas.save();
-		canvas.rotate((rotation+1) * 90);
-		canvas.drawPath(path, brush);
+		canvas.rotate(rotation * 90);
+		Bitmap b = BitmapFactory.decodeResource(getResources(), isPlayer ? R.drawable.bluebot : R.drawable.redbot);
+		canvas.drawBitmap(b, new Rect(0, 0, b.getWidth(), b.getHeight()), new RectF(-halfSize, -halfSize, halfSize, halfSize), brush);
 		canvas.restore();
 		
 		brush.setColor(Color.BLACK);
