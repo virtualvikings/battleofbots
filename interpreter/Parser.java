@@ -117,6 +117,10 @@ public class Parser {
 			}
 		}
 		
+		if (parts.contains(null)) {
+			return null;
+		}
+		
 		for (int i = 0; i < operatorParts.length; i++) {
 			if (!operatorParts[i].equals("")) {
 				operators.add(operatorParts[i]);
@@ -142,7 +146,6 @@ public class Parser {
 					i = i - 1;
 				}
 			}
-			System.out.println(parts);
 		}
 		return parts.get(0);
 	}
@@ -201,17 +204,17 @@ public class Parser {
 		String[] parts = condition.split(operator);
 		Expression[] parsedParts = new Expression[2];
 		for (int i = 0; i < parts.length; i++) {
-			try {
-				parsedParts[i] = parseMath(parts[i]);
-			} catch (Exception e) {
+			Expression e = parseMath(parts[i]);
+			if (e == null) {
 				Variable v;
 				if (isUserVariable(parts[i])) {
 					v = getUserVariable(parts[i]);
 				} else {
 					v = new BotVariable(parts[i]);
 				}
-				parsedParts[i] = v;
-				
+				parsedParts[i] = v;	
+			} else {
+				parsedParts[i] = e;
 			}
 		}
 		
