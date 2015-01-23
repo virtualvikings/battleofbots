@@ -1,0 +1,68 @@
+.nav a {
+  color: #5a5a5a;
+  font-size: 14px;
+  font-weight: bold;
+  padding: 14px 10px;
+  text-transform: uppercase;
+}
+
+.nav li {
+  display: inline;
+}
+
+.jumbotron {
+  background-image: url(bannerbackground.png);
+  height: 200px;
+}
+
+.container .leden {
+  padding-bottom: 15px;
+}
+
+.container .leden h1 {
+  font-size: 21px;
+}
+
+.container .contactdeel {
+  padding-bottom: 15px;
+}
+
+.container .contactdeel h1 {
+  font-size: 25px;
+}
+
+.jumbotron .container {
+  position: relative;
+  top: 0px;
+}
+
+.neighborhood-guides .container {
+  postion: relative;
+  top: 100px;
+}
+
+.jumbotron h1 {
+  color: #fff;
+  font-size: 48px;  
+  font-family: 'Shift', sans-serif;
+  font-weight: bold;
+}
+
+.jumbotron p {
+  font-size: 20px;
+  color: #fff;
+}
+
+.learn-more {
+  background-color: #f7f7f7;
+}
+
+.learn-more h3 {
+  font-family: 'Shift', sans-serif;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.learn-more a {
+  color: #00b0ff;
+}
