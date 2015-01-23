@@ -9,7 +9,7 @@ public class Block implements Statement{
 		this.statements = statements;
 	}
 	
-	public String result(byte[] stats) {
+	public String result(int[] stats) {
 		for (int i = 0; i < statements.size(); i++) {
 			//System.out.println(i + " " + statements.get(i) + " "+ statements.get(i).result(stats));
 			String s = statements.get(i).result(stats);

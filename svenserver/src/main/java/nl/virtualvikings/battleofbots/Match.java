@@ -58,9 +58,13 @@ public class Match {
                             (byte)vm.getBotById(i).getHealth(),
                             (byte)vm.getBotById(i).getPosition().x,
                             (byte)vm.getBotById(i).getPosition().y,
-                            vm.scanAhead(i),
+                            vm.scanAhead(i, 1, 0), //left
+                            vm.scanAhead(i, 0, 1), //front
+                            vm.scanAhead(i, -1, 0), //right
                             0//(byte)r.nextInt(100) NOPE, random needs to be random every time
                     };
+
+                    //left/right is reversed, apparently
 
                     String result = codes[i].result(stats);
                     Machine.Command command;

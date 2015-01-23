@@ -12,7 +12,7 @@ public class If implements Statement {
 	}
 	
 	
-	public String result(byte[] stats) {
+	public String result(int[] stats) {
 		if (condition.result(stats) == 1) {
 			return primary.result(stats);
 		} else {
