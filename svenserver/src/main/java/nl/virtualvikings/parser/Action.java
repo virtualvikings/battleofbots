@@ -7,7 +7,7 @@ public class Action implements Statement {
 		this.action = action;
 	}
 	
-	public String result(byte[] stats) {
+	public String result(int[] stats) {
 		return action;
 	}
 	

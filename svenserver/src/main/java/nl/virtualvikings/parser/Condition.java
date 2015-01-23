@@ -11,7 +11,7 @@ public class Condition implements Expression {
 		this.right = right;
 	}
 	
-	public int result(byte[] stats) {
+	public int result(int[] stats) {
 		switch (type) {
 		case "==":
 			if (left.result(stats) == right.result(stats)) { return 1; };

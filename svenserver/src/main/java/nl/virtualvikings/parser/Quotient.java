@@ -9,7 +9,7 @@ public class Quotient implements Expression {
 		this.right = right;
 	}
 	
-	public int result(byte[] stats) {
+	public int result(int[] stats) {
 		return (int) Math.round(Math.round((float) left.result(stats) / right.result(stats)));
 	}
 	

@@ -9,7 +9,7 @@ public class Product implements Expression {
 		this.right = right;
 	}
 	
-	public int result(byte[] stats) {
+	public int result(int[] stats) {
 		return left.result(stats) * right.result(stats);
 	}
 	
