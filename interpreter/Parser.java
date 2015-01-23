@@ -6,7 +6,7 @@ public class Parser {
 	
 	String[] actions = {"TurnLeft", "TurnRight", "GoForward", "GoBackward", "Attack"};
 	String[] operators = {"<", ">", "<=", ">=", "==", "!="};
-	String[] botVariables = {"HP", "POS-X", "POS-Y", "VIEW-L", "VIEW-F", "VIEW-R", "DIRECTION", "RANDOM",};
+	String[] botVariables = {"HP", "POS-X", "POS-Y", "VIEW-L", "VIEW-F", "VIEW-R", "DIRECTION", "RANDOM", "TURNS"};
 	
 	ArrayList<UserVariable> userVariables;
 	
@@ -125,7 +125,7 @@ public class Parser {
 			right = new BotVariable(parts[1]);
 		}
 		
-		System.out.println(right);
+		//System.out.println(right);
 		
 		UserVariable left = getUserVariable(parts[0]);
 		return new Assignment(left, right);
@@ -138,7 +138,7 @@ public class Parser {
 	 * @return
 	 */
 	public Expression parseMath(String e) {
-		String[] splitParts = e.split("\\+|\\-|\\*|\\/");
+		String[] splitParts = e.split("\\+|\\-|\\*|\\/|\\%");
 		ArrayList<Expression> parts = new ArrayList<Expression>();
 		
 		String operatorString = e.replaceAll("[a-z0-9]","");
@@ -165,7 +165,7 @@ public class Parser {
 			}
 		}
 		
-		String[] allOperators = {"*/", "+-"};
+		String[] allOperators = {"*/%", "+-"};
 		
 		for (int ao = 0; ao < allOperators.length; ao++) {
 			for (int i = 0; i < operators.size(); i++) {
@@ -177,6 +177,7 @@ public class Parser {
 					switch (operators.get(i)) {
 					case "*": parts.add(i, new Product(left, right)); break;
 					case "/": parts.add(i, new Quotient(left, right)); break;
+					case "%": parts.add(i, new Modulo(left, right)); break;
 					case "+": parts.add(i, new Sum(left, right)); break;
 					case "-": parts.add(i, new Difference(left, right)); break;
 					}

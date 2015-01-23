@@ -9,7 +9,7 @@ public class Assignment implements Statement {
 		this.right = right;
 	}
 	
-	public String result(byte[] stats) {
+	public String result(int[] stats) {
 		left.setValue(new Constant(right.result(stats)));
 		return null;
 	}
