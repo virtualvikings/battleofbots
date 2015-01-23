@@ -364,10 +364,16 @@ public class GameView extends View {
 		canvas.restore();
 		
 		//TODO: make health display less ugly
-		brush.setColor(Color.WHITE);
-		brush.setTextSize(20);
-		brush.setTextAlign(Align.CENTER);
-		canvas.drawText(hp == 0 ? "DEAD" : Integer.toString(hp), 0, 0, brush);
+		//brush.setColor(Color.WHITE);
+		//brush.setTextSize(20);
+		//brush.setTextAlign(Align.CENTER);
+		//canvas.drawText(hp == 0 ? "DEAD" : Integer.toString(hp), 0, 0, brush);
+		
+		//HP bar
+		brush.setColor(Color.RED);
+		canvas.drawRect(new RectF(-halfSize, halfSize / 2, halfSize, halfSize / 2 + 5), brush);
+		brush.setColor(Color.GREEN);
+		canvas.drawRect(new RectF(-halfSize, halfSize / 2, halfSize * (hp / 5f - 1), halfSize / 2 + 5), brush);
 	}
 	
 	final private int INVALID_POINTER_ID = -1;

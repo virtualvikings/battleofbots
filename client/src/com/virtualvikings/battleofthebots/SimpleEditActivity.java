@@ -216,6 +216,8 @@ public class SimpleEditActivity extends ActionBarActivity {
             	actionStr += s + ";";
             	//actionStr += indentation + s + "\n"; //Removing newlines for now
         }
+        
+        //TODO: remove ends between if and else!!!
 
         String rest = String.format("%s", actionStr);
         //String rest = String.format("{%s}", actionStr);
@@ -223,9 +225,12 @@ public class SimpleEditActivity extends ActionBarActivity {
         
         String result;
         if (condition.equalsIgnoreCase("else"))
-            result = String.format(" %s; %s end;", condition, rest);
+            result = String.format(" else; %s end;", rest);
         else
-            result = String.format(" if (%s); %s end;", condition, rest);
+            result = String.format(" if (%s); %s ", condition, rest);
+        	//result = String.format(" if (%s); %s end;", condition, rest);
+        	//TODO only add end if there's no following else!
+        	//
 
         return result;
     }
