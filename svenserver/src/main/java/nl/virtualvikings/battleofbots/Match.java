@@ -58,7 +58,9 @@ public class Match {
                             (byte)vm.getBotById(i).getHealth(),
                             (byte)vm.getBotById(i).getPosition().x,
                             (byte)vm.getBotById(i).getPosition().y,
-                            vm.scanAhead(i),
+                            vm.scanAhead(i, -1, 1), //front left
+                            vm.scanAhead(i, 0, 1), //front
+                            vm.scanAhead(i, 1, 1), //front right
                             0//(byte)r.nextInt(100) NOPE, random needs to be random every time
                     };
 

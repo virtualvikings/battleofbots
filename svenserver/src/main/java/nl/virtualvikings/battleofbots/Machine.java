@@ -94,12 +94,12 @@ public class Machine {
         return -1;
     }
 
-    public byte scanAhead(int botId) {
-        return scanAhead(bots[botId]);
+    public byte scanAhead(int botId, int x, int y) {
+        return scanAhead(bots[botId], x, y);
     }
 
-    private byte scanAhead(Robot current) { //Scan the cell in front of the bot, returns 0 if nothing, -1 if enemy and something else if obstacle
-        Point scanPos = getPointInFrontOf(current);
+    private byte scanAhead(Robot current, int x, int y) { //Scan the cell in front of the bot, returns 0 if nothing, -1 if enemy and something else if obstacle
+        Point scanPos = getLocalPoint(current, x, y);
         if (!insideBounds(scanPos)) return 1; //Outside bounds is always solid
 
         Robot scanBot = getBotAt(scanPos);
@@ -118,7 +118,7 @@ public class Machine {
 
         if (!insideBounds(scanPos)) return null;
         return getBotAt(scanPos);
-    }
+   }
 
     private Point getPointInFrontOf(Robot current) {
         return getLocalPoint(current, 0, 1);
