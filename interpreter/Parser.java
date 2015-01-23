@@ -141,7 +141,7 @@ public class Parser {
 		String[] splitParts = e.split("\\+|\\-|\\*|\\/|\\%");
 		ArrayList<Expression> parts = new ArrayList<Expression>();
 		
-		String operatorString = e.replaceAll("[a-z0-9]","");
+		String operatorString = e.replaceAll("[A-Za-z0-9]","");
 		String[] operatorParts = operatorString.split("");
 		ArrayList<String> operators = new ArrayList<String>();
 		
@@ -150,7 +150,11 @@ public class Parser {
 				try {
 					parts.add(new Constant(Integer.parseInt(splitParts[i])));
 				} catch (Exception x) {
-					parts.add(getUserVariable(splitParts[i]));
+					if (isUserVariable(splitParts[i])) {
+						parts.add(getUserVariable(splitParts[i]));
+					} else {
+						parts.add(new BotVariable(splitParts[i]));
+					}
 				}
 			}
 		}
@@ -164,7 +168,7 @@ public class Parser {
 				operators.add(operatorParts[i]);
 			}
 		}
-		
+
 		String[] allOperators = {"*/%", "+-"};
 		
 		for (int ao = 0; ao < allOperators.length; ao++) {

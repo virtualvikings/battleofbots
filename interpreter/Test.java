@@ -33,7 +33,8 @@ public class Test {
 			try {
 				Statement parsed = parser.parse(code);
 				System.out.println("PARSED: " + parsed);
-				int[] stats = {1, 100, 5, 0, 1, 100, 0};
+				// 			{DIR, HP, X, Y, TURNS, VL, VF, VR}
+				int[] stats = {1, 100, 0, 0, 10, 0, 0, 0};
 				System.out.println("RESULT: " + parsed.result(stats));
 			} catch (Exception e) {
 				e.printStackTrace(System.out);
