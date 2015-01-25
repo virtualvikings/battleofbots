@@ -17,6 +17,7 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
@@ -351,6 +352,7 @@ public class SimpleEditActivity extends ActionBarActivity {
             condition.setHint("Conditions");
             condition.setHintTextColor(hintColor);
             condition.setTypeface(Typeface.MONOSPACE);
+            condition.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
             
            watcher = new TextWatcher(){
 				@Override
@@ -475,6 +477,7 @@ public class SimpleEditActivity extends ActionBarActivity {
             action.setPadding(pad * 2, pad * 2, pad * 2, pad * 2);
             action.setText(tempActions);
             action.addTextChangedListener(watcher);
+            action.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
 
             actionWrapper.addView(action);
         }
