@@ -7,7 +7,7 @@ public class Constant implements Expression {
 		this.value = value;
 	}
 
-	public int result(byte[] stats) {
+	public int result(int[] stats) {
 		return value;
 	}
 	
