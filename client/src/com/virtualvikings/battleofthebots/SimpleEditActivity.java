@@ -183,14 +183,20 @@ public class SimpleEditActivity extends ActionBarActivity {
 
         for (int i = 0; i < json.length(); i++) {
             JSONObject obj = json.getJSONObject(i);
-            builder.append(codeFromJSON(obj));
+            boolean removeEndAfterIf = false;
+            if (i+1 < json.length()) {
+            	JSONObject objNext = json.getJSONObject(i+1);
+            	if (objNext.optString("condition").equalsIgnoreCase("else"))
+            		removeEndAfterIf = true; //Don't put an "end" after "if" in case the next condition is "else"
+            }
+            builder.append(codeFromJSON(obj, removeEndAfterIf));
         }
 
         Log.e("stuff", builder.toString());
         return builder.toString();
     }
 
-    private static String codeFromJSON(JSONObject json) throws JSONException {
+    private static String codeFromJSON(JSONObject json, boolean removeEndAfterIf) throws JSONException {
         String condition = json.optString("condition");
         JSONArray actions = json.optJSONArray("actions");
 
@@ -208,8 +214,19 @@ public class SimpleEditActivity extends ActionBarActivity {
             if (value instanceof String)
                 linesToAdd = ((String) value).split("\n");
             else if (value instanceof JSONObject) {
-            	String xc = codeFromJSON((JSONObject)value);
+            	
+            	 boolean rm = false;
+                 if (i+1 < actions.length()) {
+                 	Object objNext = actions.get(i+1);
+                 	if (objNext instanceof JSONObject
+                 			&& ((JSONObject)objNext).optString("condition").equalsIgnoreCase("else"))
+                 		rm = true; //Don't put an "end" after "if" in case the next condition is "else"
+                 }
+                 //TODO: code duplication
+                 
+            	String xc = codeFromJSON((JSONObject)value, rm);
                 linesToAdd = xc.substring(0, xc.length() - 1).split("\n"); //remove last ;
+                
             }
 
             for (String s : linesToAdd) 
@@ -217,8 +234,6 @@ public class SimpleEditActivity extends ActionBarActivity {
             	//actionStr += indentation + s + "\n"; //Removing newlines for now
         }
         
-        //TODO: remove ends between if and else!!!
-
         String rest = String.format("%s", actionStr);
         //String rest = String.format("{%s}", actionStr);
         //String rest = String.format("{%s}"/*\n"*/, actionStr);
@@ -227,10 +242,9 @@ public class SimpleEditActivity extends ActionBarActivity {
         if (condition.equalsIgnoreCase("else"))
             result = String.format(" else; %s end;", rest);
         else
-            //result = String.format(" if (%s); %s ", condition, rest);
-        	result = String.format(" if (%s); %s end;", condition, rest);
-        	//TODO only add end if there's no following else!
-        	//
+        	result = String.format(" if (%s); %s %s;", condition, rest, removeEndAfterIf ? "" : "end");
+        	//TODO there might be too many semicolons here
+        	//result = String.format(" if (%s); %s ", condition, rest);
 
         return result;
     }
