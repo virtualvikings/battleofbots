@@ -363,7 +363,10 @@ public class SimpleEditActivity extends ActionBarActivity {
 				@Override
 				public void onTextChanged(CharSequence s, int start,
 						int before, int count) {
-					 SimpleEditActivity.this.changed = true;
+					 if (count != before) 
+						 SimpleEditActivity.this.changed = true;
+					 //TODO: bug here - if you replace a word with another word of the same length (by using paste), changes aren't notified
+					 //But this is a pretty rare case, right?
 				}
 
 				@Override
