@@ -95,7 +95,9 @@ public class Machine {
     }
 
     public byte scanAhead(int botId, int x, int y) {
-        return scanAhead(bots[botId], x, y);
+        byte res = scanAhead(bots[botId], x, y);
+        //System.out.println("Scan at [" + x + "," + y + "] resulted in " + res);
+        return res;
     }
 
     private byte scanAhead(Robot current, int x, int y) { //Scan the cell in front of the bot, returns 0 if nothing, -1 if enemy and something else if obstacle

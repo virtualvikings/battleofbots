@@ -6,7 +6,7 @@ public class Parser {
 	
 	String[] actions = {"TurnLeft", "TurnRight", "GoForward", "GoBackward", "Attack"};
 	String[] operators = {"<", ">", "<=", ">=", "==", "!="};
-	String[] botVariables = {"HP", "POS-X", "POS-Y", "VIEW-L", "VIEW-F", "VIEW-R", "DIRECTION", "RANDOM", "TURNS"};
+	String[] botVariables = {"HP", "POS_X", "POS_Y", "VIEW_L", "VIEW_F", "VIEW_R", "DIRECTION", "RANDOM", "TURNS"};
 	
 	ArrayList<UserVariable> userVariables;
 	
