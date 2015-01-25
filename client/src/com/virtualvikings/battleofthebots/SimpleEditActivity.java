@@ -227,8 +227,8 @@ public class SimpleEditActivity extends ActionBarActivity {
         if (condition.equalsIgnoreCase("else"))
             result = String.format(" else; %s end;", rest);
         else
-            result = String.format(" if (%s); %s ", condition, rest);
-        	//result = String.format(" if (%s); %s end;", condition, rest);
+            //result = String.format(" if (%s); %s ", condition, rest);
+        	result = String.format(" if (%s); %s end;", condition, rest);
         	//TODO only add end if there's no following else!
         	//
 
