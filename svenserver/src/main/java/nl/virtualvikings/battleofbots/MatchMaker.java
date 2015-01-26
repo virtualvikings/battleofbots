@@ -34,25 +34,12 @@ public class MatchMaker {
 	public boolean createMatch() throws Exception {
 		if(freeBots.size() >= 2){
 
-			ArrayList<UserVariable> variables = new ArrayList<UserVariable>();
-			String[] userVariables = {"a", "b", "c", "d", "e"};
-			for (int i = 0; i < userVariables.length; i++) {
-				variables.add(new UserVariable(userVariables[i], new Constant(0)));
-			}
-
-			ArrayList<UserVariable> variables2 = new ArrayList<UserVariable>();
-			String[] userVariables2 = {"a", "b", "c", "d", "e"};
-			for (int i = 0; i < userVariables.length; i++) {
-				variables2.add(new UserVariable(userVariables2[i], new Constant(0)));
-			}
-			//TODO: duplicated code
-
 			//Parser parser = new Parser(variables);
 			//Every bot needs their own parser, or variables will be shared
 
 			Match match = new Match(
-					new Parser(variables).parse(freeBots.get(0).code),
-					new Parser(variables2).parse(freeBots.get(1).code));
+					new Parser().parse(freeBots.get(0).code),
+					new Parser().parse(freeBots.get(1).code));
 			//TODO: abort if parse() throws exception
 
 			//Een match wordt slechts door een MultiThread getriggered, dus moet de andere kunnen kijken of er al een match voor hem is gevonden.

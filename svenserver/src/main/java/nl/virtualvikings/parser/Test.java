@@ -16,25 +16,20 @@ public class Test {
 		//System.out.println("RESULT: " + block.result());
 		//System.out.println(block.toString());
 		
-			Path file = FileSystems.getDefault().getPath("/Users/David/Desktop", "code2.txt");
+			Path file = FileSystems.getDefault().getPath("/Users/David/Documents", "test.txt");
 			List<String> fileArray;
 			fileArray = Files.readAllLines(file, Charset.defaultCharset());
 			String code = "";
 			for (int i = 0; i < fileArray.size(); i++) {
 				code += fileArray.get(i) + ";";
 			}
-			ArrayList<UserVariable> variables = new ArrayList<UserVariable>();
-			String[] userVariables = {"a", "b", "c", "d", "e"};
-			for (int i = 0; i < userVariables.length; i++) {
-				variables.add(new UserVariable(userVariables[i], new Constant(0)));
-			}
 			
-			Parser parser = new Parser(variables);
+			Parser parser = new Parser();
 			try {
 				Statement parsed = parser.parse(code);
 				System.out.println("PARSED: " + parsed);
 				// 			{DIR, HP, X, Y, TURNS, VL, VF, VR}
-				int[] stats = {1, 100, 0, 0, 10, 0, 0, 0};
+				int[] stats = {1, 10, 0, 0, 10, 0, 0, 0};
 				System.out.println("RESULT: " + parsed.result(stats));
 			} catch (Exception e) {
 				e.printStackTrace(System.out);

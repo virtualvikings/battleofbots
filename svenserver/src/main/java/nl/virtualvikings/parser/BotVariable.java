@@ -12,8 +12,8 @@ public class BotVariable extends Variable {
 		switch (name) {
 		case "DIRECTION": return stats[0];
 		case "HP": return stats[1];
-		case "POS_X": return stats[2];
-		case "POS_Y": return stats[3];
+		case "X": return stats[2];
+		case "Y": return stats[3];
 		case "RANDOM": return new Random().nextInt(100);
 		case "TURNS": return stats[4];
 		case "VIEW_L": return stats[5];

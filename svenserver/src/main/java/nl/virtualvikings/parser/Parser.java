@@ -6,14 +6,18 @@ public class Parser {
 	
 	String[] actions = {"TurnLeft", "TurnRight", "GoForward", "GoBackward", "Attack"};
 	String[] operators = {"<", ">", "<=", ">=", "==", "!="};
-	String[] botVariables = {"HP", "POS_X", "POS_Y", "VIEW_L", "VIEW_F", "VIEW_R", "DIRECTION", "RANDOM", "TURNS"};
+	String[] botVariables = {"HP", "X", "Y", "VIEW_L", "VIEW_F", "VIEW_R", "DIRECTION", "RANDOM", "TURNS"};
 	
 	ArrayList<UserVariable> userVariables;
 	
 	char split = ';';
 	
-	public Parser(ArrayList<UserVariable> variables) {
-		this.userVariables = variables;
+	public Parser() {
+		userVariables = new ArrayList<UserVariable>();
+		String[] names = {"a", "b", "c", "d", "e"};
+		for (int i = 0; i < names.length; i++) {
+			userVariables.add(new UserVariable(names[i], new Constant(0)));
+		}
 	}
 	
 	/**
@@ -152,8 +156,10 @@ public class Parser {
 				} catch (Exception x) {
 					if (isUserVariable(splitParts[i])) {
 						parts.add(getUserVariable(splitParts[i]));
-					} else {
+					} else if (isBotVariable(splitParts[i])){
 						parts.add(new BotVariable(splitParts[i]));
+					} else {
+						parts.add(null);
 					}
 				}
 			}
