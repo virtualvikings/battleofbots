@@ -47,9 +47,15 @@ public class Machine {
 
     private void makeTestLevel() {
         Random r = new Random();
-        for (int y = 1; y < fieldSize - 1; y++)
-            for (int x = 1; x < fieldSize - 1; x++)
-                field[x][y] = r.nextDouble() > 0.7 ? (byte) r.nextInt(4) : 0;
+        for (int y = 0; y < fieldSize; y++)
+            for (int x = 0; x < fieldSize; x++) {
+                float distanceLT = (float) Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+                float distanceRB = (float) Math.sqrt(Math.pow(fieldSize - x, 2) + Math.pow(fieldSize - y, 2));
+                float distanceToCorners = Math.min(distanceLT, distanceRB);
+                //TODO: distance LT is bigger than distanceRB
+                if (distanceToCorners > 4)
+                    field[x][y] = r.nextDouble() > 0.7 ? (byte) r.nextInt(4) : 0;
+            }
         printStateForDebugging();
     }
 
