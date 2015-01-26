@@ -26,7 +26,7 @@ public class Condition implements Expression {
 			if (left.result(stats) >= right.result(stats)) { return 1; };
 			break;
 		case "<=":
-			if (left.result(stats) >= right.result(stats)) { return 1; };
+			if (left.result(stats) <= right.result(stats)) { return 1; };
 			break;
 		case "!=":
 			if (left.result(stats) != right.result(stats)) { return 1; };
