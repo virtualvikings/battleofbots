@@ -63,7 +63,9 @@ public class Parser {
 			String currentLine = lines.get(i);
 			
 			// If the current line contains an "if(", it is an if-statement.
-			if (currentLine.contains("if(")) {
+			if (isComment(currentLine)) {
+				// Do nothing
+			} else if (currentLine.contains("if(")) {
 				// The primary body of the if-statement.
 				ArrayList<String> primary = new ArrayList<String>();
 				// The secondary (else) body of the if-statement.
@@ -108,6 +110,13 @@ public class Parser {
 		
 		// The top level Block.
 		return new Block(block);
+	}
+	
+	public boolean isComment(String c) {
+		if (c.startsWith("//")) {
+			return true;
+		}
+		return false;
 	}
 
 	/**
