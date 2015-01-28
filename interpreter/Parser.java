@@ -6,7 +6,20 @@ public class Parser {
 	
 	private final String[] ACTIONS = {"TurnLeft", "TurnRight", "GoForward", "GoBackward", "Attack"};
 	private final String[] OPERATORS = {"<", ">", "<=", ">=", "==", "!="};
-	public static final String[] BOT_VARIABLES = {"HP", "DIRECTION_E", "X", "Y", "VIEW_L", "VIEW_LF", "VIEW_F", "VIEW_RF", "VIEW_R", "DIRECTION", "RANDOM", "TURNS"};
+	public static final String[] BOT_VARIABLES = {
+		"DIRECTION",
+		"DIRECTION_E",
+		"HP",
+		"RANDOM",
+		"TURNS",
+		"X",
+		"Y",
+		"VIEW_L",
+		"VIEW_LF",
+		"VIEW_F",
+		"VIEW_RF",
+		"VIEW_R",
+		};
 	
 	private ArrayList<UserVariable> userVariables;
 	
