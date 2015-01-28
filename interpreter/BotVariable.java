@@ -7,18 +7,17 @@ public class BotVariable extends Variable {
 		super(name, new Constant(0));
 	}
 	
-		
 	public int result(int[] stats) {
-		switch (name) {
-		case "DIRECTION": return stats[0];
-		case "HP": return stats[1];
-		case "X": return stats[2];
-		case "Y": return stats[3];
-		case "RANDOM": return new Random().nextInt(100);
-		case "TURNS": return stats[4];
-		case "VIEW_L": return stats[5];
-		case "VIEW_F": return stats[6];
-		case "VIEW_R": return stats[7];
+		if (name.equals("RANDOM")) {
+			return new Random().nextInt(100);
+		} else {
+			String[] variables = Parser.BOT_VARIABLES;
+			for (int i = 0; i < variables.length; i++) {
+				String currentVariable = variables[i];
+				if (name.equals(currentVariable)) {
+					return stats[i];
+				}
+			}
 		}
 		return -1;
 	}

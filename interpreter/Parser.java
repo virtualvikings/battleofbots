@@ -4,13 +4,16 @@ import java.util.ArrayList;
 
 public class Parser {
 	
-	String[] actions = {"TurnLeft", "TurnRight", "GoForward", "GoBackward", "Attack"};
-	String[] operators = {"<", ">", "<=", ">=", "==", "!="};
-	String[] botVariables = {"HP", "X", "Y", "VIEW_L", "VIEW_F", "VIEW_R", "DIRECTION", "RANDOM", "TURNS"};
+	private final String[] ACTIONS = {"TurnLeft", "TurnRight", "GoForward", "GoBackward", "Attack"};
+	private final String[] OPERATORS = {"<", ">", "<=", ">=", "==", "!="};
+	public static final String[] BOT_VARIABLES = {"HP", "DIRECTION_E", "X", "Y", "VIEW_L", "VIEW_LF", "VIEW_F", "VIEW_RF", "VIEW_R", "DIRECTION", "RANDOM", "TURNS"};
 	
-	ArrayList<UserVariable> userVariables;
+	private ArrayList<UserVariable> userVariables;
 	
-	char split = ';';
+	private final char SPLIT = ';';
+	private final String IF = "if(";
+	private final String ELSE = "else";
+	private final String END = "end";
 	
 	public Parser() {
 		userVariables = new ArrayList<UserVariable>();
@@ -37,7 +40,7 @@ public class Parser {
 		while (i < strategy.length()) {
 			int j = i;
 			String currentLine = "";
-			while (strategy.charAt(j) != split) {
+			while (strategy.charAt(j) != SPLIT) {
 				currentLine += strategy.charAt(j);
 				j++;
 			}
@@ -52,7 +55,7 @@ public class Parser {
 	 * @param s
 	 * @return
 	 */
-	public Statement readLines(ArrayList<String> lines) throws Exception {
+	private Statement readLines(ArrayList<String> lines) throws Exception {
 		// List of the top level statements.
 		ArrayList<Statement> block = new ArrayList<Statement>();
 		
@@ -65,7 +68,7 @@ public class Parser {
 			// If the current line contains an "if(", it is an if-statement.
 			if (isComment(currentLine)) {
 				// Do nothing
-			} else if (currentLine.contains("if(")) {
+			} else if (currentLine.contains(IF)) {
 				// The primary body of the if-statement.
 				ArrayList<String> primary = new ArrayList<String>();
 				// The secondary (else) body of the if-statement.
@@ -76,11 +79,11 @@ public class Parser {
 				while (nestCount != 0) {
 					whileLine = lines.get(i+1);
 					
-					if (whileLine.contains("if(")) {
+					if (whileLine.contains(IF)) {
 						nestCount++;
-					} else if (whileLine.equals("end")) {
+					} else if (whileLine.equals(END)) {
 						nestCount--;
-					} else if (whileLine.equals("else") && nestCount == 1) {
+					} else if (whileLine.equals(ELSE) && nestCount == 1) {
 						elseFound = true;
 					}
 					
@@ -102,7 +105,7 @@ public class Parser {
 				Assignment a = parseAssignment(currentLine);
 				block.add(a);	
 			// Nothing is recognized, throw an Exception.
-			} else if (!(currentLine.equals("else") || currentLine.equals("end") || currentLine.equals(""))){
+			} else if (!(currentLine.equals(ELSE) || currentLine.equals(END) || currentLine.equals(""))){
 				throw new Exception("Line " + (i + 1) + " (" + currentLine + ") could not be parsed correctly.");
 			}
 			
@@ -112,7 +115,7 @@ public class Parser {
 		return new Block(block);
 	}
 	
-	public boolean isComment(String c) {
+	private boolean isComment(String c) {
 		if (c.startsWith("//")) {
 			return true;
 		}
@@ -124,7 +127,7 @@ public class Parser {
 	 * @param s
 	 * @return
 	 */
-	public Assignment parseAssignment(String s) {
+	private Assignment parseAssignment(String s) {
 		// Split into left-hand and right-hand side.
 		String[] parts = s.split("=");
 		
@@ -150,7 +153,7 @@ public class Parser {
 	 * @param s
 	 * @return
 	 */
-	public Expression parseMath(String e) {
+	private Expression parseMath(String e) {
 		String[] splitParts = e.split("\\+|\\-|\\*|\\/|\\%");
 		ArrayList<Expression> parts = new ArrayList<Expression>();
 		
@@ -213,7 +216,7 @@ public class Parser {
 	 * @param s
 	 * @return
 	 */
-	public UserVariable getUserVariable(String s) {
+	private UserVariable getUserVariable(String s) {
 		for (int i = 0; i < userVariables.size(); i++) {
 			if (userVariables.get(i).getName().equals(s)) {
 				return userVariables.get(i);
@@ -227,7 +230,7 @@ public class Parser {
 	 * @param v
 	 * @return
 	 */
-	public boolean isUserVariable(String v) {
+	private boolean isUserVariable(String v) {
 		for (int i = 0; i < userVariables.size(); i++) {
 			if (userVariables.get(i).getName().equals(v)) {
 				return true;
@@ -241,9 +244,9 @@ public class Parser {
 	 * @param v
 	 * @return
 	 */
-	public boolean isBotVariable(String v) {
-		for (int i = 0; i < botVariables.length; i++) {
-			if (botVariables[i].equals(v)) {
+	private boolean isBotVariable(String v) {
+		for (int i = 0; i < BOT_VARIABLES.length; i++) {
+			if (BOT_VARIABLES[i].equals(v)) {
 				return true;
 			}
 		}
@@ -255,9 +258,9 @@ public class Parser {
 	 * @param s
 	 * @return
 	 */
-	public boolean isAction(String s) {
-		for (int i = 0; i < actions.length; i++) {
-			if (s.equals(actions[i])) {
+	private boolean isAction(String s) {
+		for (int i = 0; i < ACTIONS.length; i++) {
+			if (s.equals(ACTIONS[i])) {
 				return true;
 			}
 		}
@@ -269,7 +272,7 @@ public class Parser {
 	 * @param s
 	 * @return
 	 */
-	public boolean isAssignment(String s) {
+	private boolean isAssignment(String s) {
 		if (s.contains("=")) {
 			String[] parts = s.split("=");
 			return isUserVariable(parts[0]);
@@ -282,11 +285,11 @@ public class Parser {
 	 * @param condition
 	 * @return
 	 */
-	public Condition parseCondition(String condition) {
+	private Condition parseCondition(String condition) {
 		String operator = "";
-		for (int i = 0; i < operators.length; i++) {
-			if (condition.contains(operators[i])) {
-				operator = operators[i];
+		for (int i = 0; i < OPERATORS.length; i++) {
+			if (condition.contains(OPERATORS[i])) {
+				operator = OPERATORS[i];
 			}
 		}
 		String[] parts = condition.split(operator);
