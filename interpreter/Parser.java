@@ -21,6 +21,7 @@ public class Parser {
 		"VIEW_R",
 		};
 	
+	public static ArrayList<Label> labels;
 	private ArrayList<UserVariable> userVariables;
 	
 	private final char SPLIT = ';';
@@ -34,6 +35,7 @@ public class Parser {
 		for (int i = 0; i < names.length; i++) {
 			userVariables.add(new UserVariable(names[i], new Constant(0)));
 		}
+		labels = new ArrayList<Label>();
 	}
 	
 	/**
@@ -117,6 +119,21 @@ public class Parser {
 			} else if (isAssignment(currentLine)) {
 				Assignment a = parseAssignment(currentLine);
 				block.add(a);	
+			} else if (isLabel(currentLine)) {
+				String name = currentLine.replace("label", "");
+				ArrayList<String> labelBlock = new ArrayList<String>();
+				i++;
+				while (i < lines.size()) {
+					labelBlock.add(lines.get(i));
+					i++;
+				}
+				Label l = new Label(name, readLines(labelBlock));
+				block.add(l);
+				labels.add(l);
+			} else if (isGoto(currentLine)) {
+				String name = currentLine.replace("goto", "");
+				Goto g = new Goto(name);
+				block.add(g);
 			// Nothing is recognized, throw an Exception.
 			} else if (!(currentLine.equals(ELSE) || currentLine.equals(END) || currentLine.equals(""))){
 				throw new Exception("Line " + (i + 1) + " (" + currentLine + ") could not be parsed correctly.");
@@ -126,6 +143,20 @@ public class Parser {
 		
 		// The top level Block.
 		return new Block(block);
+	}
+	
+	private boolean isGoto(String g) {
+		if (g.contains("goto")) {
+			return true;
+		}
+		return false;
+	}
+	
+	private boolean isLabel(String l) {
+		if (l.contains("label")) {
+			return true;
+		}
+		return false;
 	}
 	
 	private boolean isComment(String c) {
